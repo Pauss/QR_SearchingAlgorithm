@@ -33,7 +33,7 @@ int main()
 	/*
 	 * Get the Data for applying search algorithm.
 	 * Extract a matrix m*n from file.
-	 * Applying algorithm on a specific type system equation (complete info)*/   /*todo*/
+	 * Applying algorithm on a specific type system equation (complete info)*/   /*TODO*/
 
 	/* check validity of a file
 	 * if valid extract matrix from file*/
@@ -52,7 +52,7 @@ int main()
 			print_matrix(input_matrix);
 		}
 
-		/*choose what strategy to use
+		/* choose what strategy to use
 		 * 1. Naive search with QR decomposition applied at each step.
 		 * 2. Efficient search with QR decomposition applied only on first step. Save some time tho..
 		 * 3. Even more nice strategy using GA (Genetic Algorithm)*/
@@ -87,8 +87,8 @@ int main()
 	}
 	else
 	{
-		/*
-		 * Message to the output
+
+		/* Message to the output
 		 * Algorithm can't be verified on a invalid set of data*/
 		switch(check_file)
 		{

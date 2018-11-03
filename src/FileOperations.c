@@ -21,7 +21,7 @@ static boolean get_dimension_file(T_FILE_DIM* file_dim);
 static boolean get_matrix(T_FILE_DIM* file_dim);
 
 /*=========================================*/
-/* This function open a file and rise error if file can't be opened*/
+/*This function open a file and rise error if file can't be opened*/
 /*=========================================*/
 boolean open_file(int8 *name_file) {
 
@@ -37,8 +37,8 @@ boolean open_file(int8 *name_file) {
 }
 
 /*=========================================*/
-/* This function is a wrapper for open_file
- * it's purpose is to set a default file if the input string is empty*/
+/*This function is a wrapper for open_file
+ *it's purpose is to set a default file if the input string is empty*/
 /*=========================================*/
 boolean open_file_w(int8* in) {
 
@@ -60,8 +60,8 @@ boolean open_file_w(int8* in) {
 #define open_file(...) open_file_w((int8*){__VA_ARGS__});
 
 /*=========================================*/
-/* This function is getting the size of file: number of columns and lines
- * Also is checking if dimensions are valid*/
+/*This function is getting the size of file: number of columns and lines
+ *Also is checking if dimensions are valid*/
 /*=========================================*/
 static boolean get_dimension_file(T_FILE_DIM* file_dim) {
 
@@ -83,11 +83,7 @@ static boolean get_dimension_file(T_FILE_DIM* file_dim) {
 		/*get number of columns, from current line*/
 		do
 			switch (*l_line) {
-			case '\0':
-			case ' ':
-			case '\t':
-			case '\n':
-			case '\r':
+			case '\0': case ' ':case '\t':case '\n':case '\r':
 				/*if delimiter found, number of columns is increased*/
 				if (l_inword) {
 					l_inword = FALSE;
@@ -156,7 +152,7 @@ static boolean get_matrix(T_FILE_DIM* matrix_dim) {
 }
 
 /*=========================================*/
-/* This function checks possible errors of an input file*/
+/*This function checks possible errors of an input file*/
 /*=========================================*/
 T_FILE_ERRORS fileIsValid(int8* name_file, T_FILE_DIM *file_dim) {
 
@@ -200,7 +196,7 @@ T_FILE_ERRORS fileIsValid(int8* name_file, T_FILE_DIM *file_dim) {
 }
 
 /*=========================================*/
-/* Function to close file*/
+/*Function to close file*/
 /*=========================================*/
 void clean_file(void)
 {

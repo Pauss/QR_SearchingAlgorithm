@@ -19,7 +19,7 @@
 /*=========================================*/
 
 /*=========================================*/
-/*Description*/
+/*Function to convert double matrix to gsl_matrix type*/
 /*=========================================*/
 void convert_to_gsl(T_FILE_DIM* file_dim, gsl_matrix *M) {
 
@@ -33,7 +33,7 @@ void convert_to_gsl(T_FILE_DIM* file_dim, gsl_matrix *M) {
 }
 
 /*=========================================*/
-/*Description*/
+/*Function to print a gsl_matrix*/
 /*=========================================*/
 void print_matrix(gsl_matrix *M) {
 
@@ -44,6 +44,29 @@ void print_matrix(gsl_matrix *M) {
 		printf("\n");
 	}
 	printf("\n");
+}
+
+/*=========================================*/
+/*Function to compute product of a gsl_matrix with a gsl_vector*/
+/*=========================================*/
+boolean product_matrix_vector(gsl_matrix* M, gsl_vector* v, gsl_vector* result) {
+
+	/*if matrix's number of columns is not equal with vector size then product can't be done*/
+	if (M->size2 != v->size) {
+		return FALSE;
+
+	} else {
+		for (uint8 i = 0; i < M->size1; i++) {
+			double S = 0;
+			for (uint8 j = 0; j < M->size1; j++) {
+				S += gsl_matrix_get(M, i, j) * gsl_vector_get(v, j);
+			}
+			gsl_vector_set(result, i, S);
+		}
+	}
+
+	return TRUE;
+
 }
 
 /*=========================================*/
@@ -127,7 +150,6 @@ boolean compute_matrix_inverse(gsl_matrix * M) {
 
 	for (i = 0; i < sqaured_size; i++) {
 
-		/*make a copy of element (i,i)*/
 		double temp_i_i = gsl_matrix_get(M_local, i, i);
 
 		for (j = 0; j < multiplied_size; j++) {
@@ -147,10 +169,27 @@ boolean compute_matrix_inverse(gsl_matrix * M) {
 	view = gsl_matrix_submatrix(M_local, INIT, sqaured_size, sqaured_size,
 			sqaured_size);
 
-	/*set to the input matrix Inverse matrix computed*/
+	/*set to the input matrix inverse matrix computed*/
 	gsl_matrix_memcpy(M, &view.matrix);
 
 	return TRUE;
 
 }
+
+/*=========================================*/
+/*This function compute Euclidean norm*/
+/*=========================================*/
+double euclidean_norm(gsl_vector* V, uint8 i) {
+
+	double sum = INIT;
+
+	for (; i < V->size; i++) {
+		sum += pow((gsl_vector_get(V, i)), 2);
+
+	}
+
+	return sqrt(sum);
+
+}
+
 
