@@ -1,4 +1,11 @@
 /*=========================================*/
+/*
+ * MatrixComputations.c
+ *
+ *  Created on: Nov 2, 2018
+ *      Author: Paus
+ */
+/*=========================================*/
 /*include*/
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,8 +17,8 @@ static FILE *file;
 /*global data*/
 /*=========================================*/
 /*private functions*/
-static boolean get_dimension_file(FILE_DIM* file_dim);
-static boolean get_matrix(FILE_DIM* file_dim);
+static boolean get_dimension_file(T_FILE_DIM* file_dim);
+static boolean get_matrix(T_FILE_DIM* file_dim);
 
 /*=========================================*/
 /* This function open a file and rise error if file can't be opened*/
@@ -56,7 +63,7 @@ boolean var_f(int8* in) {
 /* This function is getting the size of file: number of columns and lines
  * Also is checking if dimensions are valid*/
 /*=========================================*/
-static boolean get_dimension_file(FILE_DIM* file_dim) {
+static boolean get_dimension_file(T_FILE_DIM* file_dim) {
 
 	int8 *l_line = (int8 *) malloc(sizeof(int8) * MAX_LINE);
 	boolean l_inword = FALSE;
@@ -118,7 +125,7 @@ static boolean get_dimension_file(FILE_DIM* file_dim) {
 /*=========================================*/
 /*This function extract data from file into a matrix*/
 /*=========================================*/
-static boolean get_matrix(FILE_DIM* matrix_dim) {
+static boolean get_matrix(T_FILE_DIM* matrix_dim) {
 
 	/*line index*/
 	uint8 i = INIT;
@@ -151,7 +158,7 @@ static boolean get_matrix(FILE_DIM* matrix_dim) {
 /*=========================================*/
 /* This function checks possible errors of an input file*/
 /*=========================================*/
-FILE_ERRORS fileIsValid(int8* name_file, FILE_DIM *file_dim) {
+T_FILE_ERRORS fileIsValid(int8* name_file, T_FILE_DIM *file_dim) {
 
 	boolean this_file_checks = FALSE;
 
@@ -164,13 +171,13 @@ FILE_ERRORS fileIsValid(int8* name_file, FILE_DIM *file_dim) {
 	;
 
 	if (FALSE == this_file_checks) {
-		return FILE_NOT_FOUND;
+		return file_not_found;
 	}
 
 	/* check that number of columns is equivalent for all lines
 	 * get file dimensions: number of lines and number of columns*/
 	if (FALSE == get_dimension_file(file_dim)) {
-		return FILE_DIM_INVALID;
+		return file_dim_invalid;
 	}
 
 	/* first line is documented with data representation
@@ -185,10 +192,10 @@ FILE_ERRORS fileIsValid(int8* name_file, FILE_DIM *file_dim) {
 
 	/*populate the matrix with data form file*/
 	if (FALSE == get_matrix(file_dim)) {
-		return FILE_DATA_INVALID;
+		return file_data_invalid;
 	}
 
-	return FILE_NO_ERROR;
+	return file_no_error;
 
 }
 

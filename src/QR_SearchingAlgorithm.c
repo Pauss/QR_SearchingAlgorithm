@@ -11,14 +11,26 @@
 /*includes*/
 #include "Types.h"
 #include "FileOperations.h"
+#include "MatrixComputations.h"
+#include "QR_SearchingAlgorithm.h"
+/*=========================================*/
+/*private data*/
+/*=========================================*/
+/*global data*/
+/*=========================================*/
+/*private functions*/
+/*=========================================*/
+
+/*=========================================*/
+/*Description*/
 /*=========================================*/
 int main()
 {
 
-	FILE_DIM file_dim;
-	FILE_ERRORS check_file;
+	T_FILE_DIM file_dim;
+	T_FILE_ERRORS check_file;
+	gsl_matrix* input_matrix;
 	/*
-	 * STEP1
 	 * Get the Data for applying search algorithm.
 	 * Extract a matrix m*n from file.
 	 * Applying algorithm on a specific type system equation (complete info)*/   /*todo*/
@@ -26,10 +38,41 @@ int main()
 	/* check validity of a file
 	 * if valid extract matrix from file*/
 	check_file = fileIsValid("Data_Invalid.txt", &file_dim);
-	if( FILE_NO_ERROR == check_file)
+	if( file_no_error == check_file)
 	{
 
-		printf("File is valid!\n");
+		/*File is valid*/
+
+		/*choose what strategy to use
+		 * 1. Naive search with QR decomposition applied at each step.
+		 * 2. Efficient search with QR decomposition applied only on first step. Save some time tho..
+		 * 3. Even more nice strategy using GA (Genetic Algorithm)*/
+
+		T_SEARCH_STRATEGIES strategy = naive_search;
+
+		switch(strategy)
+		{
+		case naive_search:{
+			/*todo*/
+			break;
+		}
+		case efficient_search:{
+			/*todo*/
+			break;
+		}
+		case GA_search:{
+			/*todo*/
+			break;
+		}
+		default: {
+			/*todo*/
+			break;
+		}
+
+		}
+
+
+
 	}
 	else
 	{
@@ -38,17 +81,17 @@ int main()
 		 * Algorithm can't be verified on a invalid set of data*/
 		switch(check_file)
 		{
-		case FILE_NOT_FOUND:
+		case file_not_found:
 		{
 			printf("ERROR: File not found.\n");
 			break;
 		}
-		case FILE_DIM_INVALID:
+		case file_dim_invalid:
 		{
 			printf("ERROR: File dimension is not valid.\n");
 			break;
 		}
-		case FILE_DATA_INVALID:
+		case file_data_invalid:
 		{
 			printf("ERROR: File data is not valid.\n");
 			break;

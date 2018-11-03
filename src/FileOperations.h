@@ -14,11 +14,11 @@
 /*enumerations*/
 typedef enum
 {
-	FILE_NOT_FOUND = 0u,
-	FILE_DIM_INVALID,
-	FILE_DATA_INVALID, /*not numbers*/
-	FILE_NO_ERROR
-}FILE_ERRORS;
+	file_not_found = 0u,
+	file_dim_invalid,
+	file_data_invalid, /*not numbers*/
+	file_no_error
+}T_FILE_ERRORS;
 /*=========================================*/
 /*typedef*/
 typedef struct
@@ -27,12 +27,12 @@ typedef struct
 	uint8 columns;
 	double** matrix;
 
-}FILE_DIM;
+}T_FILE_DIM;
 /*=========================================*/
 /*external functions*/
 boolean open_file(int8 *name_file);
 boolean var_f(int8* in);
-FILE_ERRORS fileIsValid(int8 *name_file, FILE_DIM* file_dim);
+T_FILE_ERRORS fileIsValid(int8 *name_file, T_FILE_DIM* file_dim);
 void clean_file(void);
 /*=========================================*/
 
