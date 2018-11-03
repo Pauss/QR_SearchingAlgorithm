@@ -143,10 +143,11 @@ boolean compute_matrix_inverse(gsl_matrix * M) {
 
 	gsl_matrix_set_zero(M);
 
-	/*upper-left elements[0,squared_size], number of lines and number of columns of the view*/
+	/*extract [Inverse] matrix from local matrix*/
 	view = gsl_matrix_submatrix(M_local, INIT, sqaured_size, sqaured_size,
 			sqaured_size);
 
+	/*set to the input matrix Inverse matrix computed*/
 	gsl_matrix_memcpy(M, &view.matrix);
 
 	return TRUE;
