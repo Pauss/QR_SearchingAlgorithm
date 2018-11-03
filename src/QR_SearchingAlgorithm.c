@@ -38,10 +38,19 @@ int main()
 	/* check validity of a file
 	 * if valid extract matrix from file*/
 	check_file = fileIsValid("Data_Invalid.txt", &file_dim);
+
 	if( file_no_error == check_file)
 	{
 
 		/*File is valid*/
+		input_matrix = gsl_matrix_alloc(file_dim.lines, file_dim.columns);
+		convert_to_gsl(&file_dim, input_matrix);
+		if (TRUE == compute_matrix_inverse(input_matrix)) {
+			print_matrix(input_matrix);
+
+			convert_to_gsl(&file_dim, input_matrix);
+			print_matrix(input_matrix);
+		}
 
 		/*choose what strategy to use
 		 * 1. Naive search with QR decomposition applied at each step.
@@ -53,19 +62,21 @@ int main()
 		switch(strategy)
 		{
 		case naive_search:{
-			/*todo*/
+
+
+			/*TODO*/
 			break;
 		}
 		case efficient_search:{
-			/*todo*/
+			/*TODO*/
 			break;
 		}
 		case GA_search:{
-			/*todo*/
+			/*TODO*/
 			break;
 		}
 		default: {
-			/*todo*/
+			/*TODO*/
 			break;
 		}
 

@@ -9,6 +9,9 @@
 #include "FileOperations.h"
 /*=========================================*/
 /*define*/
+#define IDENTITY_VALUE 1u
+#define INVERSE_MULTIPLI(value) (1/(value))
+#define SCALE_2 2u
 /*=========================================*/
 /*enumerations*/
 /*=========================================*/
@@ -17,5 +20,6 @@
 /*external functions*/
 void print_matrix(gsl_matrix *M);
 void convert_to_gsl(T_FILE_DIM* file_dim, gsl_matrix *M);
+boolean compute_matrix_inverse(gsl_matrix * M);
 /*=========================================*/
 #endif

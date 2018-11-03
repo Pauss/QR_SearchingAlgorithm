@@ -31,7 +31,7 @@ typedef struct
 /*=========================================*/
 /*external functions*/
 boolean open_file(int8 *name_file);
-boolean var_f(int8* in);
+boolean open_file_w(int8* in);
 T_FILE_ERRORS fileIsValid(int8 *name_file, T_FILE_DIM* file_dim);
 void clean_file(void);
 /*=========================================*/

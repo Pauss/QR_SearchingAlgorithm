@@ -40,7 +40,7 @@ boolean open_file(int8 *name_file) {
 /* This function is a wrapper for open_file
  * it's purpose is to set a default file if the input string is empty*/
 /*=========================================*/
-boolean var_f(int8* in) {
+boolean open_file_w(int8* in) {
 
 	/* wrapper to set default file to be opened*/
 	int8* i_out = (int8*) malloc(sizeof(int8) * MAX_STRING);
@@ -57,7 +57,7 @@ boolean var_f(int8* in) {
 /*=========================================*/
 /*special define*/
 /*=========================================*/
-#define open_file(...) var_f((int8*){__VA_ARGS__});
+#define open_file(...) open_file_w((int8*){__VA_ARGS__});
 
 /*=========================================*/
 /* This function is getting the size of file: number of columns and lines
@@ -190,7 +190,7 @@ T_FILE_ERRORS fileIsValid(int8* name_file, T_FILE_DIM *file_dim) {
 	for (uint8 i = 0; i < file_dim->lines; ++i)
 		file_dim->matrix[i] = malloc((file_dim->columns) * sizeof(double));
 
-	/*populate the matrix with data form file*/
+	/*populate the matrix with data from file*/
 	if (FALSE == get_matrix(file_dim)) {
 		return file_data_invalid;
 	}
@@ -200,7 +200,7 @@ T_FILE_ERRORS fileIsValid(int8* name_file, T_FILE_DIM *file_dim) {
 }
 
 /*=========================================*/
-/* Function that closes file*/
+/* Function to close file*/
 /*=========================================*/
 void clean_file(void)
 {
