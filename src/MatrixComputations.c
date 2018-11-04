@@ -47,6 +47,18 @@ void print_matrix(gsl_matrix *M) {
 }
 
 /*=========================================*/
+/*Function to print a gsl_vector*/
+/*=========================================*/
+void print_vector (gsl_vector *V) {
+
+	for (uint8 i = 0; i < V->size; i++) {
+
+			printf("m(%d) = %lf\t", i, gsl_vector_get(V, i));
+	}
+	printf("\n");
+}
+
+/*=========================================*/
 /*Function to compute product of a gsl_matrix with a gsl_vector*/
 /*=========================================*/
 boolean product_matrix_vector(gsl_matrix* M, gsl_vector* v, gsl_vector* result) {
@@ -179,17 +191,15 @@ boolean compute_matrix_inverse(gsl_matrix * M) {
 /*=========================================*/
 /*This function compute Euclidean norm*/
 /*=========================================*/
-double euclidean_norm(gsl_vector* V, uint8 i) {
+double euclidean_norm(gsl_vector* V) {
 
 	double sum = INIT;
 
-	for (; i < V->size; i++) {
-		sum += pow((gsl_vector_get(V, i)), 2);
+	for (uint8 i = INIT; i < V->size; i++) {
+		sum += pow((gsl_vector_get(V, i)), SCALE_2);
 
 	}
 
 	return sqrt(sum);
 
 }
-
-

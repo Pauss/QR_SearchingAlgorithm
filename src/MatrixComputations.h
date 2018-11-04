@@ -21,6 +21,7 @@
 void print_matrix(gsl_matrix *M);
 void convert_to_gsl(T_FILE_DIM* file_dim, gsl_matrix *M);
 boolean compute_matrix_inverse(gsl_matrix * M);
-double euclidean_norm(gsl_vector* V, uint8 i);
+double euclidean_norm(gsl_vector* V);
+void print_vector (gsl_vector *V);
 /*=========================================*/
 #endif

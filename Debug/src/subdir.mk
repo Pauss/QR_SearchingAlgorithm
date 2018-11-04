@@ -4,16 +4,19 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../src/AlgorithmComputations.c \
 ../src/FileOperations.c \
 ../src/MatrixComputations.c \
 ../src/QR_SearchingAlgorithm.c 
 
 OBJS += \
+./src/AlgorithmComputations.o \
 ./src/FileOperations.o \
 ./src/MatrixComputations.o \
 ./src/QR_SearchingAlgorithm.o 
 
 C_DEPS += \
+./src/AlgorithmComputations.d \
 ./src/FileOperations.d \
 ./src/MatrixComputations.d \
 ./src/QR_SearchingAlgorithm.d 

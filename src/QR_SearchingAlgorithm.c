@@ -13,6 +13,7 @@
 #include "FileOperations.h"
 #include "MatrixComputations.h"
 #include "QR_SearchingAlgorithm.h"
+#include "AlgorithmComputations.h"
 /*=========================================*/
 /*private data*/
 /*=========================================*/
@@ -29,7 +30,6 @@ int main()
 
 	T_FILE_DIM file_dim;
 	T_FILE_ERRORS check_file;
-	gsl_matrix* input_matrix;
 	/*
 	 * Get the Data for applying search algorithm.
 	 * Extract a matrix m*n from file.
@@ -43,14 +43,7 @@ int main()
 	{
 
 		/*File is valid*/
-		input_matrix = gsl_matrix_alloc(file_dim.lines, file_dim.columns);
-		convert_to_gsl(&file_dim, input_matrix);
-		if (TRUE == compute_matrix_inverse(input_matrix)) {
-			print_matrix(input_matrix);
 
-			convert_to_gsl(&file_dim, input_matrix);
-			print_matrix(input_matrix);
-		}
 
 		/* choose what strategy to use
 		 * 1. Naive search with QR decomposition applied at each step.
@@ -65,6 +58,10 @@ int main()
 
 
 			/*TODO*/
+			set_y_vector(&file_dim);
+			set_A_matrix(&file_dim);
+			QR_decomposition();
+
 			break;
 		}
 		case efficient_search:{
