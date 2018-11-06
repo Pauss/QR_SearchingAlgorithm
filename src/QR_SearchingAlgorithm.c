@@ -28,8 +28,8 @@
 int main()
 {
 
-	T_FILE_DIM file_dim;
-	T_FILE_ERRORS check_file;
+	T_FILE_DIM* file_dim;
+	T_FILE_ERRORS check_file = file_no_error;
 	/*
 	 * Get the Data for applying search algorithm.
 	 * Extract a matrix m*n from file.
@@ -37,7 +37,7 @@ int main()
 
 	/* check validity of a file
 	 * if valid extract matrix from file*/
-	check_file = fileIsValid("Data_Invalid.txt", &file_dim);
+	check_file = fileIsValid("Data_Invalid.txt");
 
 	if( file_no_error == check_file)
 	{
@@ -58,10 +58,13 @@ int main()
 
 
 			/*TODO*/
-			set_y_vector(&file_dim);
-			set_A_matrix(&file_dim);
-			QR_decomposition();
+			file_dim = get_file_dimensions();
 
+			if (NULL != file_dim) {
+				set_y_vector(file_dim);
+				set_A_matrix(file_dim);
+				QR_decomposition();
+			}
 			break;
 		}
 		case efficient_search:{

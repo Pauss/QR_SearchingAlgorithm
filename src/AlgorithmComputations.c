@@ -74,6 +74,7 @@ void set_y_vector(T_FILE_DIM* file_dim)
 	   3.Q transpose * y => y conjugate
 	   4.compute RSS */
 /*=========================================*/
+/*TODO, change name or separate them, Q,R, to can use them in other functions*/
 void QR_decomposition(void)
 {
 
