@@ -61,16 +61,17 @@ void set_y_vector(T_FILE_DIM* file_dim) {
 	/*extract [y] vector from input*/
 	gsl_vector_view y_view = gsl_matrix_column(matrix_file, INIT);
 
-	/*set A matrix*/
+	/*set y vector*/
 	y = gsl_vector_alloc(file_dim->lines);
 	gsl_vector_memcpy(y, &y_view.vector);
 }
 
 /*=========================================*/
-/*	   1.QR decomposition
- 2.unpack Q and R
- 3.Q transpose * y => y conjugate
- 4.compute RSS */
+/*
+ * 1.QR decomposition
+   2.unpack Q and R
+   3.Q transpose * y => y conjugate
+   4.compute RSS */
 /*=========================================*/
 /*TODO, change name or separate them, Q,R, to can use them in other functions*/
 void QR_decomposition(void) {
