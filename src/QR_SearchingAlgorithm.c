@@ -64,6 +64,7 @@ int main()
 				set_y_vector(file_dim);
 				set_A_matrix(file_dim);
 				QR_decomposition();
+				compute_transitions();
 			}
 			break;
 		}

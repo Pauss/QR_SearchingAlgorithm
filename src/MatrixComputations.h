@@ -5,6 +5,7 @@
 #include<gsl\gsl_linalg.h>
 #include<gsl\gsl_matrix.h>
 #include<gsl\gsl_vector.h>
+#include<gsl/gsl_combination.h>
 #include "Types.h"
 #include "FileOperations.h"
 /*=========================================*/

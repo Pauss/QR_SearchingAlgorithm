@@ -18,6 +18,8 @@
 /*=========================================*/
 /*external functions*/
 void QR_decomposition(void);
+void compute_transitions(void);
+gsl_matrix* sub_model_matrix(gsl_combination* matrix_combination);
 void set_y_vector(T_FILE_DIM* file_dim);
 void set_A_matrix(T_FILE_DIM* file_dim);
 /*=========================================*/
