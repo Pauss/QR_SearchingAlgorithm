@@ -67,35 +67,45 @@ void set_y_vector(T_FILE_DIM* file_dim) {
 }
 
 /*=========================================*/
-/*
- * 1.QR decomposition
-   2.unpack Q and R
-   3.Q transpose * y => y conjugate
-   4.compute RSS */
+/* 1.QR decomposition
+ * 2.unpack Q and R
+ * 3.Q transpose * y => y conjugate*/
 /*=========================================*/
-/*TODO, change name or separate them, Q,R, to can use them in other functions*/
-void QR_decomposition(void) {
+void QR_decomposition(gsl_matrix matrix_input, gsl_matrix* Q, gsl_matrix* R) {
 
 	/*QR used to decompose matrix A such that A = Q*R*/
-	gsl_matrix* QR = gsl_matrix_alloc(A->size1, A->size2);
-	gsl_matrix_memcpy(QR, A);
+	gsl_matrix* QR = gsl_matrix_alloc(matrix_input.size1, matrix_input.size2);
+	gsl_matrix_memcpy(QR, &matrix_input);
 
-	/*RSS = residual sum of squares*/
-	double RSS = 0;
-
-	gsl_vector* tau = gsl_vector_alloc(MIN_VALUE(A->size1, A->size2));
-	gsl_matrix *Q = gsl_matrix_alloc(A->size1, A->size1);
-	gsl_matrix *R = gsl_matrix_alloc(A->size1, A->size2);
-
-	/*vector of approximated solution*/
-	gsl_vector * x = gsl_vector_alloc(A->size2);
-	/*vector of residual values*/
-	gsl_vector * E = gsl_vector_alloc(A->size1);
+	gsl_vector* tau = gsl_vector_alloc(MIN_VALUE(QR->size1, QR->size2));
+	Q = gsl_matrix_alloc(QR->size1, QR->size1);
+	R = gsl_matrix_alloc(QR->size1, QR->size2);
 
 	gsl_linalg_QR_decomp(QR, tau);
 
 	/*This function unpacks the encoded QR decomposition (QR,tau) into the matrices Q and R, where Q is M-by-M and R is M-by-N. */
 	gsl_linalg_QR_unpack(QR, tau, Q, R);
+
+	/*
+	 print_matrix(Q);
+	 print_matrix(R);*/
+}
+
+/*=========================================*/
+/* Function to compute compute RSS
+ * QR + tau contains already decomposed matrix*/
+/*=========================================*/
+double RSS_compute(gsl_matrix* QR) {
+
+	/*vector of approximated solution*/
+	gsl_vector * x = gsl_vector_alloc(QR->size2);
+	/*vector of residual values*/
+	gsl_vector * E = gsl_vector_alloc(QR->size1);
+
+	gsl_vector* tau = gsl_vector_alloc(MIN_VALUE(QR->size1, QR->size2));
+	double RSS = INIT;
+
+	gsl_linalg_QR_decomp(QR, tau);
 
 	/* This function finds the least squares solution to the over-determined system A * x = y,
 	 * where the matrix A has more rows than columns.
@@ -104,33 +114,22 @@ void QR_decomposition(void) {
 
 	RSS = euclidean_norm(x);
 
-	print_matrix(A);
-	print_vector(y);
-
-	print_matrix(QR);
-	print_vector(tau);
-
-	print_matrix(Q);
-	print_matrix(R);
-
-	print_vector(x);
-	printf("RSS: %lf\n", RSS);
-
+	return (RSS);
 }
 
 /*=========================================*/
 /*This function compute all possible subsets of ModelMatrix*/
 /*=========================================*/
-void compute_transitions(void) {
-	gsl_matrix* matrix_transitions = gsl_matrix_alloc(A->size1, A->size2);
+void compute_transitions_QR(void) {
 	/*ToDo*/
 	/*Error handling*/
 
-	/*computing all possible combinations of columns*/
-	for (uint8 i = 1; i <= matrix_transitions->size2; i++) {
+	remove("Output_Steps");
 
-		gsl_combination * columns_transitions = gsl_combination_alloc(
-				matrix_transitions->size2, i);
+	/*computing all possible combinations of columns*/
+	for (uint8 i = 1; i <= A->size2; i++) {
+
+		gsl_combination * columns_transitions = gsl_combination_alloc(A->size2, i);
 
 		/*set combinations with values from 0 to n-1*/
 		gsl_combination_init_first(columns_transitions);
@@ -139,10 +138,9 @@ void compute_transitions(void) {
 		do {
 
 			/*get matrix model*/
-			gsl_matrix* my_m = sub_model_matrix(columns_transitions);
-			/*ToDo*/
-			/*chnage QR computation in order to call it for every submodel*/
-			print_matrix(my_m);
+			gsl_matrix* my_model = sub_model_matrix(columns_transitions);
+			print_steps(RSS_compute(my_model), columns_transitions);
+
 		} while (GSL_SUCCESS == gsl_combination_next(columns_transitions));
 	}
 }
@@ -174,10 +172,8 @@ gsl_matrix* sub_model_matrix(gsl_combination* matrix_combination) {
 
 /*=========================================*/
 /*Description*/
-/*=========================================*/
-
-/*=========================================*/
-/*Description*/
+/*TODO*/
+/*add a function to choose for new different scores (RSS)*/
 /*=========================================*/
 
 /*=========================================*/

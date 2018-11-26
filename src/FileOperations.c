@@ -7,8 +7,6 @@
  */
 /*=========================================*/
 /*include*/
-#include <stdio.h>
-#include <stdlib.h>
 #include "FileOperations.h"
 /*=========================================*/
 /*private data*/
@@ -215,3 +213,33 @@ void clean_file(void)
 	fclose(file);
 }
 
+/*=========================================*/
+/* this function print to a file number of steps algorithm makes at each sub_model
+ * this is a more visual print*/
+/*=========================================*/
+void print_steps(double Rss_model, gsl_combination* columns_transitions)
+{
+	FILE* f;
+
+	f = fopen("Output_steps", "a+");
+
+	fputs("\n=========New sub-model=========\n",f);
+	fputs("Columns that form sub-model: \n",f);
+	gsl_combination_fprintf(f, columns_transitions,"%u ");
+	fputs("\n", f);
+	if (Rss_model > INIT) {
+		while (Rss_model > INIT) {
+			fputs("->",f);
+			Rss_model--;
+		}
+	}
+	else
+	{
+		while (Rss_model < INIT ) {
+			fputs("<-",f);
+			Rss_model++;
+		}
+	}
+	fputs("\n===============================\n",f);
+	fclose(f);
+}

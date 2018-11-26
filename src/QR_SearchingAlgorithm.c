@@ -10,10 +10,10 @@
 /*=========================================*/
 /*includes*/
 #include "Types.h"
-#include "FileOperations.h"
 #include "MatrixComputations.h"
 #include "QR_SearchingAlgorithm.h"
 #include "AlgorithmComputations.h"
+#include "FileOperations.h"
 /*=========================================*/
 /*private data*/
 /*=========================================*/
@@ -63,8 +63,7 @@ int main()
 			if (NULL != file_dim) {
 				set_y_vector(file_dim);
 				set_A_matrix(file_dim);
-				QR_decomposition();
-				compute_transitions();
+				compute_transitions_QR();
 			}
 			break;
 		}

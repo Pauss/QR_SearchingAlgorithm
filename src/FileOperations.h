@@ -4,6 +4,7 @@
 /*=========================================*/
 /*include*/
 #include"Types.h"
+#include <gsl/gsl_combination.h>
 /*=========================================*/
 /*define*/
 #define MAX_LINE 500
@@ -35,6 +36,8 @@ boolean 	  open_file_w(int8* in);
 T_FILE_ERRORS fileIsValid(int8 *name_file);
 T_FILE_DIM*   get_file_dimensions(void);
 void 		  clean_file(void);
+void 		  remove_file(const int8* file_name);
+void 		  print_steps(double Rss_model, gsl_combination* columns_transitions);
 /*=========================================*/
 
 #endif
