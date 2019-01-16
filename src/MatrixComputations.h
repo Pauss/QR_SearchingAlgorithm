@@ -23,6 +23,7 @@ void 	print_matrix(gsl_matrix *M);
 void 	convert_to_gsl(T_FILE_DIM* file_dim, gsl_matrix *M);
 void 	print_vector (gsl_vector *V);
 boolean compute_matrix_inverse(gsl_matrix * M);
+boolean product_matrix_vector(gsl_matrix* M, gsl_vector* v, gsl_vector* result);
 double  euclidean_norm(gsl_vector* V);
 
 /*=========================================*/

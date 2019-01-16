@@ -69,31 +69,41 @@ void set_y_vector(T_FILE_DIM* file_dim) {
 /*=========================================*/
 /* 1.QR decomposition
  * 2.unpack Q and R
- * 3.Q transpose * y => y conjugate*/
+ * 3.calculates approximate solution, residual and RSS*/
 /*=========================================*/
-void QR_decomposition(gsl_matrix matrix_input, gsl_matrix* Q, gsl_matrix* R) {
+void QR_decomposition(gsl_matrix* matrix_input, Model_QR_components* matrix_components) {
+
+	matrix_components->model = gsl_matrix_alloc(matrix_input->size1, matrix_input->size2);
+	gsl_matrix_memcpy(matrix_components->model, matrix_input);
 
 	/*QR used to decompose matrix A such that A = Q*R*/
-	gsl_matrix* QR = gsl_matrix_alloc(matrix_input.size1, matrix_input.size2);
-	gsl_matrix_memcpy(QR, &matrix_input);
+	matrix_components->QR = gsl_matrix_alloc(matrix_input->size1, matrix_input->size2);
+	gsl_matrix_memcpy(matrix_components->QR, matrix_input);
 
-	gsl_vector* tau = gsl_vector_alloc(MIN_VALUE(QR->size1, QR->size2));
-	Q = gsl_matrix_alloc(QR->size1, QR->size1);
-	R = gsl_matrix_alloc(QR->size1, QR->size2);
+	matrix_components->tau = gsl_vector_alloc(MIN_VALUE(matrix_components->QR->size1, matrix_components->QR->size2));
+	matrix_components->Q = gsl_matrix_alloc(matrix_components->QR->size1, matrix_components->QR->size1);
+	matrix_components->R = gsl_matrix_alloc(matrix_components->QR->size1, matrix_components->QR->size2);
+	/*vector of approximated solution*/
+	matrix_components->solution = gsl_vector_alloc(matrix_components->QR->size2);
+	/*vector of residual values*/
+	matrix_components->residual = gsl_vector_alloc(matrix_components->QR->size1);
 
-	gsl_linalg_QR_decomp(QR, tau);
+	gsl_linalg_QR_decomp(matrix_components->QR, matrix_components->tau);
 
-	/*This function unpacks the encoded QR decomposition (QR,tau) into the matrices Q and R, where Q is M-by-M and R is M-by-N. */
-	gsl_linalg_QR_unpack(QR, tau, Q, R);
+	/*This function unpacks the encoded QR decomposition (QR,tau) into the matrices Q and R, where Q is M-by-M and R is M-by-N.*/
+	gsl_linalg_QR_unpack(matrix_components->QR, matrix_components->tau, matrix_components->Q, matrix_components->R);
 
-	/*
-	 print_matrix(Q);
-	 print_matrix(R);*/
+	/*This function calculates approximate solution of equation and residual */
+	gsl_linalg_QR_lssolve(matrix_components->QR, matrix_components->tau, y, matrix_components->solution, matrix_components->residual);
+
+	matrix_components->RSS = euclidean_norm(matrix_components->residual);
+
 }
 
 /*=========================================*/
 /* Function to compute compute RSS
- * QR + tau contains already decomposed matrix*/
+ * shorter version, without interest of other components
+ * used for compute RSS of all sub-models*/
 /*=========================================*/
 double RSS_compute(gsl_matrix* QR) {
 
@@ -112,7 +122,9 @@ double RSS_compute(gsl_matrix* QR) {
 	 * The least squares solution minimizes the Euclidean norm of the residual, ||Ax - b||.*/
 	gsl_linalg_QR_lssolve(QR, tau, y, x, E);
 
-	RSS = euclidean_norm(x);
+	/*RSS = euclidean_norm(x);*/
+
+	RSS = euclidean_norm(E);
 
 	return (RSS);
 }
@@ -139,7 +151,10 @@ void compute_transitions_QR(void) {
 
 			/*get matrix model*/
 			gsl_matrix* my_model = sub_model_matrix(columns_transitions);
-			print_steps(RSS_compute(my_model), columns_transitions);
+			/*print_steps(RSS_compute(my_model), columns_transitions);*/
+			printf("\n%lf\n", RSS_compute(my_model));
+			gsl_combination_fprintf(stdout, columns_transitions,"%u ");
+
 
 		} while (GSL_SUCCESS == gsl_combination_next(columns_transitions));
 	}
@@ -177,5 +192,19 @@ gsl_matrix* sub_model_matrix(gsl_combination* matrix_combination) {
 /*=========================================*/
 
 /*=========================================*/
-/*Description*/
+/*This function calculates R* by decomposing (A|Y)*/
 /*=========================================*/
+void get_base_R(void)
+{
+
+	Model_QR_components matrix_components;
+	gsl_vector* C;
+
+	QR_decomposition(A, &matrix_components);
+	C = gsl_vector_alloc(matrix_components.QR->size1);
+
+    product_matrix_vector(matrix_components.R, matrix_components.solution, C);
+
+    print_vector(C);
+
+}

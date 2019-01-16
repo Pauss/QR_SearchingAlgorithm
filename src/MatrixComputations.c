@@ -37,6 +37,7 @@ void convert_to_gsl(T_FILE_DIM* file_dim, gsl_matrix *M) {
 /*=========================================*/
 void print_matrix(gsl_matrix *M) {
 
+	printf("\n");
 	for (uint8 i = 0; i < M->size1; i++) {
 		for (uint8 j = 0; j < M->size2; j++) {
 			printf("m(%d,%d) = %lf\t", i, j, gsl_matrix_get(M, i, j));
@@ -51,6 +52,7 @@ void print_matrix(gsl_matrix *M) {
 /*=========================================*/
 void print_vector (gsl_vector *V) {
 
+	printf("\n");
 	for (uint8 i = 0; i < V->size; i++) {
 
 			printf("m(%d) = %lf\t", i, gsl_vector_get(V, i));
@@ -64,14 +66,14 @@ void print_vector (gsl_vector *V) {
 boolean product_matrix_vector(gsl_matrix* M, gsl_vector* v, gsl_vector* result) {
 
 	/*if matrix's number of columns is not equal with vector size then product can't be done*/
-	if (M->size2 != v->size) {
+	if ((M->size2 != v->size) || (M->size1 != result->size)) {
 		return FALSE;
 
 	} else {
 		for (uint8 i = 0; i < M->size1; i++) {
 			double S = 0;
-			for (uint8 j = 0; j < M->size1; j++) {
-				S += gsl_matrix_get(M, i, j) * gsl_vector_get(v, j);
+			for (uint8 j = 0; j < M->size2; j++) {
+				S += (double)gsl_matrix_get(M, i, j) * gsl_vector_get(v, j);
 			}
 			gsl_vector_set(result, i, S);
 		}
@@ -200,7 +202,8 @@ double euclidean_norm(gsl_vector* V) {
 
 	}
 
-	return sqrt(sum);
+	/*return sqrt(sum);*/
+	return (sum);
 
 }
 

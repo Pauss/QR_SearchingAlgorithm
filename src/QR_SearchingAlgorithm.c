@@ -1,6 +1,6 @@
 /*
  ============================================================================
- Name        : Licenta_FBS_QR.c
+ Name        : QR_SearchingAlgorithm.c
  Author      : Paula Tanasa
  Version     :
  Copyright   : Your copyright notice
@@ -37,7 +37,7 @@ int main()
 
 	/* check validity of a file
 	 * if valid extract matrix from file*/
-	check_file = fileIsValid("Data_Invalid.txt");
+	check_file = fileIsValid("data_invalid.txt");
 
 	if( file_no_error == check_file)
 	{
@@ -56,7 +56,7 @@ int main()
 		{
 		case naive_search:{
 
-
+			printf("Performing Naive Search\n");
 			/*TODO*/
 			file_dim = get_file_dimensions();
 
@@ -64,6 +64,8 @@ int main()
 				set_y_vector(file_dim);
 				set_A_matrix(file_dim);
 				compute_transitions_QR();
+				get_base_R();
+
 			}
 			break;
 		}
