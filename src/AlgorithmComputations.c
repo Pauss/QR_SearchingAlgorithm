@@ -215,13 +215,13 @@ void get_base_R(gsl_matrix* R, gsl_vector* x, gsl_matrix* R_result)
 
     gsl_vector_view column;
 
-    for(uint8 i=0; i< (R_result->size1) - 1; i++)
+    for(uint8 i=0; i< (R->size2); i++)
     {
-    	column = gsl_matrix_column(R,i);
+    	column = gsl_matrix_column(R, i);
     	gsl_matrix_set_col(R_result, i, &column.vector);
     }
 
-    gsl_matrix_set_col(R_result, (R_result->size1)-1, C);
+    gsl_matrix_set_col(R_result, (R_result->size2)-1, C);
 
     gsl_vector_free(C);
 
@@ -233,12 +233,13 @@ void get_base_R(gsl_matrix* R, gsl_vector* x, gsl_matrix* R_result)
 void efficient_RSS(gsl_vector* C, gsl_vector* RSS_models, const double RSS)
 {
 
-	uint8 n = C->size;
+	uint8 n = RSS_models->size;
 	double result = RSS;
-	for(uint8 i=1; i<C->size-1; i++)
+
+	for(uint8 i=0; i < n; i++)
 	{
-		result += pow(gsl_vector_get(C,(n-i-1)),2);
-		gsl_vector_set(RSS_models,i-1, result);
+		result += pow(gsl_vector_get(C,(n-i)),2);
+		gsl_vector_set(RSS_models,i, result);
 	}
 
 }
@@ -317,11 +318,13 @@ void efficient_alg()
 	QR_decomposition(A, &matrix_components);
 
 	base_R = gsl_matrix_alloc(matrix_components.model->size1, matrix_components.model->size1);
-	RSS_models = gsl_vector_alloc(matrix_components.model->size2 -1);
+
 
 	get_base_R(matrix_components.R, matrix_components.solution, base_R);
 
 	view_C = gsl_matrix_column(base_R, (base_R->size2)-1);
+
+	RSS_models = gsl_vector_alloc(matrix_components.R->size2 - 1);
 
 	efficient_RSS(&view_C.vector,RSS_models, matrix_components.RSS);
 
