@@ -17,6 +17,6 @@ typedef enum
 /*typedef*/
 /*=========================================*/
 /*external functions*/
-void get_base_R(void);
+void get_base_R(gsl_matrix* R, gsl_vector* x, gsl_matrix* R_result);
 /*=========================================*/
 #endif /* SRC_QR_SEARCHINGALGORITHM_H_ */

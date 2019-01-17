@@ -64,7 +64,7 @@ int main()
 				set_y_vector(file_dim);
 				set_A_matrix(file_dim);
 				compute_transitions_QR();
-				get_base_R();
+				efficient_alg();
 
 			}
 			break;

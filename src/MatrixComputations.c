@@ -84,6 +84,30 @@ boolean product_matrix_vector(gsl_matrix* M, gsl_vector* v, gsl_vector* result) 
 }
 
 /*=========================================*/
+/*Function to compute product of a gsl_matrix with a gsl_matrix*/
+/*=========================================*/
+boolean product_matrix(gsl_matrix* M, gsl_matrix* M2, gsl_matrix* result) {
+
+	gsl_vector* product = gsl_vector_alloc(M->size1);
+	gsl_vector* column = gsl_vector_alloc(M->size1);
+
+	/*if matrix's number of columns is not equal with vector size then product can't be done*/
+	if (((M->size2 != M2->size1) || (M->size1 != result->size1)) || (M2->size2 != result->size2)) {
+		return FALSE;
+
+	} else {
+		for (uint8 i = 0; i < M2->size2; i++) {
+			gsl_matrix_get_col(column,M2,i);
+			product_matrix_vector(M,column, product);
+			gsl_matrix_set_col(result, i, product);
+			}
+		}
+
+	return TRUE;
+
+}
+
+/*=========================================*/
 /*This function compute inverse of input matrix*/
 /*=========================================*/
 boolean compute_matrix_inverse(gsl_matrix * M) {
