@@ -147,7 +147,7 @@ void compute_transitions_QR(void) {
 	/*ToDo*/
 	/*Error handling*/
 
-	remove("Output_Steps");
+	//remove("Output_Steps");
 
 	/*computing all possible combinations of columns*/
 	for (uint8 i = 1; i <= A->size2; i++) {
@@ -163,8 +163,9 @@ void compute_transitions_QR(void) {
 			/*get matrix model*/
 			gsl_matrix* my_model = sub_model_matrix(columns_transitions);
 			/*print_steps(RSS_compute(my_model), columns_transitions);*/
-			printf("\n%lf\n", RSS_compute(my_model));
+
 			gsl_combination_fprintf(stdout, columns_transitions,"%u ");
+			printf("\nRSS: %lf\n", RSS_compute(my_model));
 
 
 		} while (GSL_SUCCESS == gsl_combination_next(columns_transitions));
@@ -249,60 +250,231 @@ void efficient_RSS(gsl_vector* C, gsl_vector* RSS_models, const double RSS)
 /*=========================================*/
 void add_submatrix(gsl_matrix* R, gsl_matrix* sub_matrix, uint8 index1, uint8 index2)
 {
+	double l_element;
 
 	for(uint8 i = 0; i< sub_matrix->size1; i++)
 	{
 		for(uint8 j = 0; j<sub_matrix->size2; j++ )
 		{
-			gsl_matrix_set(R, i+index1, j+index2, gsl_matrix_get(sub_matrix, i, j));
+
+			l_element = gsl_matrix_get(sub_matrix, i, j);
+
+			gsl_matrix_set(R, i+index1, j+index2, l_element);
 		}
 	}
 
 }
 
 /*=========================================*/
-/*This function performs re - triangularization after switching 2 columns in R*/
+/*This function delete a column from a given matrix*/
+/*=========================================*/
+void delete_column(gsl_matrix* R, uint8 col) {
+
+	gsl_matrix* l_matrix = gsl_matrix_alloc(R->size1, R->size2 - 1);
+	gsl_vector* l_vector = gsl_vector_alloc(R->size1);
+
+	//check when col = 0 or col = R->size2
+
+	if (col == R->size2) {
+
+		/*only change the size of R*/
+		R->size2--;
+
+	} else {
+		if (col > 0)
+
+		{
+
+			for (uint8 i = 0; i < col; i++) {
+				gsl_matrix_get_col(l_vector, R, i);
+				gsl_matrix_set_col(l_matrix,i, l_vector);
+			}
+
+		}
+
+		for (uint8 i = col+1; i < R->size2; i++) {
+			gsl_matrix_get_col(l_vector, R, i);
+			gsl_matrix_set_col(l_matrix,i-1, l_vector);
+		}
+
+		R->size2--;
+		gsl_matrix_memcpy(R, l_matrix);
+	}
+
+	gsl_matrix_free(l_matrix);
+	gsl_vector_free(l_vector);
+
+}
+
+/*=========================================*/
+/*This function calculates Sign of new element when Re-triangularization is applied*/
+/*=========================================*/
+int8 sign_r_element(double a, double b)
+{
+	int8 sign = 1;
+
+	if(abs(a) > abs(b))
+	{
+		if(a < 0)
+		{
+			sign = -1;
+		}
+	}
+	else
+	{
+		if(b < 0)
+		{
+			sign = -1;
+		}
+	}
+
+	return (sign);
+}
+
+/*=========================================*/
+/*This function performs re - triangularization after switching 2 columns in R, columns number difference must be 1*/
 /*=========================================*/
 
-void retriangularization_R(gsl_matrix* R, uint8 column1, uint8 column2)
+void columns_transition_retriangularization_R(gsl_matrix* R, uint8 column1)
 {
-	double a, b, s, c, result;
+	double l_a, l_b, l_sin, l_cos, l_result;
+	uint8 column2 = column1 + 1;
 	gsl_matrix* rotation = gsl_matrix_alloc(NR_ELEMENTS, NR_ELEMENTS);
+	gsl_matrix* M1;
+	gsl_matrix_view matrix_substract;
 
 	gsl_matrix_swap_columns(R, column1, column2);
 
-	a = gsl_matrix_get(R, column1, column1);
-	b = gsl_matrix_get(R, column2, column1);
+	l_a = gsl_matrix_get(R, column1, column1);
+	l_b = gsl_matrix_get(R, column2, column1);
 
-	gsl_linalg_givens(a, b, &c, &s);
+	l_result = sqrt(pow(l_a,2) + pow(l_b,2));
+	l_result = l_result * sign_r_element(l_a, l_b);
 
-	c = ABS_VALUE(c);
-	s = ABS_VALUE(s);
+	if (l_result == 0) {
+		l_cos = 1;
+		l_sin = 0;
+	} else {
 
-	/*todo*/
-	/*SIGN of R and case when r = 0*/
+		gsl_linalg_givens(l_a, l_b, &l_cos, &l_sin);
 
-	gsl_matrix_set_all(rotation, c);
-	gsl_matrix_set(rotation, 0, 1, s);
-	gsl_matrix_set(rotation, 1, 0, -s);
+		l_cos = ABS_VALUE(l_cos);
+		l_sin = ABS_VALUE(l_sin);
+	}
 
-	result = sqrt(pow(a,2) + pow(b,2));
+	gsl_matrix_set_all(rotation, l_cos);
+	gsl_matrix_set(rotation, 0, 1, l_sin);
+	gsl_matrix_set(rotation, 1, 0, -l_sin);
 
-	gsl_matrix_set(R, column1, column1, result);
+	/*update matrix R with the elements of vector [r,0] */
+	gsl_matrix_set(R, column1, column1, l_result);
 	gsl_matrix_set(R, column2, column1, 0);
 
-	gsl_matrix_view matrix_substract;
+	/*update the rest of 2 rows of R that were affected by re-triangularization*/
+	matrix_substract = gsl_matrix_submatrix(R, column1, column2, 2, R->size2-column2);
 
-	matrix_substract = gsl_matrix_submatrix(R, column1, column2, 2, R->size2-2);
-
-	gsl_matrix* M1 = gsl_matrix_alloc(2, R->size2-2);
+	M1 = gsl_matrix_alloc(2, matrix_substract.matrix.size2);
 
 	product_matrix(rotation, &matrix_substract.matrix, M1);
-
 	add_submatrix(R, M1, column1, column2);
 
 }
 
+/*=========================================*/
+/*This function performs re - triangularization after deleting a column from R*/
+/*=========================================*/
+void column_removal_retriangularization_R(gsl_matrix* R, uint8 column1)
+{
+	double l_a, l_b, l_sin, l_cos, l_result;
+
+	uint8 column2 = column1+1;
+	uint8 max_number_retriangularization = R->size2-column1;
+
+	gsl_matrix* rotation = gsl_matrix_alloc(NR_ELEMENTS, NR_ELEMENTS);
+	gsl_matrix* M1;
+	gsl_matrix_view matrix_substract;
+
+	print_matrix(R);
+
+	delete_column(R, column1);
+
+	printf("\nNumber of columns: %d\n", R->size2);
+
+	for(uint8 i = 0; i < max_number_retriangularization-2; i++)
+
+	{
+		l_a = gsl_matrix_get(R, column1, column1);
+		l_b = gsl_matrix_get(R, column2, column1);
+
+
+		printf("\na= %lf, b= %lf", l_a,l_b);
+
+		l_result = (double)sqrt(pow(l_a, 2) + pow(l_b, 2));
+
+		printf("\nresult = %lf", l_result);
+
+		l_result = l_result * sign_r_element(l_a, l_b);
+
+		printf("\nresult = %lf", l_result);
+
+		if (l_result == 0) {
+			l_cos = 1;
+			l_sin = 0;
+		} else {
+
+			gsl_linalg_givens(l_a, l_b, &l_cos, &l_sin);
+
+			l_cos = ABS_VALUE(l_cos);
+			l_sin = ABS_VALUE(l_sin);
+		}
+
+		gsl_matrix_set_all(rotation, l_cos);
+		gsl_matrix_set(rotation, 0, 1, l_sin);
+		gsl_matrix_set(rotation, 1, 0, -l_sin);
+
+		//update matrix R with the elements of vector [r,0]
+		gsl_matrix_set(R, column1, column1, l_result);
+		gsl_matrix_set(R, column2, column1, 0);
+
+		//update the rest of 2 rows of R that were affected by re-triangularization
+
+		print_matrix(R);
+		printf("\nc1: %d, c2: %d \n", column1, column2);
+
+/*		if(i == max_number_retriangularization-3)
+		{*/
+
+		matrix_substract = gsl_matrix_submatrix(R, column1, column2, 2,
+				R->size2 - column2);  //before : R->size2 - 2
+
+		//}
+/*		else
+		{
+			matrix_substract = gsl_matrix_submatrix(R, column1, column2, 2,
+							R->size2 - column2-1);  //before : R->size2 - 2
+
+		}*/
+
+		M1 = gsl_matrix_alloc(2, matrix_substract.matrix.size2);
+
+		product_matrix(rotation, &matrix_substract.matrix, M1);
+
+		print_matrix(R);
+
+	    print_matrix(&matrix_substract.matrix);
+		print_matrix(rotation);
+
+		print_matrix(M1);
+
+		add_submatrix(R, M1, column1, column2);
+
+		print_matrix(R);
+
+		column1++;
+		column2++;
+	}
+
+}
 
 /*=========================================*/
 /*This function makes all computations in order to perform efficient search for all sub-models*/
@@ -330,19 +502,49 @@ void efficient_alg()
 
 	print_vector(RSS_models);
 
-	/*Applying Columns mutations*/
+	/*Applying Columns transitions*/
 
 	gsl_matrix* swap_R = gsl_matrix_alloc(base_R->size1, base_R->size2);
 
 	gsl_matrix_memcpy(swap_R, base_R);
 
-	retriangularization_R(swap_R, 1, 2 );
+	//print_matrix(swap_R);
+
+	columns_transition_retriangularization_R(swap_R, 1);
 
 	view_C = gsl_matrix_column(swap_R, (swap_R->size2)-1);
 
 	efficient_RSS(&view_C.vector,RSS_models, matrix_components.RSS);
 
-	printf("\nAfter Switching column 2 with 1\n");
+	printf("\nAfter Switching column 1 with 2\n");
+
+	//print_matrix(swap_R);
+
+	print_vector(RSS_models);
+
+	//print_matrix(swap_R);
+
+	columns_transition_retriangularization_R(swap_R, 2);
+
+	view_C = gsl_matrix_column(swap_R, (swap_R->size2)-1);
+
+	efficient_RSS(&view_C.vector,RSS_models, matrix_components.RSS);
+
+	printf("\nAfter Switching column 2 with 3\n");
+
+	//print_matrix(swap_R);
+
+	print_vector(RSS_models);
+
+	//print_matrix(swap_R);
+
+	column_removal_retriangularization_R(base_R, 2);
+
+	view_C = gsl_matrix_column(base_R, (base_R->size2)-1);
+
+	efficient_RSS(&view_C.vector,RSS_models, matrix_components.RSS);
+
+	printf("\nAfter Deleting column 2 \n");
 	print_vector(RSS_models);
 
 }

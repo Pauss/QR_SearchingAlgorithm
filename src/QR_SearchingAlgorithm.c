@@ -37,7 +37,7 @@ int main()
 
 	/* check validity of a file
 	 * if valid extract matrix from file*/
-	check_file = fileIsValid("house.txt");
+	check_file = fileIsValid("data_invalid.txt"); //house //data_invalid
 
 	if( file_no_error == check_file)
 	{
@@ -50,7 +50,7 @@ int main()
 		 * 2. Efficient search with QR decomposition applied only on first step. Save some time tho..
 		 * 3. Even more nice strategy using GA (Genetic Algorithm)*/
 
-		T_SEARCH_STRATEGIES strategy = naive_search + 1;
+		T_SEARCH_STRATEGIES strategy = naive_search;
 
 		file_dim = get_file_dimensions();
 
@@ -67,6 +67,7 @@ int main()
 
 			if (NULL != file_dim) {
 				compute_transitions_QR();
+				efficient_alg();
 
 			}
 			break;
