@@ -103,6 +103,9 @@ boolean product_matrix(gsl_matrix* M, gsl_matrix* M2, gsl_matrix* result) {
 			}
 		}
 
+	gsl_vector_free(product);
+	gsl_vector_free(column);
+
 	return TRUE;
 
 }
@@ -209,6 +212,8 @@ boolean compute_matrix_inverse(gsl_matrix * M) {
 
 	/*set to the input matrix inverse matrix computed*/
 	gsl_matrix_memcpy(M, &view.matrix);
+
+	gsl_matrix_free(M_local);
 
 	return TRUE;
 

@@ -134,6 +134,10 @@ double RSS_compute(gsl_matrix* QR) {
 	/* The least squares solution minimizes the Euclidean norm of the residual, ||Ax - b||.*/
 	RSS = euclidean_norm(E);
 
+	gsl_vector_free(x);
+	gsl_vector_free(E);
+	gsl_vector_free(tau);
+
 	return (RSS);
 }
 
@@ -177,6 +181,7 @@ gsl_matrix* sub_model_matrix(gsl_combination* matrix_combination) {
 	/*make a copy of full model matrix*/
 	gsl_matrix* matrix_transitions = gsl_matrix_alloc(main_model_A->size1,
 			matrix_combination->k);
+	gsl_vector * v;
 
 	gsl_matrix_set_zero(matrix_transitions);
 
@@ -185,12 +190,14 @@ gsl_matrix* sub_model_matrix(gsl_combination* matrix_combination) {
 		/* take each column index from full model matrix that is present in combination
 		 * and add it to sub-model*/
 		gsl_combination_get(matrix_combination, i);
-		gsl_vector * v = gsl_vector_alloc(main_model_A->size1);
+		v = gsl_vector_alloc(main_model_A->size1);
 		gsl_matrix_get_col(v, main_model_A,
 				gsl_combination_get(matrix_combination, i));
 		gsl_matrix_set_col(matrix_transitions, i, v);
 
 	}
+
+	gsl_vector_free(v);
 
 	return matrix_transitions;
 
@@ -321,6 +328,9 @@ static void columns_transition_retriangularization_R(gsl_matrix* R, uint8 column
 
 	add_submatrix(R, M1, column1, column2);
 
+	gsl_matrix_free(rotation);
+	gsl_matrix_free(M1);
+
 }
 
 /*=========================================*/
@@ -357,6 +367,9 @@ static void column_removal_retriangularization_R(gsl_matrix* R, uint8 column1)
 		column1++;
 		column2++;
 	}
+
+	gsl_matrix_free(rotation);
+	gsl_matrix_free(M1);
 
 }
 
@@ -419,5 +432,8 @@ void efficient_alg(void)
 
 	 }*/
 
+	gsl_matrix_free(base_R);
+	gsl_matrix_free(swap_R);
+	gsl_vector_free(RSS_models);
 }
 
