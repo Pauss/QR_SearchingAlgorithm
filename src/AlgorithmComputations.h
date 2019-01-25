@@ -36,6 +36,7 @@ void 				 QR_decomposition(gsl_matrix* matrix_input, Model_QR_components* matrix
 void 				 compute_transitions_QR(void);
 void 				 set_y_vector(T_FILE_DIM* file_dim);
 void 			     set_A_matrix(T_FILE_DIM* file_dim);
+void 			     efficient_alg(void);
 gsl_matrix* 		 get_A_matrix();
 gsl_matrix* 		 sub_model_matrix(gsl_combination* matrix_combination);
 

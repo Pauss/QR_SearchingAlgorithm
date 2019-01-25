@@ -226,8 +226,66 @@ double euclidean_norm(gsl_vector* V) {
 
 	}
 
-	/*return sqrt(sum);*/
-	return (sum);
+	return sqrt(sum);
+	//return (sum);
 
 }
 
+/*=========================================*/
+/*This function add a sub-matrix to a matrix*/
+/*=========================================*/
+void add_submatrix(gsl_matrix* R, gsl_matrix* sub_matrix, uint8 index1, uint8 index2)
+{
+	double l_element;
+
+	for(uint8 i = 0; i< sub_matrix->size1; i++)
+	{
+		for(uint8 j = 0; j<sub_matrix->size2; j++ )
+		{
+
+			l_element = gsl_matrix_get(sub_matrix, i, j);
+
+			gsl_matrix_set(R, i+index1, j+index2, l_element);
+		}
+	}
+
+}
+
+/*=========================================*/
+/*This function delete a column from a given matrix*/
+/*=========================================*/
+void delete_column(gsl_matrix* R, uint8 col) {
+
+	gsl_matrix* l_matrix = gsl_matrix_alloc(R->size1, R->size2 - 1);
+	gsl_vector* l_vector = gsl_vector_alloc(R->size1);
+
+	if (col == R->size2) {
+
+		/*only change the size of R*/
+		R->size2--;
+
+	} else {
+		if (col > 0)
+
+		{
+
+			for (uint8 i = 0; i < col; i++) {
+				gsl_matrix_get_col(l_vector, R, i);
+				gsl_matrix_set_col(l_matrix, i, l_vector);
+			}
+
+		}
+
+		for (uint8 i = col + 1; i < R->size2; i++) {
+			gsl_matrix_get_col(l_vector, R, i);
+			gsl_matrix_set_col(l_matrix, i - 1, l_vector);
+		}
+
+		R->size2--;
+		gsl_matrix_memcpy(R, l_matrix);
+	}
+
+	gsl_matrix_free(l_matrix);
+	gsl_vector_free(l_vector);
+
+}
