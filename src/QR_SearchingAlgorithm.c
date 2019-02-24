@@ -51,6 +51,7 @@ int main()
 		 * 3. Even more nice strategy using GA (Genetic Algorithm)*/
 
 		T_SEARCH_STRATEGIES strategy = naive_search;
+		T_EFFICIENT_METHOD method = columns_removal;//columns_transitions; columns_removal;
 
 		file_dim = get_file_dimensions();
 
@@ -67,7 +68,7 @@ int main()
 
 			if (NULL != file_dim) {
 				compute_transitions_QR();
-				efficient_alg();
+				efficient_alg(method);
 
 			}
 			break;
@@ -77,7 +78,7 @@ int main()
 			printf("Performing Efficient Search\n");
 
 			if (NULL != file_dim) {
-				efficient_alg();
+				efficient_alg(method);
 			}
 			break;
 		}

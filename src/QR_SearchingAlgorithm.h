@@ -13,6 +13,8 @@ typedef enum
 	efficient_search,
 	GA_search
 }T_SEARCH_STRATEGIES;
+
+
 /*=========================================*/
 /*typedef*/
 /*=========================================*/

@@ -27,8 +27,15 @@ typedef struct{
 	gsl_vector* tau;
 	gsl_vector* residual;
 	gsl_vector* solution;
+	gsl_vector* QtransposeY;
 	double RSS;
 }Model_QR_components;
+
+typedef enum
+{
+	columns_transitions = 0,
+	columns_removal
+}T_EFFICIENT_METHOD;
 
 /*=========================================*/
 /*external functions*/
@@ -36,7 +43,7 @@ void 				 QR_decomposition(gsl_matrix* matrix_input, Model_QR_components* matrix
 void 				 compute_transitions_QR(void);
 void 				 set_y_vector(T_FILE_DIM* file_dim);
 void 			     set_A_matrix(T_FILE_DIM* file_dim);
-void 			     efficient_alg(void);
+void 			     efficient_alg(T_EFFICIENT_METHOD method);
 gsl_matrix* 		 get_A_matrix();
 gsl_matrix* 		 sub_model_matrix(gsl_combination* matrix_combination);
 

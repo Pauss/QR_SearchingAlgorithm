@@ -80,7 +80,7 @@ void QR_decomposition(gsl_matrix* matrix_input,
 			matrix_input->size2);
 	gsl_matrix_memcpy(matrix_components->model, matrix_input);
 
-	/*QR used to decompose matrix A such that A = Q*R*/
+	//QR used to decompose matrix A such that A = Q*R
 	matrix_components->QR = gsl_matrix_alloc(matrix_input->size1,
 			matrix_input->size2);
 	gsl_matrix_memcpy(matrix_components->QR, matrix_input);
@@ -93,13 +93,16 @@ void QR_decomposition(gsl_matrix* matrix_input,
 	matrix_components->R = gsl_matrix_alloc(matrix_components->QR->size1,
 			matrix_components->QR->size2);
 
-	/*vector of approximated solution*/
+	//vector of approximated solution
 	matrix_components->solution = gsl_vector_alloc(
 			matrix_components->QR->size2);
 
-	/*vector of residual values*/
+	//vector of residual values
 	matrix_components->residual = gsl_vector_alloc(
 			matrix_components->QR->size1);
+
+	//vector resulting after product:  Q-transpose*Y
+	matrix_components->QtransposeY = gsl_vector_alloc(matrix_input->size1);
 
 	gsl_linalg_QR_decomp(matrix_components->QR, matrix_components->tau);
 
@@ -112,6 +115,12 @@ void QR_decomposition(gsl_matrix* matrix_input,
 			matrix_components->solution, matrix_components->residual);
 
 	matrix_components->RSS = euclidean_norm(matrix_components->residual);
+
+	gsl_vector_memcpy(matrix_components->QtransposeY, solution_y);
+
+	gsl_linalg_QR_QTvec(matrix_components->QR, matrix_components->tau, matrix_components->QtransposeY);
+
+	matrix_components->QtransposeY->size = matrix_input->size2;
 
 }
 
@@ -145,8 +154,6 @@ double RSS_compute(gsl_matrix* QR) {
 /*This function compute all possible subsets of ModelMatrix*/
 /*=========================================*/
 void compute_transitions_QR(void) {
-	/*ToDo*/
-	/*Error handling*/
 
 	//remove("Output_Steps");
 
@@ -189,10 +196,12 @@ gsl_matrix* sub_model_matrix(gsl_combination* matrix_combination) {
 
 		/* take each column index from full model matrix that is present in combination
 		 * and add it to sub-model*/
-		gsl_combination_get(matrix_combination, i);
+
 		v = gsl_vector_alloc(main_model_A->size1);
+
 		gsl_matrix_get_col(v, main_model_A,
 				gsl_combination_get(matrix_combination, i));
+
 		gsl_matrix_set_col(matrix_transitions, i, v);
 
 	}
@@ -204,7 +213,7 @@ gsl_matrix* sub_model_matrix(gsl_combination* matrix_combination) {
 }
 
 /*=========================================*/
-/*This function calculates R* by decomposing (A|Y)*/
+/*This function calculates R* using R*x(approximated solution) */
 /*=========================================*/
 void get_base_R(gsl_matrix* R, gsl_vector* x, gsl_matrix* R_result)
 {
@@ -229,6 +238,27 @@ void get_base_R(gsl_matrix* R, gsl_vector* x, gsl_matrix* R_result)
 }
 
 /*=========================================*/
+/*This function calculates R* using Q-transpose*Y */
+/*=========================================*/
+void get_base_R_byQ( gsl_matrix* R, gsl_vector* QtY, gsl_matrix* R_result)
+{
+
+
+    gsl_vector_view column;
+
+    for(uint8 i=0; i< (R->size2); i++)
+    {
+    	column = gsl_matrix_column(R, i);
+    	gsl_matrix_set_col(R_result, i, &column.vector);
+    }
+
+    QtY->size = R_result->size1;
+
+    gsl_matrix_set_col(R_result, (R_result->size2)-1, QtY);
+
+}
+
+/*=========================================*/
 /*This function compute RSS using elements of C*/
 /*=========================================*/
 void efficient_RSS(gsl_vector* C, gsl_vector* RSS_models, const double RSS)
@@ -240,7 +270,11 @@ void efficient_RSS(gsl_vector* C, gsl_vector* RSS_models, const double RSS)
 
 	for(uint8 i=0; i < n; i++)
 	{
-		result += pow(gsl_vector_get(C,(n-i)),2);
+		double el = gsl_vector_get(C,(n-i));
+
+		printf("\nel = %lf\n",el);
+
+		result += (double)pow(el,2);
 
 		temp_result = sqrt(result);
 
@@ -296,7 +330,7 @@ void compute_rotation_angle(gsl_matrix* R, gsl_matrix* rotation, uint8 column)
 
 	gsl_matrix_set_all(rotation, l_cos);
 	gsl_matrix_set(rotation, 0, 1, l_sin);
-	gsl_matrix_set(rotation, 1, 0, -l_sin);
+	gsl_matrix_set(rotation, 1, 0, (-1)*l_sin);
 
 	//update matrix R with the elements of vector [r,0]
 	gsl_matrix_set(R, column, column, l_result);
@@ -366,74 +400,116 @@ static void column_removal_retriangularization_R(gsl_matrix* R, uint8 column1)
 
 		column1++;
 		column2++;
+		gsl_matrix_free(M1);
+
+		print_matrix(R);
 	}
 
 	gsl_matrix_free(rotation);
-	gsl_matrix_free(M1);
 
+}
+
+void get_submodels_Rss(gsl_matrix* Model, void (*f_method)(gsl_matrix* M, uint8 index) , double RSS, gsl_vector* RSS_models)
+{
+	uint8 Model_columns = Model->size2;
+
+	gsl_vector_view view_C;
+
+	for (uint8 i = 0; i < 1/*Model->size2 - 2*/; i++) {
+
+		(*f_method)(Model, 0);
+
+		view_C = gsl_matrix_column(Model, (Model->size2) - 1);
+
+		if(Model_columns != Model->size2)
+		{
+			RSS_models->size = Model->size2-1;
+		}
+
+		efficient_RSS(&view_C.vector, RSS_models, RSS);
+
+		print_matrix(Model);
+
+		printf("\nRSS of new model.\n");
+
+		print_vector(RSS_models);
+
+	}
 }
 
 /*=========================================*/
 /*This function makes all computations in order to perform efficient search for all sub-models*/
 /*=========================================*/
-void efficient_alg(void)
+void efficient_alg(T_EFFICIENT_METHOD method)
 {
 	Model_QR_components matrix_components;
 
 	gsl_matrix* base_R;
-	gsl_matrix* swap_R;
+	gsl_matrix* base_R_byQ;
+
 	gsl_vector* RSS_models;
 	gsl_vector_view view_C;
 
 	QR_decomposition(main_model_A, &matrix_components);
 
-	base_R = gsl_matrix_alloc(matrix_components.model->size1,
-			matrix_components.model->size1);
-	RSS_models = gsl_vector_alloc(matrix_components.R->size2 - 1);
+	const uint8 nRows = matrix_components.R->size1;
+	const uint8 nColumns = matrix_components.R->size2;
+
+	base_R = gsl_matrix_alloc(nRows, nColumns+1);
+
+	base_R_byQ = gsl_matrix_alloc(nRows, nColumns+1);
+
 
 	get_base_R(matrix_components.R, matrix_components.solution, base_R);
 
-	swap_R = gsl_matrix_alloc(base_R->size1, base_R->size2);
-	gsl_matrix_memcpy(swap_R, base_R);
+	get_base_R_byQ(matrix_components.R, matrix_components.QtransposeY, base_R_byQ);
 
-	/*Applying re-triangularization after switching 2 columns*/
-	for (uint8 i = 0; i < 1/*swap_R->size2 - 2*/; i++) {
 
-		columns_transition_retriangularization_R(swap_R, i);
-
-		view_C = gsl_matrix_column(swap_R, (swap_R->size2) - 1);
-
-		efficient_RSS(&view_C.vector, RSS_models, matrix_components.RSS);
+	switch (method) {
+	case columns_transitions: {
+		gsl_matrix* swap_R = gsl_matrix_alloc(base_R_byQ->size1, base_R_byQ->size2);
+		gsl_matrix_memcpy(swap_R, base_R_byQ);
 
 		print_matrix(swap_R);
 
-		printf("\nAfter Switching column %d with %d\n", i, i + 1);
+		//number of sub-models will be always number of columns of R minus 1
+		uint8 nSubmodels = swap_R->size2 - 2;
+		RSS_models = gsl_vector_alloc(nSubmodels);
 
-		print_vector(RSS_models);
+		printf("\n################################################");
+		printf("\n##########Applying Columns Transitions##########\n");
+		printf("################################################\n");
+
+		//Applying re-triangularization after switching 2 columns
+		get_submodels_Rss(swap_R,columns_transition_retriangularization_R, matrix_components.RSS, RSS_models);
+
+		break;
+	}
+	case columns_removal: {
+		gsl_matrix* elimination_R = gsl_matrix_alloc(base_R_byQ->size1, base_R_byQ->size2);
+		gsl_matrix_memcpy(elimination_R, base_R_byQ);
+
+		print_matrix(elimination_R);
+
+		//number of sub-models will be always number of columns of R minus 1
+		uint8 nSubmodels = elimination_R->size2 - 1;
+		RSS_models = gsl_vector_alloc(nSubmodels);
+
+		printf("\n################################################");
+		printf("\n##########Applying Columns Removal##############\n");
+		printf("################################################\n");
+
+		//Applying re-triangularization after deleting a column
+		get_submodels_Rss(elimination_R,column_removal_retriangularization_R, matrix_components.RSS, RSS_models);
+
+		break;
+	}
+	default: {
+		//Nothing To Do
+		break;
+	}
 	}
 
-	swap_R = gsl_matrix_alloc(base_R->size1, base_R->size2);
-	gsl_matrix_memcpy(swap_R, base_R);
-
-	//Applying re-triangularization after deleting a column
-	/*	for (uint8 i = 0; i < base_R->size1 - 2; i++) {
-
-	 column_removal_retriangularization_R(swap_R, 1);
-
-	 view_C = gsl_matrix_column(swap_R, (swap_R->size2) - 1);
-
-	 efficient_RSS(&view_C.vector, RSS_models, matrix_components.RSS);
-
-	 printf("\nAfter Deleting column %d\n", i);
-
-	 print_matrix(swap_R);
-
-	 print_vector(RSS_models);
-
-	 }*/
-
 	gsl_matrix_free(base_R);
-	gsl_matrix_free(swap_R);
-	gsl_vector_free(RSS_models);
 }
 
