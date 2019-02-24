@@ -65,7 +65,7 @@ void print_vector (gsl_vector *V) {
 /*=========================================*/
 boolean product_matrix_vector(gsl_matrix* M, gsl_vector* v, gsl_vector* result) {
 
-	/*if matrix's number of columns is not equal with vector size then product can't be done*/
+	//if matrix's number of columns is not equal with vector size then product can't be done
 	if ((M->size2 != v->size) || (M->size1 != result->size)) {
 		return FALSE;
 
@@ -73,9 +73,12 @@ boolean product_matrix_vector(gsl_matrix* M, gsl_vector* v, gsl_vector* result) 
 		for (uint8 i = 0; i < M->size1; i++) {
 			double S = 0;
 			for (uint8 j = 0; j < M->size2; j++) {
-				S += (double)gsl_matrix_get(M, i, j) * gsl_vector_get(v, j);
+
+				S += (double) gsl_matrix_get(M, i, j) * gsl_vector_get(v, j);
 			}
+
 			gsl_vector_set(result, i, S);
+
 		}
 	}
 
@@ -91,17 +94,20 @@ boolean product_matrix(gsl_matrix* M, gsl_matrix* M2, gsl_matrix* result) {
 	gsl_vector* product = gsl_vector_alloc(M->size1);
 	gsl_vector* column = gsl_vector_alloc(M->size1);
 
-	/*if matrix's number of columns is not equal with vector size then product can't be done*/
-	if (((M->size2 != M2->size1) || (M->size1 != result->size1)) || (M2->size2 != result->size2)) {
+	//if matrix's number of columns is not equal with vector size then product can't be done
+	if (((M->size2 != M2->size1) || (M->size1 != result->size1))
+			|| (M2->size2 != result->size2)) {
 		return FALSE;
 
 	} else {
 		for (uint8 i = 0; i < M2->size2; i++) {
-			gsl_matrix_get_col(column,M2,i);
-			product_matrix_vector(M,column, product);
+			gsl_matrix_get_col(column, M2, i);
+
+			product_matrix_vector(M, column, product);
+
 			gsl_matrix_set_col(result, i, product);
-			}
 		}
+	}
 
 	gsl_vector_free(product);
 	gsl_vector_free(column);
@@ -243,14 +249,12 @@ void add_submatrix(gsl_matrix* R, gsl_matrix* sub_matrix, uint8 index1, uint8 in
 {
 	double l_element;
 
-	for(uint8 i = 0; i< sub_matrix->size1; i++)
-	{
-		for(uint8 j = 0; j<sub_matrix->size2; j++ )
-		{
+	for (uint8 i = 0; i < sub_matrix->size1; i++) {
+		for (uint8 j = 0; j < sub_matrix->size2; j++) {
 
 			l_element = gsl_matrix_get(sub_matrix, i, j);
 
-			gsl_matrix_set(R, i+index1, j+index2, l_element);
+			gsl_matrix_set(R, i + index1, j + index2, l_element);
 		}
 	}
 

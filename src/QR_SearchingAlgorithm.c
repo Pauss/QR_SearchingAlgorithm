@@ -33,7 +33,7 @@ int main()
 	/*
 	 * Get the Data for applying search algorithm.
 	 * Extract a matrix m*n from file.
-	 * Applying algorithm on a specific type system equation (complete info)*/   /*TODO*/
+	 * Applying algorithm on a specific type system equation (over_determined system)*/
 
 	/* check validity of a file
 	 * if valid extract matrix from file*/
