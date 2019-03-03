@@ -237,8 +237,8 @@ double euclidean_norm(gsl_vector* V) {
 
 	}
 
-	return sqrt(sum);
-	//return (sum);
+	//return sqrt(sum);
+	return (sum);
 
 }
 

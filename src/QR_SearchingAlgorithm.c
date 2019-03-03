@@ -14,6 +14,7 @@
 #include "QR_SearchingAlgorithm.h"
 #include "AlgorithmComputations.h"
 #include "FileOperations.h"
+#include "GeneticAlgorithm.h"
 /*=========================================*/
 /*private data*/
 /*=========================================*/
@@ -37,7 +38,7 @@ int main()
 
 	/* check validity of a file
 	 * if valid extract matrix from file*/
-	check_file = fileIsValid("data_invalid.txt"); //house //data_invalid
+	check_file = fileIsValid("house.txt"); //house //data_invalid
 
 	if( file_no_error == check_file)
 	{
@@ -50,7 +51,7 @@ int main()
 		 * 2. Efficient search with QR decomposition applied only on first step. Save some time tho..
 		 * 3. Even more nice strategy using GA (Genetic Algorithm)*/
 
-		T_SEARCH_STRATEGIES strategy = naive_search;
+		T_SEARCH_STRATEGIES strategy = GA_search;
 		T_EFFICIENT_METHOD method = columns_removal;//columns_transitions; columns_removal;
 
 		file_dim = get_file_dimensions();
@@ -67,8 +68,7 @@ int main()
 			printf("Performing Naive Search\n");
 
 			if (NULL != file_dim) {
-				compute_transitions_QR();
-				efficient_alg(method);
+				naive_alg();
 
 			}
 			break;
@@ -83,7 +83,11 @@ int main()
 			break;
 		}
 		case GA_search:{
-			/*TODO*/
+			printf("Performing GA Search\n");
+
+			if (NULL != file_dim) {
+				GA_alg();
+			}
 			break;
 		}
 		default: {

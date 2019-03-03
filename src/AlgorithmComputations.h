@@ -7,6 +7,7 @@
 #include "MatrixComputations.h"
 #include "Types.h"
 #include <gsl/gsl_combination.h>
+#include "GeneticAlgorithm.h"
 /*=========================================*/
 /*define*/
 #define MIN_VALUE(X, Y)  ((X) < (Y) ? (X) : (Y))
@@ -40,13 +41,14 @@ typedef enum
 /*=========================================*/
 /*external functions*/
 void 				 QR_decomposition(gsl_matrix* matrix_input, Model_QR_components* matrix_components);
-void 				 compute_transitions_QR(void);
+void 				 naive_alg(void);
 void 				 set_y_vector(T_FILE_DIM* file_dim);
 void 			     set_A_matrix(T_FILE_DIM* file_dim);
 void 			     efficient_alg(T_EFFICIENT_METHOD method);
 gsl_matrix* 		 get_A_matrix();
-gsl_matrix* 		 sub_model_matrix(gsl_combination* matrix_combination);
-
+gsl_matrix* 		 sub_model_matrix(gsl_vector* matrix_combination);
+double 				 RSS_compute(gsl_matrix* QR);
+extern gsl_vector* solution_y;
 /*=========================================*/
 
 #endif /* SRC_ALGORITHMCOMPUTATIONS_H_ */

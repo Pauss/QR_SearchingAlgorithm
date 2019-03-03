@@ -11,9 +11,9 @@
 /*=========================================*/
 /*private data*/
 static gsl_matrix* main_model_A;
-static gsl_vector* solution_y;
 /*=========================================*/
 /*global data*/
+gsl_vector* solution_y;
 /*=========================================*/
 /*private functions*/
 /*=========================================*/
@@ -150,12 +150,20 @@ double RSS_compute(gsl_matrix* QR) {
 	return (RSS);
 }
 
+
 /*=========================================*/
 /*This function compute all possible subsets of ModelMatrix*/
 /*=========================================*/
-void compute_transitions_QR(void) {
+void naive_alg(void) {
 
 	//remove("Output_Steps");
+
+	gsl_vector* columns_selected;
+	T_BEST_SUBMODEL solution;
+	solution.columns = gsl_vector_alloc(main_model_A->size2);
+	double new_value  = 100;
+	double new_RSS;
+
 
 	/*computing all possible combinations of columns*/
 	for (uint8 i = 1; i <= main_model_A->size2; i++) {
@@ -169,25 +177,48 @@ void compute_transitions_QR(void) {
 		/*do combination while reaching all possible subsets*/
 		do {
 
+			columns_selected = gsl_vector_alloc(columns_transitions->k);
+			for(uint8 i = 0; i < columns_selected->size; i++)
+			{
+				columns_selected->data[i] = columns_transitions->data[i];
+			}
+
 			/*get matrix model*/
-			gsl_matrix* my_model = sub_model_matrix(columns_transitions);
-			/*print_steps(RSS_compute(my_model), columns_transitions);*/
+			gsl_matrix* my_model = sub_model_matrix(columns_selected);
 
 			gsl_combination_fprintf(stdout, columns_transitions, "%u ");
-			printf("\nRSS: %lf\n", RSS_compute(my_model));
+
+			new_RSS = RSS_compute(my_model);
+			printf("\nRSS: %lf\n", new_RSS);
+
+			//if best solution is find then update model
+			if (FALSE != criterion(new_RSS, columns_selected->size, &new_value)) {
+
+				solution.value = new_value;
+				solution.columns->size = columns_selected->size;
+				solution.RSS = new_RSS;
+				gsl_vector_memcpy(solution.columns, columns_selected);
+			}
 
 		} while (GSL_SUCCESS == gsl_combination_next(columns_transitions));
+
+
 	}
+
+	printf("\nValue of best solution based on criterion: %lf\nRSS: %lf",
+			solution.value, solution.RSS);
+	print_vector(solution.columns);
+
 }
 
 /*=========================================*/
 /*This function form a sub-model matrix*/
 /*=========================================*/
-gsl_matrix* sub_model_matrix(gsl_combination* matrix_combination) {
+gsl_matrix* sub_model_matrix(gsl_vector* matrix_combination) {
 
 	/*make a copy of full model matrix*/
 	gsl_matrix* matrix_transitions = gsl_matrix_alloc(main_model_A->size1,
-			matrix_combination->k);
+			matrix_combination->size);
 	gsl_vector * v;
 
 	gsl_matrix_set_zero(matrix_transitions);
@@ -200,7 +231,7 @@ gsl_matrix* sub_model_matrix(gsl_combination* matrix_combination) {
 		v = gsl_vector_alloc(main_model_A->size1);
 
 		gsl_matrix_get_col(v, main_model_A,
-				gsl_combination_get(matrix_combination, i));
+				gsl_vector_get(matrix_combination, i));
 
 		gsl_matrix_set_col(matrix_transitions, i, v);
 
@@ -450,7 +481,7 @@ void get_submodels_Rss(gsl_matrix* Model, void (*f_method)(gsl_matrix* M, uint8 
 
 	for (uint8 i = 0; i < 1/*Model->size2 - 2*/; i++) {
 
-		(*f_method)(Model, 2);
+		(*f_method)(Model, 0);
 
 		view_C = gsl_matrix_column(Model, (Model->size2) - 1);
 
@@ -479,6 +510,8 @@ void efficient_alg(T_EFFICIENT_METHOD method)
 	gsl_matrix* base_R_byQ;
 	gsl_vector* RSS_models;
 
+	print_matrix(main_model_A);
+
 	QR_decomposition(main_model_A, &matrix_components);
 
 	const uint8 nRows = matrix_components.R->size1;
@@ -496,6 +529,8 @@ void efficient_alg(T_EFFICIENT_METHOD method)
 	printf("\nColumn of data for RSS computation, using C = Qt*y\n");
 	print_matrix(base_R_byQ);
 
+	//
+	method = 3;
 
 	switch (method) {
 	case columns_transitions: {
