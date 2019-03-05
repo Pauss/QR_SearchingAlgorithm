@@ -296,21 +296,52 @@ void efficient_RSS(gsl_vector* C, gsl_vector* RSS_models, const double RSS)
 {
 
 	uint8 n = RSS_models->size;
-	double result = pow(RSS,2);
+	double result = RSS;
 	double temp_result = 0;
 
-	for(uint8 i=0; i < n; i++)
-	{
-		double el = gsl_vector_get(C,(n-i));
+	printf("\nRSS: %lf\n", result);
+
+	for (uint8 i = 0; i < n; i++) {
+		double el = gsl_vector_get(C, (n - i));
 
 		printf("\nElement: %lf\n", el);
 
-		result += (double)pow(el,2);
+		result += (double) pow(el, 2);
 
-		temp_result = sqrt(result);
+		temp_result = result;
 
-		gsl_vector_set(RSS_models,i, temp_result);
+		gsl_vector_set(RSS_models, i, temp_result);
 	}
+
+}
+
+/*=========================================*/
+/*This function compute RSS using elements of C in case of columns are deleted*/
+/*=========================================*/
+void efficient_RSS_D(gsl_vector* C, gsl_vector* RSS_models, const double RSS, uint8 SubModel_size, uint8 Model_size)
+{
+
+	double result = RSS;
+	double temp_result = 0;
+
+	RSS_models->size = Model_size;
+
+	for (uint8 i = 0; i < Model_size; i++) {
+		double el = gsl_vector_get(C, (Model_size - i));
+
+		printf("\nElement: %lf\n", el);
+
+		result += (double) pow(el, 2);
+
+		temp_result = result;
+
+		gsl_vector_set(RSS_models, i, temp_result);
+
+	}
+
+	gsl_vector_reverse(RSS_models);
+	RSS_models->size = SubModel_size;
+	gsl_vector_reverse(RSS_models);
 
 }
 
@@ -348,27 +379,26 @@ void compute_rotation_angle(gsl_matrix* R, gsl_matrix* rotation, uint8 column)
 	result = (double) sqrt(pow(a, 2) + pow(b, 2));
 	result = result * sign_r_element(a, b);
 
-	printf("\na: %lf\n",a);
-	printf("b: %lf\n",b);
+	printf("\na: %lf\n", a);
+	printf("b: %lf\n", b);
 
 	if (result == 0) {
 		cos = 1;
 		sin = 0;
 	} else {
 
-		gsl_linalg_givens(a, b, &cos, &sin);
+		cos = (double) a / result;
+		sin = (double) b / result;
 
-		cos = ABS_VALUE(cos);
-		sin = ABS_VALUE(sin);
 	}
 
-	printf("\nsin: %lf\n",sin);
-    printf("cos: %lf\n",cos);
-    printf("\nres: %lf\n",result);
+	printf("\nsin: %lf\n", sin);
+	printf("cos: %lf\n", cos);
+	printf("\nres: %lf\n", result);
 
 	gsl_matrix_set_all(rotation, cos);
 	gsl_matrix_set(rotation, 0, 1, sin);
-	gsl_matrix_set(rotation, 1, 0, (-1)*sin);
+	gsl_matrix_set(rotation, 1, 0, (-1) * sin);
 
 	print_matrix(rotation);
 
@@ -479,18 +509,21 @@ void get_submodels_Rss(gsl_matrix* Model, void (*f_method)(gsl_matrix* M, uint8 
 
 	gsl_vector_view view_C;
 
-	for (uint8 i = 0; i < 1/*Model->size2 - 2*/; i++) {
+	for (uint8 i = 0; i < 2/*Model->size2 - 2*/; i++) {
 
-		(*f_method)(Model, 0);
+		(*f_method)(Model, i);
 
 		view_C = gsl_matrix_column(Model, (Model->size2) - 1);
 
 		if (Model_columns != Model->size2) {
-			//when deleting a column, RSS' vector size is also updated
-			RSS_models->size = Model->size2 - 1;
-		}
 
-		efficient_RSS(&view_C.vector, RSS_models, RSS);
+			efficient_RSS_D(&view_C.vector, RSS_models, RSS, Model->size2 - 1,
+					Model_columns - 1);
+
+		} else {
+
+			efficient_RSS(&view_C.vector, RSS_models, RSS);
+		}
 
 		printf("\nRSS of new model.\n");
 
@@ -526,11 +559,22 @@ void efficient_alg(T_EFFICIENT_METHOD method)
 	printf("\nColumn of data for RSS computation, using C = R*x(approximated solution)\n");
 	print_matrix(base_R);
 
-	printf("\nColumn of data for RSS computation, using C = Qt*y\n");
-	print_matrix(base_R_byQ);
+	gsl_matrix* elimination_R = gsl_matrix_alloc(base_R->size1, base_R->size2);
+	gsl_matrix_memcpy(elimination_R, base_R);
+
+	gsl_vector_view view_C = gsl_matrix_column(elimination_R, (elimination_R->size2) - 1);
+
+	uint8 nSubmodels = elimination_R->size2 - 2;
+			RSS_models = gsl_vector_alloc(nSubmodels);
+
+	efficient_RSS(&view_C.vector, RSS_models, matrix_components.RSS);
+
+	printf("\nRSS of Main model.\n");
+
+	print_vector(RSS_models);
 
 	//
-	method = 3;
+	method = 1;
 
 	switch (method) {
 	case columns_transitions: {

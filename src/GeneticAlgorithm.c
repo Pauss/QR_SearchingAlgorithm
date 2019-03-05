@@ -64,6 +64,7 @@ boolean get_random_model(gsl_vector* my_random_model, uint8 n, uint8 size_A)
 boolean criterion(double RSS, uint8 k, double* best_solution) {
 	double result;
 
+	//AIC forumla change
 	result = (double) ((-2) * log(RSS)) + 2 * k;
 
 	if (result < *best_solution) {
