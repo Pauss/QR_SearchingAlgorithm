@@ -134,11 +134,14 @@ double RSS_compute(gsl_matrix* QR) {
 	gsl_vector * x = gsl_vector_alloc(QR->size2);
 	gsl_vector * E = gsl_vector_alloc(QR->size1);
 	gsl_vector* tau = gsl_vector_alloc(MIN_VALUE(QR->size1, QR->size2));
+	gsl_matrix* temp_QR = gsl_matrix_alloc(QR->size1, QR->size2);
+
+	gsl_matrix_memcpy(temp_QR, QR);
 	double RSS = INIT;
 
-	gsl_linalg_QR_decomp(QR, tau);
+	gsl_linalg_QR_decomp(temp_QR, tau);
 
-	gsl_linalg_QR_lssolve(QR, tau, solution_y, x, E);
+	gsl_linalg_QR_lssolve(temp_QR, tau, solution_y, x, E);
 
 	/* The least squares solution minimizes the Euclidean norm of the residual, ||Ax - b||.*/
 	RSS = euclidean_norm(E);
@@ -146,6 +149,7 @@ double RSS_compute(gsl_matrix* QR) {
 	gsl_vector_free(x);
 	gsl_vector_free(E);
 	gsl_vector_free(tau);
+	gsl_matrix_free(temp_QR);
 
 	return (RSS);
 }
@@ -159,9 +163,10 @@ void naive_alg(void) {
 	//remove("Output_Steps");
 
 	gsl_vector* columns_selected;
-	T_BEST_SUBMODEL solution;
+	T_INDIVIDUAL solution;
 	solution.columns = gsl_vector_alloc(main_model_A->size2);
-	double new_value  = 100;
+
+	double result  = 1;
 	double new_RSS;
 
 
@@ -192,11 +197,10 @@ void naive_alg(void) {
 			printf("\nRSS: %lf\n", new_RSS);
 
 			//if best solution is find then update model
-			if (FALSE != criterion(new_RSS, columns_selected->size, &new_value)) {
-
-				solution.value = new_value;
+			if (FALSE != criterion(new_RSS, main_model_A->size2, columns_selected->size, &result)) {
 				solution.columns->size = columns_selected->size;
 				solution.RSS = new_RSS;
+				solution.fitness_value = result;
 				gsl_vector_memcpy(solution.columns, columns_selected);
 			}
 
@@ -206,7 +210,7 @@ void naive_alg(void) {
 	}
 
 	printf("\nValue of best solution based on criterion: %lf\nRSS: %lf",
-			solution.value, solution.RSS);
+			solution.fitness_value, solution.RSS);
 	print_vector(solution.columns);
 
 }

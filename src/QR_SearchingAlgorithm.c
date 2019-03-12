@@ -51,7 +51,7 @@ int main()
 		 * 2. Efficient search with QR decomposition applied only on first step. Save some time tho..
 		 * 3. Even more nice strategy using GA (Genetic Algorithm)*/
 
-		T_SEARCH_STRATEGIES strategy = efficient_search;
+		T_SEARCH_STRATEGIES strategy = GA_search;
 		T_EFFICIENT_METHOD method = columns_removal;//columns_transitions; columns_removal;
 
 		file_dim = get_file_dimensions();
@@ -87,7 +87,8 @@ int main()
 			printf("Performing GA Search\n");
 
 			if (NULL != file_dim) {
-				GA_alg();
+				//naive_alg();
+				naive_GA_alg();
 			}
 			break;
 		}
@@ -97,7 +98,6 @@ int main()
 		}
 
 		}
-
 
 
 	}
