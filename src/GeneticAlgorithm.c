@@ -143,20 +143,37 @@ void roulette_wheel(T_INDIVIDUAL* population, uint8 size) {
 	}
 
 	for (uint8 i = 0; i < size; i++) {
-		population[i].selection_probability = (double) (population[i].fitness_value / sum_fitness);
-		sum_probabilities += population[i].selection_probability;
+		//it's used cumulative probability
+		population[i].selection_probability = sum_probabilities + (double) (population[i].fitness_value / sum_fitness);
+		sum_probabilities += (double) (population[i].fitness_value / sum_fitness);
 	}
 
 	for (uint8 i = 0; i < size - 1; i++) {
-		double r = (double) rand() / (double) (RAND_MAX / 0.1);
+		//double r = (double) rand() / (double) (RAND_MAX / 0.1);
+		double r = (double) (rand() / (double)(RAND_MAX));
+
+		printf("\nR = %lf\n",r);
 
 		//r bigger than actual but less then next individual
 		if (population[i].selection_probability < r
-				&& r >= population[i + 1].selection_probability) {
+				&& r <= population[i + 1].selection_probability) {
 			population[i].selected = TRUE;
 		} else
 			population[i].selected = FALSE;
 	}
+
+}
+
+/*=========================================*/
+/*This function implements Tournament selection*/
+/*=========================================*/
+void tournament_selection(T_INDIVIDUAL* population, uint8 size, uint8 k) {
+
+	/*Steps:
+	 * 1. Pick k random individuals from population
+	 * 2. Select the best individual and add it to new population
+	 * 3. repeat step 1 and 2 untile seletd deisred number of individuals
+	*/
 
 }
 
@@ -191,30 +208,69 @@ int get_number_locus(gsl_vector *bit_individ) {
 }
 
 /*=========================================*/
-/*This function apply mutation on individual on a random position*/
+/*This function apply mutation on individual on a n random positions, n also randomly choosed*/
 /*=========================================*/
-void mutation(gsl_vector* bit_columns) {
-	// get a random position and change its value : if it's 0 become 1, and reverse;
+void flip_mutation(gsl_vector* bit_columns) {
+	// get n random positions and change its value : if it's 0 become 1, and reverse;
 
 	gsl_vector* aux = gsl_vector_alloc(bit_columns->size);
 
-	uint8 len = 0;
-	while (len == 0 || len == bit_columns->size) {
-		gsl_vector_memcpy(aux, bit_columns);
-		int r = rand() % (aux->size);
-		if (gsl_vector_get(aux, r) == 0) {
-			gsl_vector_set(aux, r, 1);
-		}
-		else
-		{
-			gsl_vector_set(aux, r, 0);
-		}
-		len = get_number_locus(aux);
+	uint8 n_random_positions = 0;
+
+	while (n_random_positions == 0) {
+		n_random_positions = rand() % (bit_columns->size);
 	}
 
-	gsl_vector_memcpy(bit_columns,aux);
+	while (n_random_positions) {
+		gsl_vector_memcpy(aux, bit_columns);
+		uint8 r = rand() % (aux->size);
+		uint8 temp_el = gsl_vector_get(aux, r);
+		temp_el ^= 1UL;
+		gsl_vector_set(aux, r, temp_el);
+
+		n_random_positions--;
+
+	}
+
+	gsl_vector_memcpy(bit_columns, aux);
 	gsl_vector_free(aux);
 }
+
+/*=========================================*/
+/*This function apply mutation on individuals on a 2 random positions, by switchig it's elements*/
+/*=========================================*/
+void interchanging_mutation (gsl_vector* bit_columns) {
+
+	uint8 pos1 = 0;
+	uint8 pos2 = 0;
+
+	while(pos1 == pos2)
+	{
+		pos1 = rand() % (bit_columns->size);
+		pos2 = rand() % (bit_columns->size);
+	}
+
+	gsl_vector_swap_elements(bit_columns, pos1, pos2);
+}
+
+/*=========================================*/
+/*This function apply mutation on individuals that are after one random position, by reversing it's bit value*/
+/*=========================================*/
+void reversing_mutation (gsl_vector* bit_columns) {
+
+	uint8 pos = 0;
+
+	while (pos >= bit_columns->size - 1) {
+		pos = rand() % (bit_columns->size);
+	}
+
+	for (uint8 i = pos + 1; i < bit_columns->size; i++) {
+		uint8 temp_el = gsl_vector_get(bit_columns, i);
+		temp_el ^= 1UL;
+		gsl_vector_set(bit_columns, i, temp_el);
+	}
+}
+
 
 /*=========================================*/
 /*This function compute new population using selection method*/
@@ -224,7 +280,7 @@ void new_population_computed(T_INDIVIDUAL* temp_population, uint8 new_size)
 	//Apply mutation on selected individuals
 	for(uint8 i = 0; i< new_size; i++)
 	{
-		mutation(temp_population[i].bit_columns);
+		interchanging_mutation(temp_population[i].bit_columns);
 	}
 }
 
@@ -271,6 +327,10 @@ void print_individual(T_INDIVIDUAL individual)
 /*=========================================*/
 void naive_GA_alg(void)
 {
+
+	// Initialization of rand() function
+	srand(time(NULL));   
+
 	gsl_matrix * main_model = get_A_matrix();
 	Model_QR_components matrix_components;
 
@@ -334,13 +394,20 @@ void naive_GA_alg(void)
 
 	}
 
-	new_population_computed(new_GA_population, new_size);
+	if (new_size) {
 
-	printf("\nAfter\n");
-	for (uint8 i = 0; i < new_size; i++) {
-		printf("\nIndivid %d\n", i);
-		print_vector(new_GA_population[i].bit_columns);
+		new_population_computed(new_GA_population, new_size);
 
+		printf("\nAfter\n");
+		for (uint8 i = 0; i < new_size; i++) {
+			printf("\nIndivid %d\n", i);
+			print_vector(new_GA_population[i].bit_columns);
+
+		}
+	}
+	else
+	{
+		printf("\nNo individual survived!!\n");
 	}
 
 	//finish when best solution isn't updated for more than k iterations

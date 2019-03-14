@@ -30,7 +30,7 @@ int main()
 {
 
 	T_FILE_DIM* file_dim;
-	T_FILE_ERRORS check_file = file_no_error;
+ 	T_FILE_ERRORS check_file = file_no_error;
 	/*
 	 * Get the Data for applying search algorithm.
 	 * Extract a matrix m*n from file.

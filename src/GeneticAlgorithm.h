@@ -15,6 +15,8 @@
 #include "Types.h"
 #include <gsl/gsl_combination.h>
 #include <Math.h>
+#include <stdlib.h>
+#include <time.h>
 /*=========================================*/
 /*define*/
 #define NUMBER_OF_CHROMOSOMES 15u
