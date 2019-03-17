@@ -19,8 +19,10 @@
 #include <time.h>
 /*=========================================*/
 /*define*/
-#define NUMBER_OF_CHROMOSOMES 15u
-#define NUMBER_OF_GENES 2u
+#define NUMBER_OF_CHROMOSOMES 10u
+#define NUMBER_OF_GENES 9u
+#define TEMP 10u
+#define MIN_FITNESS 1000
 
 /*=========================================*/
 /*enumerations*/

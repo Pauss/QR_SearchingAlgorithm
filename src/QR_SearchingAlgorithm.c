@@ -38,7 +38,7 @@ int main()
 
 	/* check validity of a file
 	 * if valid extract matrix from file*/
-	check_file = fileIsValid("data_invalid.txt"); //house //data_invalid
+	check_file = fileIsValid("house.txt"); //house //data_invalid
 
 	if( file_no_error == check_file)
 	{

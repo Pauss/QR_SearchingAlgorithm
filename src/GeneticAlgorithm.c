@@ -91,6 +91,26 @@ boolean criterion(double RSS, uint8 n, uint8 k, double* result) {
 	return FALSE;
 }
 
+/*=========================================*/
+/*This function build and assign to an individual all corresponding values*/
+/*=========================================*/
+void build_individual (T_INDIVIDUAL* GA_individual, gsl_vector* rand_model, uint8 n)
+{
+
+	GA_individual->columns = gsl_vector_alloc(rand_model->size);
+	GA_individual->bit_columns = gsl_vector_alloc(rand_model->size);
+	GA_individual->submodel = gsl_matrix_alloc(n, n);
+
+	gsl_vector_memcpy(GA_individual->bit_columns, rand_model);
+
+	convert_submodels(rand_model, GA_individual->columns);
+
+	GA_individual->submodel = sub_model_matrix(GA_individual->columns);
+	GA_individual->RSS = RSS_compute(GA_individual->submodel);
+	GA_individual->fitness_value = 0;
+	GA_individual->selection_probability = 0;
+	GA_individual->selected = FALSE;
+}
 
 /*=========================================*/
 /*This function implements generation of population*/
@@ -104,24 +124,8 @@ void generate_population(T_INDIVIDUAL* GA_population, uint8 n, uint8 k)
 	for (uint8 i = 0; i < NUMBER_OF_CHROMOSOMES; i++) {
 
 		if (FALSE != get_random_model(random_model, k, n)) {
-			GA_population[i].columns = gsl_vector_alloc(random_model->size);
-			GA_population[i].bit_columns = gsl_vector_alloc(random_model->size);
-			GA_population[i].submodel = gsl_matrix_alloc(random_model->size,
-					random_model->size);
 
-			gsl_vector_memcpy(GA_population[i].bit_columns, random_model);
-
-			convert_submodels(random_model, bit_model);
-
-			GA_population[i].columns = gsl_vector_alloc(bit_model->size);
-
-			gsl_vector_memcpy(GA_population[i].columns, bit_model);
-
-			GA_population[i].submodel = sub_model_matrix(
-					GA_population[i].columns);
-			GA_population[i].RSS = RSS_compute(GA_population[i].submodel);
-			GA_population[i].selection_probability = 0;
-			GA_population[i].selected = FALSE;
+			build_individual(&GA_population[i], random_model, n);
 
 		}
 
@@ -151,8 +155,6 @@ void roulette_wheel(T_INDIVIDUAL* population, uint8 size) {
 	for (uint8 i = 0; i < size - 1; i++) {
 		//double r = (double) rand() / (double) (RAND_MAX / 0.1);
 		double r = (double) (rand() / (double)(RAND_MAX));
-
-		printf("\nR = %lf\n",r);
 
 		//r bigger than actual but less then next individual
 		if (population[i].selection_probability < r
@@ -275,13 +277,67 @@ void reversing_mutation (gsl_vector* bit_columns) {
 /*=========================================*/
 /*This function compute new population using selection method*/
 /*=========================================*/
-void new_population_computed(T_INDIVIDUAL* temp_population, uint8 new_size)
+void new_population_computed(T_INDIVIDUAL* temp_population, uint8 new_size, uint8 n)
 {
+	gsl_vector* temp_mutation;
+
 	//Apply mutation on selected individuals
 	for(uint8 i = 0; i< new_size; i++)
 	{
-		interchanging_mutation(temp_population[i].bit_columns);
+		temp_mutation = gsl_vector_alloc(temp_population[i].bit_columns->size);
+
+		gsl_vector_memcpy(temp_mutation, temp_population[i].bit_columns);
+
+		interchanging_mutation(temp_mutation);
+
+		build_individual(&temp_population[i], temp_mutation, n);
+
+
 	}
+}
+
+/*=========================================*/
+/*This function copy values of a source population into destination population */
+/*=========================================*/
+void copy_population(T_INDIVIDUAL* dest, T_INDIVIDUAL* src, uint8 new_size)
+{
+	for(uint8 i = 0; i < new_size; i++)
+	{
+		dest[i].RSS = src[i].RSS;
+		dest[i].fitness_value = src[i].fitness_value;
+		dest[i].selected = src[i].selected;
+		dest[i].selection_probability = src[i].selected;
+
+		dest[i].columns = gsl_vector_alloc(src[i].columns->size);
+		dest[i].bit_columns = gsl_vector_alloc(src[i].bit_columns->size);
+		dest[i].submodel = gsl_matrix_alloc(src[i].submodel->size1, src[i].submodel->size2);
+
+		gsl_vector_memcpy(dest[i].columns, src[i].columns);
+		gsl_vector_memcpy(dest[i].bit_columns, src[i].bit_columns);
+		gsl_matrix_memcpy(dest[i].submodel, src[i].submodel);
+
+	}
+}
+
+/*=========================================*/
+/*This function copy values of a source population into destination population */
+/*=========================================*/
+void copy_individual(T_INDIVIDUAL* dest, T_INDIVIDUAL* src, uint8 index1, uint8 index2)
+{
+
+		dest[index1].RSS = src[index2].RSS;
+		dest[index1].fitness_value = src[index2].fitness_value;
+		dest[index1].selected = src[index2].selected;
+		dest[index1].selection_probability = src[index2].selected;
+
+		dest[index1].columns = gsl_vector_alloc(src[index2].columns->size);
+		dest[index1].bit_columns = gsl_vector_alloc(src[index2].bit_columns->size);
+		dest[index1].submodel = gsl_matrix_alloc(src[index2].submodel->size1, src[index2].submodel->size2);
+
+		gsl_vector_memcpy(dest[index1].columns, src[index2].columns);
+		gsl_vector_memcpy(dest[index1].bit_columns, src[index2].bit_columns);
+		gsl_matrix_memcpy(dest[index1].submodel, src[index2].submodel);
+
 }
 
 /*=========================================*/
@@ -297,14 +353,26 @@ void population_selected(T_INDIVIDUAL* population, T_INDIVIDUAL* temp_population
 		if(FALSE != population[i].selected)
 		{
 
-			temp_population[temp_index].bit_columns =  gsl_vector_alloc(population[i].bit_columns->size);
+			copy_individual(temp_population, population, temp_index, i);
+
+			/*temp_population[temp_index].bit_columns =  gsl_vector_alloc(population[i].bit_columns->size);
+			temp_population[temp_index].columns =  gsl_vector_alloc(population[i].columns->size);
+			temp_population[temp_index].submodel = gsl_matrix_alloc(population[i].submodel->size1, population[i].submodel->size2);
+
 			gsl_vector_memcpy(temp_population[temp_index].bit_columns, population[i].bit_columns);
+			gsl_vector_memcpy(temp_population[temp_index].columns, population[i].columns);
+			gsl_matrix_memcpy(temp_population[temp_index].submodel, population[i].submodel);
+
+			temp_population[temp_index].fitness_value = population[i].fitness_value;
+			temp_population[temp_index].selection_probability = population[i].selection_probability;
+			temp_population[temp_index].selected = population[i].selected;*/
 
 			temp_index++;
 		}
 	}
 
 	*new_size = temp_index;
+
 }
 
 /*=========================================*/
@@ -340,79 +408,105 @@ void naive_GA_alg(void)
 	uint8 new_size = 0;
 	double result = 1;
 	uint8 best_solution_index = 0;
+	uint8 generation = 1;
+	double temperature = TEMP;
 
 	T_INDIVIDUAL GA_population[population_size];
 	T_INDIVIDUAL new_GA_population[population_size];
+
 
 	QR_decomposition(main_model, &matrix_components);
 
 	//generate population
 	generate_population(GA_population, model_size_n, model_size_k);
 
-	//apply fitness function on each individual and save best fitness
-	for (uint8 i = 0; i < NUMBER_OF_CHROMOSOMES; i++) {
-		if (criterion(GA_population[i].RSS, model_size_n, model_size_k,
-				&result)) {
-			best_solution_index = i;
-		}
-
-		//in each case update fitness value of each individual
-		GA_population[i].fitness_value = result;
-
-	}
-
-	//print best individual
-	print_individual(GA_population[best_solution_index]);
-
-	/* select best individual for next generation (x %)
-	 * 1. Roulette Wheel -> how % from SUM of all Results represents each Result)
-	 * 2. Tournament Selection -> first selects two individuals with uniform probability -> chooses the one with the highest fitness.
-	 * 3. Truncation Selection -> simply selects at random from the population having first eliminated K number of the least fit individuals
-	 * 4.  */
-
-	roulette_wheel(GA_population, population_size);
-
-	for (uint8 i = 0; i < NUMBER_OF_CHROMOSOMES; i++) {
-		printf("\nIndivid %d\n", i);
-		print_individual(GA_population[i]);
-
-	}
-
-	/*Evolution
-	 * 1. Replacement-with-elitism -> almost complete replacement except that the best one or two individuals from the source population are preserved in the successor population
-	 *
-	 */
-
-	//apply mutation and crossover on selected chromosomes => get next generation
-	population_selected(GA_population, new_GA_population, population_size,
-			&new_size);
+	double MIN = (double)MIN_FITNESS;
 
 
-	for (uint8 i = 0; i < new_size; i++) {
-		printf("\nIndivid %d\n", i);
-		print_vector(new_GA_population[i].bit_columns);
+	while (temperature)
 
-	}
-
-	if (new_size) {
-
-		new_population_computed(new_GA_population, new_size);
-
-		printf("\nAfter\n");
-		for (uint8 i = 0; i < new_size; i++) {
-			printf("\nIndivid %d\n", i);
-			print_vector(new_GA_population[i].bit_columns);
-
-		}
-	}
-	else
 	{
-		printf("\nNo individual survived!!\n");
+		printf("===========Generation# %d #===========", generation);
+
+		//apply fitness function on each individual and save best fitness
+		for (uint8 i = 0; i < NUMBER_OF_CHROMOSOMES; i++) {
+			if (criterion(GA_population[i].RSS, model_size_n, model_size_k,
+					&result)) {
+				best_solution_index = i;
+			}
+
+			//in each case update fitness value of each individual
+			GA_population[i].fitness_value = result;
+
+		}
+
+		//print best individual
+
+		if(GA_population[best_solution_index].fitness_value < MIN)
+
+		{
+			MIN = GA_population[best_solution_index].fitness_value;
+			temperature-- ;
+		}
+
+		/* select best individual for next generation (x %)
+		 * 1. Roulette Wheel -> how % from SUM of all Results represents each Result)
+		 * 2. Tournament Selection -> first selects two individuals with uniform probability -> chooses the one with the highest fitness.
+		 * 3. Truncation Selection -> simply selects at random from the population having first eliminated K number of the least fit individuals
+		 * 4.  */
+
+		roulette_wheel(GA_population, population_size);
+
+		for (uint8 i = 0; i < population_size; i++) {
+			printf("\nIndivid %d\n", i);
+			print_individual(GA_population[i]);
+
+		}
+
+		/*Evolution
+		 * 1. Replacement-with-elitism -> almost complete replacement except that the best one or two individuals from the source population are preserved in the successor population
+		 *
+		 */
+
+		//apply mutation and crossover on selected chromosomes => get next generation
+		population_selected(GA_population, new_GA_population, population_size,
+				&new_size);
+
+		copy_population(GA_population, new_GA_population, new_size);
+
+		printf("\n############NEW POPULATION############\n");
+		for(uint8 i = 0; i < new_size; i++)
+		{
+			print_individual(GA_population[i]);
+		}
+
+
+		population_size = new_size;
+
+		if (new_size) {
+
+			printf("\nSelected\n");
+			for (uint8 i = 0; i < population_size; i++) {
+				print_individual(GA_population[i]);
+			}
+
+			new_population_computed(GA_population, population_size, model_size_n);
+
+			printf("\nAfter\n");
+			for (uint8 i = 0; i < population_size; i++) {
+				print_individual(GA_population[i]);
+			}
+		} else {
+			printf("\nNo individual survived at generation %d!!\n", generation);
+			temperature = 0;
+		}
+
+		generation++;
+
 	}
 
-	//finish when best solution isn't updated for more than k iterations
-	//OR
-	// finish when temperature is 0
+	printf("BEST individual value: %lf", MIN);
+	print_individual(GA_population[best_solution_index]);
 
 
 }
