@@ -14,11 +14,16 @@ typedef enum
 	GA_search
 }T_SEARCH_STRATEGIES;
 
+typedef enum
+{
+	not_installed = 0,
+	installed
+}T_Intercept;
 
 /*=========================================*/
 /*typedef*/
 /*=========================================*/
 /*external functions*/
-void get_base_R(gsl_matrix* R, gsl_vector* x, gsl_matrix* R_result);
+extern T_Intercept intercept;
 /*=========================================*/
 #endif /* SRC_QR_SEARCHINGALGORITHM_H_ */

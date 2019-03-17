@@ -50,6 +50,11 @@ void set_A_matrix(T_FILE_DIM* file_dim) {
 	/*set A matrix*/
 	main_model_A = gsl_matrix_alloc(file_dim->lines, file_dim->columns - 1);
 	gsl_matrix_memcpy(main_model_A, &A_view.matrix);
+
+	if(intercept)
+	{
+		add_intercept(main_model_A);
+	}
 }
 
 /*=========================================*/

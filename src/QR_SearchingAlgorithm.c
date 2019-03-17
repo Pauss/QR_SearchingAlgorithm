@@ -19,10 +19,10 @@
 /*private data*/
 /*=========================================*/
 /*global data*/
+T_Intercept intercept = installed;
 /*=========================================*/
 /*private functions*/
 /*=========================================*/
-
 /*=========================================*/
 /*Description*/
 /*=========================================*/
@@ -45,7 +45,6 @@ int main()
 
 		/*File is valid*/
 
-
 		/* choose what strategy to use
 		 * 1. Naive search with QR decomposition applied at each step.
 		 * 2. Efficient search with QR decomposition applied only on first step. Save some time tho..
@@ -53,6 +52,7 @@ int main()
 
 		T_SEARCH_STRATEGIES strategy = GA_search;
 		T_EFFICIENT_METHOD method = columns_removal;//columns_transitions; columns_removal;
+		intercept = installed;
 
 		file_dim = get_file_dimensions();
 

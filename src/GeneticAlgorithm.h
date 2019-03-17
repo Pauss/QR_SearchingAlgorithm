@@ -10,6 +10,7 @@
 
 /*=========================================*/
 /*include*/
+#include "QR_SearchingAlgorithm.h"
 #include "MatrixComputations.h"
 #include "AlgorithmComputations.h"
 #include "Types.h"
@@ -20,7 +21,7 @@
 /*=========================================*/
 /*define*/
 #define NUMBER_OF_CHROMOSOMES 10u
-#define NUMBER_OF_GENES 9u
+#define NUMBER_OF_GENES 2u
 #define TEMP 10u
 #define MIN_FITNESS 1000
 
