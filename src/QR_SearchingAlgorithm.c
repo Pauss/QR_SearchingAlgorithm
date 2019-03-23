@@ -9,12 +9,7 @@
  */
 /*=========================================*/
 /*includes*/
-#include "Types.h"
-#include "MatrixComputations.h"
 #include "QR_SearchingAlgorithm.h"
-#include "AlgorithmComputations.h"
-#include "FileOperations.h"
-#include "GeneticAlgorithm.h"
 /*=========================================*/
 /*private data*/
 /*=========================================*/
@@ -28,6 +23,8 @@ T_Intercept intercept = installed;
 /*=========================================*/
 int main()
 {
+
+	clock_t begin = clock();
 
 	T_FILE_DIM* file_dim;
  	T_FILE_ERRORS check_file = file_no_error;
@@ -131,6 +128,10 @@ int main()
 	}
 
 	}
+
+	clock_t end = clock();
+	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+	printf("EXECUTION TIME %f", time_spent);
 
 	return 0;
 

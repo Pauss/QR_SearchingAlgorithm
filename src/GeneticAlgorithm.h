@@ -21,9 +21,11 @@
 /*=========================================*/
 /*define*/
 #define NUMBER_OF_CHROMOSOMES 10u
-#define NUMBER_OF_GENES 2u
+#define NUMBER_OF_GENES 7u
 #define TEMP 10u
 #define MIN_FITNESS 1000
+#define TOURNAMENT_K 6
+#define CONVERGE 50
 
 /*=========================================*/
 /*enumerations*/

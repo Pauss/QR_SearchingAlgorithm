@@ -100,12 +100,12 @@ boolean criterion(double RSS, uint8 n, uint8 k, double* result) {
 /*=========================================*/
 /*This function build and assign to an individual all corresponding values*/
 /*=========================================*/
-void build_individual (T_INDIVIDUAL* GA_individual, gsl_vector* rand_model, uint8 n)
+void build_individual (T_INDIVIDUAL* GA_individual, gsl_vector* rand_model, uint8 columns)
 {
 
 	GA_individual->columns = gsl_vector_alloc(rand_model->size);
 	GA_individual->bit_columns = gsl_vector_alloc(rand_model->size);
-	GA_individual->submodel = gsl_matrix_alloc(n, n);
+	GA_individual->submodel = gsl_matrix_alloc(columns, columns);
 
 	gsl_vector_memcpy(GA_individual->bit_columns, rand_model);
 
@@ -158,8 +158,8 @@ void roulette_wheel(T_INDIVIDUAL* population, uint8 size) {
 	}
 
 	for (uint8 i = 0; i < size - 1; i++) {
-		//double r = (double) rand() / (double) (RAND_MAX / 0.1);
-		double r = (double) (rand() / (double)(RAND_MAX));
+
+		double r = (double) (rand() / (double) (RAND_MAX));
 
 		//r bigger than actual but less then next individual
 		if (population[i].selection_probability < r
@@ -172,6 +172,45 @@ void roulette_wheel(T_INDIVIDUAL* population, uint8 size) {
 }
 
 /*=========================================*/
+/*This function implements a shuffle array elements method 'Fisher–Yates shuffle*/
+/*=========================================*/
+void shuffle_array(T_INDIVIDUAL* population, uint8 size) {
+	T_INDIVIDUAL temp_population[size];
+
+	for (uint8 i = size - 1; i > 0; i--) {
+		uint8 j = rand() % i;
+
+		copy_individual(temp_population, population, j, i);
+		copy_individual(temp_population, population, i, j);
+
+		copy_individual(population, temp_population, i, i);
+		copy_individual(population, temp_population, j, j);
+
+	}
+
+	copy_population(population, temp_population, size);
+
+}
+
+uint8 get_index_of_BEST(T_INDIVIDUAL* population, uint8 size){
+
+	uint8 best_index = 0;
+
+	double min = population[best_index].fitness_value;
+
+	for(uint8 index = 1; index< size; index++){
+		if(population[index].fitness_value < min)
+		{
+			min = population[index].fitness_value;
+			best_index = index;
+		}
+	}
+
+	return best_index;
+}
+
+
+/*=========================================*/
 /*This function implements Tournament selection*/
 /*=========================================*/
 void tournament_selection(T_INDIVIDUAL* population, uint8 size, uint8 k) {
@@ -181,6 +220,46 @@ void tournament_selection(T_INDIVIDUAL* population, uint8 size, uint8 k) {
 	 * 2. Select the best individual and add it to new population
 	 * 3. repeat step 1 and 2 untile seletd deisred number of individuals
 	*/
+
+	gsl_vector* temp_mutation;
+	uint8 model_size_n = population[0].columns->size;
+
+	T_INDIVIDUAL temp_population[size];
+	T_INDIVIDUAL temp_pool_population[2];
+	T_INDIVIDUAL pool_population[size];
+
+	for (uint8 i = 0; i < size; i += 2) {
+		copy_population(temp_population, population, size);
+
+		//get first element
+
+		shuffle_array(temp_population, size);
+
+		uint8 index1 = get_index_of_BEST(temp_population, k);
+
+		//add it to temp pool
+		copy_individual(temp_pool_population, temp_population, 0, index1);
+
+		//get second element
+
+		shuffle_array(temp_population, size);
+
+		uint8 index2 = get_index_of_BEST(temp_population, k);
+
+		//add it to pool
+		copy_individual(temp_pool_population, temp_population, 1, index2);
+
+		//apply muations
+		new_population_computed(temp_pool_population, 2,
+							model_size_n);
+
+		//add new 2 individuals to generation
+		copy_individual(pool_population, temp_pool_population, i, 0);
+		copy_individual(pool_population, temp_pool_population, i+1, 1);
+
+	}
+
+	copy_population(population, pool_population);
 
 }
 
@@ -377,6 +456,23 @@ void print_individual(T_INDIVIDUAL individual)
 	printf("Is Selected: %d\n", individual.selected);
 }
 
+/*=========================================*/
+/*This function calculate fitness function of each individual and return index of the best*/
+/*=========================================*/
+void fitness_func(T_INDIVIDUAL* population,uint8 model_size_n, uint8 model_size_k, double* result)
+{
+
+	for (uint8 i = 0; i < NUMBER_OF_CHROMOSOMES; i++) {
+
+		criterion(population[i].RSS, model_size_n, model_size_k, result);
+
+		//in each case update fitness value of each individual
+		population[i].fitness_value = *result;
+
+	}
+}
+
+
 /*The main components are the chromosome encoding
 * the fitness function, selection, recombination and the evolution scheme.*/
 //https://www.sciencedirect.com/science/article/pii/S0377042705000774
@@ -399,8 +495,10 @@ void naive_GA_alg(void)
 	uint8 new_size = 0;
 	uint8 best_solution_index = 0;
 	uint8 generation = 1;
+	uint8 converge_value = 0;
 	double temperature = TEMP;
 	double result = 1;
+	double MIN = (double) MIN_FITNESS;
 
 	T_INDIVIDUAL GA_population[population_size];
 	T_INDIVIDUAL new_GA_population[population_size];
@@ -410,33 +508,25 @@ void naive_GA_alg(void)
 	//generate population
 	generate_population(GA_population, model_size_n, model_size_k);
 
-	double MIN = (double) MIN_FITNESS;
+	//apply fitness to all individuals
+	fitness_func(GA_population, model_size_n, model_size_k,
+					&result);
+	//get BEST
+	best_solution_index = get_index_of_BEST(GA_population, population_size);
+
+	if (GA_population[best_solution_index].fitness_value < MIN)
+
+	{
+		MIN = GA_population[best_solution_index].fitness_value;
+	}
+
+	//temperature = 0;
 
 	while (temperature)
 
 	{
 		printf("\n==========#Generation %d#===========", generation);
 
-		//apply fitness function on each individual and save best fitness
-		for (uint8 i = 0; i < NUMBER_OF_CHROMOSOMES; i++) {
-			if (criterion(GA_population[i].RSS, model_size_n, model_size_k,
-					&result)) {
-				best_solution_index = i;
-			}
-
-			//in each case update fitness value of each individual
-			GA_population[i].fitness_value = result;
-
-		}
-
-		//update MIN value of fitness
-
-		if (GA_population[best_solution_index].fitness_value < MIN)
-
-		{
-			MIN = GA_population[best_solution_index].fitness_value;
-			temperature--;
-		}
 
 		 /*select best individual for next generation (x %)
 		 * 1. Roulette Wheel -> how % from SUM of all Results represents each Result)
@@ -444,7 +534,26 @@ void naive_GA_alg(void)
 		 * 3. Truncation Selection -> simply selects at random from the population having first eliminated K number of the least fit individuals
 		 */
 
-		roulette_wheel(GA_population, population_size);
+		tournament_selection(GA_population, population_size, TOURNAMENT_K);
+
+		//apply fitness to all individuals
+		fitness_func(GA_population, model_size_n, model_size_k,
+						&result);
+		//get BEST
+		best_solution_index = get_index_of_BEST(GA_population, population_size);
+
+		if (GA_population[best_solution_index].fitness_value < MIN)
+
+		{
+			MIN = GA_population[best_solution_index].fitness_value;
+			temperature--;
+		}
+		else
+		{
+			converge_value ++;
+		}
+
+		/*roulette_wheel(GA_population, population_size);
 
 		for (uint8 i = 0; i < population_size; i++) {
 			printf("\nIndividual index: %d", i);
@@ -452,11 +561,6 @@ void naive_GA_alg(void)
 
 		}
 
-		/*Evolution
-		 * 1. Replacement-with-elitism -> almost complete replacement except that the best one or two individuals from the source population are preserved in the successor population
-		 */
-
-		//apply mutation and crossover on selected chromosomes => get next generation
 		population_selected(GA_population, new_GA_population, population_size,
 				&new_size);
 
@@ -471,6 +575,8 @@ void naive_GA_alg(void)
 				print_individual(GA_population[i]);
 			}
 
+			//apply mutation and crossover on selected chromosomes => get next generation
+
 			new_population_computed(GA_population, population_size,
 					model_size_n);
 
@@ -482,9 +588,14 @@ void naive_GA_alg(void)
 		} else {
 			printf("\nNo individual survived at generation %d!\n", generation);
 			temperature = 0;
-		}
+		}*/
 
-		generation++;
+		if (converge_value < CONVERGE) {
+
+			generation++;
+		} else {
+			temperature = 0;
+		}
 
 	}
 

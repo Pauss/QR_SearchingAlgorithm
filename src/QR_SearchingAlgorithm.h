@@ -3,6 +3,12 @@
 
 /*=========================================*/
 /*include*/
+#include "Types.h"
+#include "MatrixComputations.h"
+#include "AlgorithmComputations.h"
+#include "FileOperations.h"
+#include "GeneticAlgorithm.h"
+#include <time.h>
 /*=========================================*/
 /*define*/
 /*=========================================*/
