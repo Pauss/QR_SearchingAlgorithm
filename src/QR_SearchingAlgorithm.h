@@ -6,6 +6,7 @@
 #include "Types.h"
 #include "MatrixComputations.h"
 #include "AlgorithmComputations.h"
+#include "GeneticAlgorithm.h"
 #include "FileOperations.h"
 #include "GeneticAlgorithm.h"
 #include <time.h>

@@ -48,7 +48,8 @@ int main()
 		 * 3. Even more nice strategy using GA (Genetic Algorithm)*/
 
 		T_SEARCH_STRATEGIES strategy = GA_search;
-		T_EFFICIENT_METHOD method = columns_removal;//columns_transitions; columns_removal;
+		T_EFFICIENT_METHOD columns_method = columns_removal;//columns_transitions; columns_removal;
+		T_SELECTION_METHOD selection_method = roulette_wheel;
 		intercept = installed;
 
 		file_dim = get_file_dimensions();
@@ -76,7 +77,7 @@ int main()
 
 			if (NULL != file_dim) {
 				naive_alg();
-				efficient_alg(method);
+				efficient_alg(columns_method);
 			}
 			break;
 		}
@@ -85,7 +86,7 @@ int main()
 
 			if (NULL != file_dim) {
 				//naive_alg();
-				naive_GA_alg();
+				naive_GA_alg(selection_method);
 			}
 			break;
 		}

@@ -17,6 +17,12 @@
 
 /*=========================================*/
 /*enumerations*/
+
+typedef enum
+{
+	columns_transitions = 0,
+	columns_removal
+}T_EFFICIENT_METHOD;
 /*=========================================*/
 /*typedef*/
 
@@ -31,13 +37,6 @@ typedef struct{
 	gsl_vector* QtransposeY;
 	double RSS;
 }Model_QR_components;
-
-typedef enum
-{
-	columns_transitions = 0,
-	columns_removal
-}T_EFFICIENT_METHOD;
-
 /*=========================================*/
 /*external functions*/
 void 				 QR_decomposition(gsl_matrix* matrix_input, Model_QR_components* matrix_components);
