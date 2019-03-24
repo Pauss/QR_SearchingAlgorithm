@@ -48,8 +48,13 @@ int main()
 		 * 3. Even more nice strategy using GA (Genetic Algorithm)*/
 
 		T_SEARCH_STRATEGIES strategy = GA_search;
+		//efficient method relevant
 		T_EFFICIENT_METHOD columns_method = columns_removal;//columns_transitions; columns_removal;
-		T_SELECTION_METHOD selection_method = roulette_wheel;
+
+		//GA relevant
+		T_SELECTION_METHOD selection_method = tournament;  //tournament; roulette_wheel
+		T_OPERATOR_METHOD operator1 = interchanghing;
+		T_OPERATOR_METHOD operator2 = uniform; //_1point; uniform; RRC
 		intercept = installed;
 
 		file_dim = get_file_dimensions();
@@ -86,7 +91,7 @@ int main()
 
 			if (NULL != file_dim) {
 				//naive_alg();
-				naive_GA_alg(selection_method);
+				naive_GA_alg(selection_method, operator1, operator2);
 			}
 			break;
 		}

@@ -213,56 +213,36 @@ uint8 get_index_of_BEST(T_INDIVIDUAL* population, uint8 size){
 /*=========================================*/
 /*This function implements Tournament selection*/
 /*=========================================*/
-void tournament_selection(T_INDIVIDUAL* population, uint8 size, uint8 k) {
+void selection_tournament(T_INDIVIDUAL* population, uint8 size, uint8 k) {
 
 	/*Steps:
-	 * 1. Pick k random individuals from population
+	 * 1. Pick k random individuals from population (shuffled population)
 	 * 2. Select the best individual and add it to new population
-	 * 3. repeat step 1 and 2 untile seletd deisred number of individuals
-	*/
+	 * 3. repeat step 1 and 2 until selected desired number of individuals
+	 */
 
 	uint8 model_size_n = population[0].columns->size;
 
 	T_INDIVIDUAL temp_population[size];
-	T_INDIVIDUAL temp_pool_population[2];
+
 	T_INDIVIDUAL pool_population[size];
 
-	for (uint8 i = 0; i < size; i += 2) {
+	for (uint8 i = 0; i < size; i++) {
 		copy_population(temp_population, population, size);
-
-		//get first element
 
 		shuffle_array(temp_population, size);
 
 		uint8 index1 = get_index_of_BEST(temp_population, k);
 
-		//add it to temp pool
-		copy_individual_into_population(temp_pool_population, temp_population, 0, index1);
-
-		//get second element
-
-		shuffle_array(temp_population, size);
-
-		uint8 index2 = get_index_of_BEST(temp_population, k);
-
-		//add it to pool
-		copy_individual_into_population(temp_pool_population, temp_population, 1, index2);
-
-		//apply muations
-		new_population_computed(temp_pool_population, 2,
-							model_size_n);
-
-		//add new 2 individuals to generation
-		copy_individual_into_population(pool_population, temp_pool_population, i, 0);
-		copy_individual_into_population(pool_population, temp_pool_population, i+1, 1);
+		copy_individual_into_population(pool_population, temp_population, i,
+				index1);
 
 	}
 
-	copy_population(population, pool_population, size);
-
+	//new_population_computed(pool_population, size, model_size_n);
 }
 
-void roulette_wheel_selection(T_INDIVIDUAL* population, uint8* size, uint8 model_size_n)
+void selection_roulette_wheel(T_INDIVIDUAL* population, uint8* size, uint8 model_size_n)
 {
 
 	T_INDIVIDUAL temp_population[*size];
@@ -297,15 +277,15 @@ void roulette_wheel_selection(T_INDIVIDUAL* population, uint8* size, uint8 model
 	copy_population(population, temp_population, temp_size);
 
 	//after applying mutations
-	new_population_computed(population, temp_size, model_size_n);
+	//new_population_computed(population, temp_size, model_size_n, no_operator);
 
 }
 
 
 /*=========================================*/
-/*This function apply crossover on 2 individuals on a random position*/
+/*This function apply crossover on 2 individuals on a random single position*/
 /*=========================================*/
-void crossover(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2) {
+void crossover_1point(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2) {
 
 	uint8 r = 0, i;
 	while (r == 0 || r == bit_individ_1->size) {
@@ -316,6 +296,65 @@ void crossover(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2) {
 		double t = gsl_vector_get(bit_individ_1, i);
 		gsl_vector_set(bit_individ_1, i, gsl_vector_get(bit_individ_2, i));
 		gsl_vector_set(bit_individ_2, i, t);
+	}
+}
+
+/*=========================================*/
+/*This function apply crossover on 2 individuals using uniform_crossover method*/
+/*=========================================*/
+void crossover_uniform(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2) {
+
+	for (uint8 i = 0; i < bit_individ_1->size; i++) {
+
+		double temp1 = gsl_vector_get(bit_individ_1, i);
+		double temp2 = gsl_vector_get(bit_individ_2, i);
+
+		if (temp1 != temp2) {
+			//random number between 0 and 1
+			double r = (double) (rand() / (double) (RAND_MAX));
+
+			if (r > REFERENCE_PROBABILITY) {
+				gsl_vector_set(bit_individ_1, i, temp2);
+				gsl_vector_set(bit_individ_2, i, temp1);
+
+			}
+
+		}
+
+	}
+}
+
+/*=========================================*/
+/*This function apply crossover on 2 individuals using random respectful crossover (RRC) method*/
+/*=========================================*/
+void crossover_RRC(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2) {
+
+
+	for (uint8 i = 0; i < bit_individ_1->size; i++) {
+
+		double temp1 = gsl_vector_get(bit_individ_1, i);
+		double temp2 = gsl_vector_get(bit_individ_2, i);
+
+		if (temp1 != temp2) {
+			//random number between 0 and 1
+			double r = (double) (rand() / (double) (RAND_MAX));
+
+			if (r < REFERENCE_PROBABILITY) {
+				gsl_vector_set(bit_individ_1, i, 1);
+			} else {
+				gsl_vector_set(bit_individ_1, i, 0);
+			}
+
+			r = (double) (rand() / (double) (RAND_MAX));
+
+			if (r < REFERENCE_PROBABILITY) {
+				gsl_vector_set(bit_individ_2, i, 1);
+			} else {
+				gsl_vector_set(bit_individ_2, i, 0);
+			}
+
+		}
+
 	}
 }
 
@@ -335,7 +374,7 @@ int get_number_locus(gsl_vector *bit_individ) {
 /*=========================================*/
 /*This function apply mutation on individual on a n random positions, n also randomly choosed*/
 /*=========================================*/
-void flip_mutation(gsl_vector* bit_columns) {
+void mutation_flip(gsl_vector* bit_columns) {
 	// get n random positions and change its value : if it's 0 become 1, and reverse;
 
 	gsl_vector* aux = gsl_vector_alloc(bit_columns->size);
@@ -364,7 +403,7 @@ void flip_mutation(gsl_vector* bit_columns) {
 /*=========================================*/
 /*This function apply mutation on individuals on a 2 random positions, by switchig it's elements*/
 /*=========================================*/
-void interchanging_mutation (gsl_vector* bit_columns) {
+void mutation_interchanging (gsl_vector* bit_columns) {
 
 	uint8 pos1 = 0;
 	uint8 pos2 = 0;
@@ -381,7 +420,7 @@ void interchanging_mutation (gsl_vector* bit_columns) {
 /*=========================================*/
 /*This function apply mutation on individuals that are after one random position, by reversing it's bit value*/
 /*=========================================*/
-void reversing_mutation (gsl_vector* bit_columns) {
+void mutation_reversing (gsl_vector* bit_columns) {
 
 	uint8 pos = 0;
 
@@ -400,21 +439,77 @@ void reversing_mutation (gsl_vector* bit_columns) {
 /*=========================================*/
 /*This function compute new population using selection method*/
 /*=========================================*/
-void new_population_computed(T_INDIVIDUAL* temp_population, uint8 new_size, uint8 n)
+void new_population_computed(T_INDIVIDUAL* temp_population, uint8 new_size, uint8 n, T_OPERATOR_METHOD op)
 {
 	gsl_vector* temp_mutation;
+	gsl_vector* temp_crossover1;
+	gsl_vector* temp_crossover2;
 
-	//Apply mutation on selected individuals
-	for (uint8 i = 0; i < new_size; i++) {
-		temp_mutation = gsl_vector_alloc(temp_population[i].bit_columns->size);
+	if (op < _1point) {
 
-		gsl_vector_memcpy(temp_mutation, temp_population[i].bit_columns);
 
-		interchanging_mutation(temp_mutation);
+		//Apply mutation on selected individuals
+		for (uint8 i = 0; i < new_size; i++) {
+			temp_mutation = gsl_vector_alloc(
+					temp_population[i].bit_columns->size);
 
-		build_individual(&temp_population[i], temp_mutation, n);
+			gsl_vector_memcpy(temp_mutation, temp_population[i].bit_columns);
+
+			switch (op) {
+			case flip: {mutation_flip(temp_mutation);break;}
+
+			case interchanghing: {mutation_interchanging(temp_mutation);break;}
+
+			case reversing: {mutation_reversing(temp_mutation);break;}
+
+			default:break;}
+
+			build_individual(&temp_population[i], temp_mutation, n);
+
+		}
+
 
 	}
+
+	else if (op < no_operator) {
+
+		if(new_size % 2 == 1){
+			new_size--;
+		}
+
+		//Apply crossover on selected individuals
+		for (uint8 i = 0; i < new_size; i += 2) {
+			temp_crossover1 = gsl_vector_alloc(
+					temp_population[i].bit_columns->size);
+
+			temp_crossover2 = gsl_vector_alloc(
+					temp_population[i + 1].bit_columns->size);
+
+			gsl_vector_memcpy(temp_crossover1, temp_population[i].bit_columns);
+			gsl_vector_memcpy(temp_crossover2,
+					temp_population[i + 1].bit_columns);
+
+			switch (op) {
+			case _1point: {crossover_1point(temp_crossover1, temp_crossover2);break;}
+
+			case RRC: {crossover_RRC(temp_crossover1, temp_crossover2);break;}
+
+			case reversing: {crossover_uniform(temp_crossover1, temp_crossover2);break;}
+
+			default:break;}
+
+			build_individual(&temp_population[i], temp_crossover1, n);
+
+			build_individual(&temp_population[i + 1], temp_crossover2, n);
+
+		}
+
+	}
+
+	else {
+		/*nothing to do*/
+	}
+
 }
 
 /*=========================================*/
@@ -515,6 +610,18 @@ void print_individual(T_INDIVIDUAL individual)
 }
 
 /*=========================================*/
+/*This function prints to the console all data of all individuals in a population*/
+/*=========================================*/
+void print_population(T_INDIVIDUAL* population, uint8 size) {
+	for (uint8 i = 0; i < size; i++) {
+
+		printf("\nColumns:");
+		print_vector(population[i].columns);
+		printf("Fitness Value: %f\n", population[i].fitness_value);
+	}
+}
+
+/*=========================================*/
 /*This function calculate fitness function of each individual and return index of the best*/
 /*=========================================*/
 void fitness_func(T_INDIVIDUAL* population,uint8 model_size_n, uint8 model_size_k, double* result)
@@ -522,7 +629,10 @@ void fitness_func(T_INDIVIDUAL* population,uint8 model_size_n, uint8 model_size_
 
 	for (uint8 i = 0; i < NUMBER_OF_CHROMOSOMES; i++) {
 
-		criterion(population[i].RSS, model_size_n, model_size_k, result);
+		/*todo*/
+		//criterion(population[i].RSS, model_size_n, model_size_k, result);
+
+		criterion(population[i].RSS, model_size_n, population[i].columns->size, result);
 
 		//in each case update fitness value of each individual
 		population[i].fitness_value = *result;
@@ -530,14 +640,10 @@ void fitness_func(T_INDIVIDUAL* population,uint8 model_size_n, uint8 model_size_
 	}
 }
 
-
-/*The main components are the chromosome encoding
-* the fitness function, selection, recombination and the evolution scheme.*/
-//https://www.sciencedirect.com/science/article/pii/S0377042705000774
 /*=========================================*/
 /*This function implements a naive approach of genetic algorithm*/
 /*=========================================*/
-void naive_GA_alg(T_SELECTION_METHOD method)
+void naive_GA_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 {
 
 	// Initialization of rand() function
@@ -577,6 +683,7 @@ void naive_GA_alg(T_SELECTION_METHOD method)
 		copy_individual(&best_solution, &GA_population[best_solution_index]);
 	}
 
+
 	//temperature = 0;
 	while (temperature)
 
@@ -590,18 +697,25 @@ void naive_GA_alg(T_SELECTION_METHOD method)
 		 */
 
 		switch (method) {
-		case tournament: tournament_selection(GA_population, population_size, TOURNAMENT_K); break;
+		case tournament: selection_tournament(GA_population, population_size, TOURNAMENT_K); break;
 
-		case roulette_wheel: roulette_wheel_selection(GA_population, &population_size, model_size_n); break;
+		case roulette_wheel: selection_roulette_wheel(GA_population, &population_size, model_size_n); break;
 
 		default: /*No method selected*/	break;
 
 		}
 
+		new_population_computed(GA_population, population_size, model_size_n, op2);
+		new_population_computed(GA_population, population_size, model_size_n, op1);
+
 		if (population_size) {
+
+
 
 			//apply fitness to all individuals
 			fitness_func(GA_population, model_size_n, model_size_k, &result);
+
+			//print_population(GA_population, population_size);
 
 			//get BEST
 			best_solution_index = get_index_of_BEST(GA_population,
@@ -632,9 +746,12 @@ void naive_GA_alg(T_SELECTION_METHOD method)
 			//if no individuals got selected in new population then search must be stopped
 			temperature = 0;
 		}
+
+
 	}
 
 	printf("\nBEST\n");
 	print_individual(best_solution);
+
 
 }
