@@ -20,14 +20,16 @@
 #include <time.h>
 /*=========================================*/
 /*define*/
-#define NUMBER_OF_CHROMOSOMES 10u
-#define NUMBER_OF_GENES 7u
-#define TEMP 30u
+#define PERCENTAJE_OF_CHROMOSOMES 40u
+#define PERCENTAJE_OF_GENES 55u
+#define TEMP 100000 //10000 100000 100000
+#define COOLING_RATE 0.86//0.003 0.98 0.330 0.729 0.85
+#define NR_ITERATIONS 140u
 #define MIN_FITNESS 1000u
-#define TOURNAMENT_K 4u
-#define CONVERGE 200u
+#define TOURNAMENT_K 50u
+#define CONVERGE 10u
 #define REFERENCE_PROBABILITY 0.5
-
+#define PERCENTAJE(x, y) ( ((x) > 0 && (y) > 0) ? ((float)(x)/100) * (y) : 0)
 
 /*=========================================*/
 /*enumerations*/
@@ -42,7 +44,7 @@ typedef enum
 {
 	//mutations
 	flip = 0u,
-	interchanghing = 1u,
+	interchanging = 1u,
 	reversing = 2u,
 	//crossovers
 	_1point = 3u,
@@ -67,9 +69,8 @@ typedef struct{
 /*=========================================*/
 /*external functions*/
 boolean get_random_model(gsl_vector* my_random_model, uint8 n, uint8 size_A);
-void 	GA_alg(void);
 boolean criterion (double RSS, uint8 n, uint8 k, double* result);
-void naive_GA_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2);
+void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2);
 void print_individual(T_INDIVIDUAL individual);
 void copy_individual(T_INDIVIDUAL* dest, T_INDIVIDUAL* src);
 void copy_individual_into_population(T_INDIVIDUAL* dest, T_INDIVIDUAL* src, uint8 index1,uint8 index2);
@@ -82,6 +83,8 @@ void print_population(T_INDIVIDUAL* population, uint8 size);
 void crossover_1point(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2);
 void crossover_uniform(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2);
 void crossover_RRC(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2);
+void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2);
+boolean neighbor_acceptance(T_INDIVIDUAL* current, T_INDIVIDUAL* neighbor, double temperature);
 /*=========================================*/
 
 #endif /* SRC_GENETICALGORITHM_H_ */

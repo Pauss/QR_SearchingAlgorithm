@@ -121,12 +121,12 @@ void build_individual (T_INDIVIDUAL* GA_individual, gsl_vector* rand_model, uint
 /*=========================================*/
 /*This function implements generation of population*/
 /*=========================================*/
-void generate_population(T_INDIVIDUAL* GA_population, uint8 n, uint8 k)
+void generate_population(T_INDIVIDUAL* GA_population, uint8 size, uint8 n, uint8 k)
 {
 	gsl_vector* random_model = gsl_vector_alloc(n);
 
 	//generate population
-	for (uint8 i = 0; i < NUMBER_OF_CHROMOSOMES; i++) {
+	for (uint8 i = 0; i < size; i++) {
 
 		if (FALSE != get_random_model(random_model, k, n)) {
 
@@ -138,6 +138,24 @@ void generate_population(T_INDIVIDUAL* GA_population, uint8 n, uint8 k)
 		random_model->size = n;
 	}
 
+}
+
+/*=========================================*/
+/*This function implements generation of an individual*/
+/*=========================================*/
+void generate_individual(T_INDIVIDUAL* individual, uint8 n, uint8 k)
+{
+	gsl_vector* random_model = gsl_vector_alloc(n);
+
+	//generate population
+
+	if (FALSE != get_random_model(random_model, k, n)) {
+
+		build_individual(individual, random_model, n);
+
+		//if size changes
+		//random_model->size = n;
+	}
 }
 
 /*=========================================*/
@@ -458,7 +476,7 @@ void new_population_computed(T_INDIVIDUAL* temp_population, uint8 new_size, uint
 			switch (op) {
 			case flip: {mutation_flip(temp_mutation);break;}
 
-			case interchanghing: {mutation_interchanging(temp_mutation);break;}
+			case interchanging: {mutation_interchanging(temp_mutation);break;}
 
 			case reversing: {mutation_reversing(temp_mutation);break;}
 
@@ -477,31 +495,34 @@ void new_population_computed(T_INDIVIDUAL* temp_population, uint8 new_size, uint
 			new_size--;
 		}
 
-		//Apply crossover on selected individuals
-		for (uint8 i = 0; i < new_size; i += 2) {
-			temp_crossover1 = gsl_vector_alloc(
-					temp_population[i].bit_columns->size);
+		if(new_size > 1)
+		{
+			//Apply crossover on selected individuals
+			for (uint8 i = 0; i < new_size; i += 2) {
+				temp_crossover1 = gsl_vector_alloc(
+						temp_population[i].bit_columns->size);
 
-			temp_crossover2 = gsl_vector_alloc(
-					temp_population[i + 1].bit_columns->size);
+				temp_crossover2 = gsl_vector_alloc(
+						temp_population[i + 1].bit_columns->size);
 
-			gsl_vector_memcpy(temp_crossover1, temp_population[i].bit_columns);
-			gsl_vector_memcpy(temp_crossover2,
-					temp_population[i + 1].bit_columns);
+				gsl_vector_memcpy(temp_crossover1, temp_population[i].bit_columns);
+				gsl_vector_memcpy(temp_crossover2,
+						temp_population[i + 1].bit_columns);
 
-			switch (op) {
-			case _1point: {crossover_1point(temp_crossover1, temp_crossover2);break;}
+				switch (op) {
+				case _1point: {crossover_1point(temp_crossover1, temp_crossover2);break;}
 
-			case RRC: {crossover_RRC(temp_crossover1, temp_crossover2);break;}
+				case RRC: {crossover_RRC(temp_crossover1, temp_crossover2);break;}
 
-			case reversing: {crossover_uniform(temp_crossover1, temp_crossover2);break;}
+				case reversing: {crossover_uniform(temp_crossover1, temp_crossover2);break;}
 
-			default:break;}
+				default:break;}
 
-			build_individual(&temp_population[i], temp_crossover1, n);
+				build_individual(&temp_population[i], temp_crossover1, n);
 
-			build_individual(&temp_population[i + 1], temp_crossover2, n);
+				build_individual(&temp_population[i + 1], temp_crossover2, n);
 
+			}
 		}
 
 	}
@@ -624,42 +645,65 @@ void print_population(T_INDIVIDUAL* population, uint8 size) {
 /*=========================================*/
 /*This function calculate fitness function of each individual and return index of the best*/
 /*=========================================*/
-void fitness_func(T_INDIVIDUAL* population,uint8 model_size_n, uint8 model_size_k, double* result)
+void fitness_func(T_INDIVIDUAL* individual, uint8 model_size_n, uint8 model_size_k, double* result)
 {
+	/*todo*/
+	//criterion(population[i].RSS, model_size_n, model_size_k, result);
+	criterion(individual->RSS, model_size_n, individual->columns->size, result);
 
-	for (uint8 i = 0; i < NUMBER_OF_CHROMOSOMES; i++) {
+	//in each case update fitness value of each individual
+	individual->fitness_value = *result;
+}
 
-		/*todo*/
-		//criterion(population[i].RSS, model_size_n, model_size_k, result);
+/*=========================================*/
+/*This function implements a method for acceptance of a neighbor */
+/*=========================================*/
+boolean neighbor_acceptance(T_INDIVIDUAL* current, T_INDIVIDUAL* neighbor, double temperature){
 
-		criterion(population[i].RSS, model_size_n, population[i].columns->size, result);
+	boolean is_accepted = FALSE;
 
-		//in each case update fitness value of each individual
-		population[i].fitness_value = *result;
+	double delta = current->fitness_value - neighbor->fitness_value;
 
+	if (delta >= 0) {
+		is_accepted = TRUE;
+	} else {
+		if (temperature) {
+
+			double r = (double) (rand() / (double) (RAND_MAX));
+
+			if ((double) exp(delta / temperature) > r) {
+
+				is_accepted = TRUE;
+
+			}
+
+		}
 	}
+
+	return is_accepted;
+
 }
 
 /*=========================================*/
 /*This function implements a naive approach of genetic algorithm*/
 /*=========================================*/
-void naive_GA_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
+void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 {
-
-	// Initialization of rand() function
-	srand(time(NULL));
 
 	gsl_matrix * main_model = get_A_matrix();
 
 	Model_QR_components matrix_components;
-
-	uint8 model_size_k = NUMBER_OF_GENES;
 	uint8 model_size_n = main_model->size2;
-	uint8 population_size = NUMBER_OF_CHROMOSOMES;
+	uint8 model_size_k = PERCENTAJE(PERCENTAJE_OF_GENES, main_model->size2) ;
+	uint8 population_size = PERCENTAJE(PERCENTAJE_OF_CHROMOSOMES, main_model->size1);
+	uint8 iterations = NR_ITERATIONS;
+	uint8 converge_value = 0;
+	boolean converge = FALSE;
+	boolean last_converge = FALSE;
+
 	uint8 best_solution_index = 0;
 	uint8 generation = 1;
-	uint8 converge_value = 0;
-	double temperature = TEMP;
+
 	double result = 1;
 	double MIN = (double) MIN_FITNESS;
 
@@ -669,10 +713,12 @@ void naive_GA_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 	QR_decomposition(main_model, &matrix_components);
 
 	//generate population
-	generate_population(GA_population, model_size_n, model_size_k);
+	generate_population(GA_population, population_size, model_size_n, model_size_k);
 
 	//apply fitness to all individuals
-	fitness_func(GA_population, model_size_n, model_size_k, &result);
+	for(uint8 i = 0 ;i < population_size; i++){
+		fitness_func(&GA_population[i], model_size_n, model_size_k, &result);
+	}
 	//get BEST
 	best_solution_index = get_index_of_BEST(GA_population, population_size);
 
@@ -683,9 +729,8 @@ void naive_GA_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 		copy_individual(&best_solution, &GA_population[best_solution_index]);
 	}
 
-
-	//temperature = 0;
-	while (temperature)
+	//iterations = 0;
+	while (iterations)
 
 	{
 		printf("\n==========#Generation %d#===========", generation);
@@ -697,7 +742,7 @@ void naive_GA_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 		 */
 
 		switch (method) {
-		case tournament: selection_tournament(GA_population, population_size, TOURNAMENT_K); break;
+		case tournament: selection_tournament(GA_population, population_size, PERCENTAJE(TOURNAMENT_K, model_size_k)); break;
 
 		case roulette_wheel: selection_roulette_wheel(GA_population, &population_size, model_size_n); break;
 
@@ -710,10 +755,12 @@ void naive_GA_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 
 		if (population_size) {
 
-
-
 			//apply fitness to all individuals
-			fitness_func(GA_population, model_size_n, model_size_k, &result);
+			//fitness_func(GA_population, model_size_n, model_size_k, &result);
+
+			for(uint8 i = 0 ;i < population_size; i++){
+				fitness_func(&GA_population[i], model_size_n, model_size_k, &result);
+			}
 
 			//print_population(GA_population, population_size);
 
@@ -728,30 +775,98 @@ void naive_GA_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 				copy_individual(&best_solution,
 						&GA_population[best_solution_index]);
 
-				if (temperature) {
-					temperature--;
+				if (iterations) {
+					iterations--;
 				}
+				converge = FALSE;
 
 			} else {
-				converge_value++;
+				converge = TRUE;
+
+				if ((converge & last_converge) == TRUE) {
+
+					converge_value++;
+				} else {
+					converge_value = 0;
+				}
 			}
 
 			if (converge_value < CONVERGE) {
 
 				generation++;
 			} else {
-				temperature = 0;
+
+				iterations = 0;
 			}
 		} else {
 			//if no individuals got selected in new population then search must be stopped
-			temperature = 0;
+			iterations = 0;
 		}
 
+		last_converge = converge;
 
 	}
 
-	printf("\nBEST\n");
+	printf("\nBEST");
 	print_individual(best_solution);
 
+}
+
+/*=========================================*/
+/*This function implements a naive approach of genetic algorithm*/
+/*=========================================*/
+void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
+
+	gsl_matrix * main_model = get_A_matrix();
+
+	uint8 model_size_n = main_model->size2;
+	uint8 model_size_k = PERCENTAJE(PERCENTAJE_OF_GENES, main_model->size2);
+	T_INDIVIDUAL current_individual;
+	T_INDIVIDUAL neighbor_individual;
+	T_INDIVIDUAL best_individual;
+	double result = 1;
+	double MIN_fitness;
+	double temperature = TEMP;
+
+	generate_individual(&current_individual, model_size_n, model_size_k);
+
+	fitness_func(&current_individual, model_size_n, model_size_k, &result);
+
+	MIN_fitness = current_individual.fitness_value;
+
+	copy_individual(&best_individual, &current_individual);
+
+	print_individual(current_individual);
+
+	for (uint8 i = 0; i < NR_ITERATIONS; i++) {
+
+		printf("\n==========#Iteration  %d#===========", i);
+
+		copy_individual(&neighbor_individual, &current_individual);
+
+		new_population_computed(&neighbor_individual, 1, model_size_n, op1);
+
+		fitness_func(&neighbor_individual, model_size_n, model_size_k, &result);
+
+		temperature = (double) temperature * COOLING_RATE;
+
+		if (neighbor_acceptance(&current_individual, &neighbor_individual,
+				temperature)) {
+
+			copy_individual(&current_individual, &neighbor_individual);
+
+		}
+
+		if (current_individual.fitness_value < MIN_fitness) {
+			MIN_fitness = current_individual.fitness_value;
+			copy_individual(&best_individual, &current_individual);
+
+			print_individual(neighbor_individual);
+		}
+	}
+
+	printf("\nBEST");
+	print_individual(best_individual);
 
 }
+
