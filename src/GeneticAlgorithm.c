@@ -333,38 +333,37 @@ void crossover_1point(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2) {
 
 	uint8 r = 0, i, nr;
 	boolean condition = FALSE; //keeping same number of genes
-	nr = get_number_locus(bit_individ_1);
-
-
-	gsl_vector* temp1 = gsl_vector_alloc(bit_individ_1->size);
-	gsl_vector* temp2 = gsl_vector_alloc(bit_individ_1->size);
-
-	//condition = TRUE;
-
+	nr = bit_individ_1->size;
 
 	while (condition == FALSE) {
 
-		gsl_vector_memcpy(temp1, bit_individ_1);
-		gsl_vector_memcpy(temp2, bit_individ_2);
+		r = rand() % (bit_individ_1->size);
 
-	    r = rand() % (bit_individ_1->size);
+		bit_individ_1->size = r;
+		bit_individ_2->size = r;
 
-		for (i = r; i < bit_individ_1->size; i++) {
-			double t = gsl_vector_get(temp1, i);
-			gsl_vector_set(temp1, i, gsl_vector_get(temp2, i));
-			gsl_vector_set(temp2, i, t);
-		}
-
-		if ((get_number_locus(temp1)
-				== get_number_locus(temp2)) && get_number_locus(temp1) == nr ) {
+		if (get_number_locus(bit_individ_1)
+				== get_number_locus(bit_individ_2)) {
 			condition = TRUE;
-
-			gsl_vector_memcpy(bit_individ_1, temp1);
-			gsl_vector_memcpy(bit_individ_2, temp2);
-
 		}
 
 	}
+
+	bit_individ_1->size = nr;
+	bit_individ_2->size = nr;
+
+	if (r) {
+		for (i = r; i < bit_individ_1->size; i++) {
+			double t = gsl_vector_get(bit_individ_1, i);
+			gsl_vector_set(bit_individ_1, i, gsl_vector_get(bit_individ_2, i));
+			gsl_vector_set(bit_individ_2, i, t);
+		}
+	} else {
+
+		gsl_vector_swap(bit_individ_1, bit_individ_2);
+
+	}
+
 }
 
 /*=========================================*/
@@ -790,7 +789,7 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 	uint16 generation = 1;
 
 	double result = 1;
-	double MIN = (double) MIN_FITNESS;
+	double MIN = (double) MAX_FITNESS;
 
 	T_INDIVIDUAL GA_population[population_size];
 	T_INDIVIDUAL best_solution;

@@ -54,8 +54,8 @@ int main()
 
 		//GA relevant
 		T_SELECTION_METHOD selection_method = tournament;  //tournament; roulette_wheel
-		T_OPERATOR_METHOD operator1 = flip; //flip //interchanging; interchanging_abs; reversing
-		T_OPERATOR_METHOD operator2 = _1point; //_1point; uniform; RRC; _1point_simple;
+		T_OPERATOR_METHOD operator1 = interchanging_abs; //flip //interchanging; interchanging_abs; reversing
+		T_OPERATOR_METHOD operator2 = _1point; //_1point; uniform; RRC; _1point_simple; no_operator
 		intercept = installed;
 
 		file_dim = get_file_dimensions();
@@ -92,8 +92,8 @@ int main()
 
 			if (NULL != file_dim) {
 				//naive_alg();
-				GA_naive_alg(selection_method, operator1, no_operator);
-				//GA_simulated_annealing(operator1, no_operator);
+				//GA_naive_alg(selection_method, operator1, operator2);
+				GA_simulated_annealing(operator1, operator2);
 			}
 			break;
 		}

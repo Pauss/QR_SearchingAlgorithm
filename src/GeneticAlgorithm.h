@@ -20,16 +20,17 @@
 #include <time.h>
 /*=========================================*/
 /*define*/
-#define PERCENTAJE_OF_CHROMOSOMES 50u
+#define PERCENTAJE_OF_CHROMOSOMES 70u
 #define PERCENTAJE_OF_GENES 55u
 #define TEMP 100000 //10000 100000 100000
 #define COOLING_RATE 0.86//0.003 0.98 0.330 0.729 0.85
-#define NR_ITERATIONS 1000u
-#define MIN_FITNESS 1000u
+#define NR_ITERATIONS 100u
 #define PERCENTAJE_OF_TOURNAMENT_K 60u
-#define CONVERGE 20u
+#define CONVERGE 10u
+//crossover probability
 #define REFERENCE_PROBABILITY 0.5
 #define MAX_FITNESS 100000
+#define NR_OF_ATTEMPTS 10u
 #define PERCENTAJE(x, y) ( ((x) > 0 && (y) > 0) ? ((float)(x)/100) * (y) : 0)
 
 /*=========================================*/
