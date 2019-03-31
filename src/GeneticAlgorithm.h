@@ -20,15 +20,16 @@
 #include <time.h>
 /*=========================================*/
 /*define*/
-#define PERCENTAJE_OF_CHROMOSOMES 40u
+#define PERCENTAJE_OF_CHROMOSOMES 50u
 #define PERCENTAJE_OF_GENES 55u
 #define TEMP 100000 //10000 100000 100000
 #define COOLING_RATE 0.86//0.003 0.98 0.330 0.729 0.85
-#define NR_ITERATIONS 140u
+#define NR_ITERATIONS 1000u
 #define MIN_FITNESS 1000u
-#define TOURNAMENT_K 50u
-#define CONVERGE 10u
+#define PERCENTAJE_OF_TOURNAMENT_K 60u
+#define CONVERGE 20u
 #define REFERENCE_PROBABILITY 0.5
+#define MAX_FITNESS 100000
 #define PERCENTAJE(x, y) ( ((x) > 0 && (y) > 0) ? ((float)(x)/100) * (y) : 0)
 
 /*=========================================*/
@@ -45,13 +46,15 @@ typedef enum
 	//mutations
 	flip = 0u,
 	interchanging = 1u,
-	reversing = 2u,
+	interchanging_abs = 2u,
+	reversing = 3u,
 	//crossovers
-	_1point = 3u,
-	RRC = 4u,
-	uniform = 5u,
+	_1point_simple = 4u,
+	_1point = 5u,
+	RRC = 6u,
+	uniform = 7u,
 	//NONE
-	no_operator = 6u
+	no_operator = 8u
 }T_OPERATOR_METHOD;
 
 /*=========================================*/
@@ -80,6 +83,7 @@ void probability_selection(T_INDIVIDUAL* population, uint8 size);
 void population_selected(T_INDIVIDUAL* population,
 		T_INDIVIDUAL* temp_population, uint8 size, uint8* new_size);
 void print_population(T_INDIVIDUAL* population, uint8 size);
+void crossover_1point_simple(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2);
 void crossover_1point(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2);
 void crossover_uniform(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2);
 void crossover_RRC(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2);

@@ -136,13 +136,18 @@ void QR_decomposition(gsl_matrix* matrix_input,
 /*=========================================*/
 double RSS_compute(gsl_matrix* QR) {
 
+	double RSS = INIT;
+
 	gsl_vector * x = gsl_vector_alloc(QR->size2);
 	gsl_vector * E = gsl_vector_alloc(QR->size1);
 	gsl_vector* tau = gsl_vector_alloc(MIN_VALUE(QR->size1, QR->size2));
 	gsl_matrix* temp_QR = gsl_matrix_alloc(QR->size1, QR->size2);
 
+	if(QR->size2 > 0)
+	{
+
 	gsl_matrix_memcpy(temp_QR, QR);
-	double RSS = INIT;
+
 
 	gsl_linalg_QR_decomp(temp_QR, tau);
 
@@ -151,6 +156,7 @@ double RSS_compute(gsl_matrix* QR) {
 	/* The least squares solution minimizes the Euclidean norm of the residual, ||Ax - b||.*/
 	RSS = euclidean_norm(E);
 
+	}
 	gsl_vector_free(x);
 	gsl_vector_free(E);
 	gsl_vector_free(tau);
@@ -246,7 +252,7 @@ gsl_matrix* sub_model_matrix(gsl_vector* matrix_combination) {
 
 	}
 
-	gsl_vector_free(v);
+	//gsl_vector_free(v);
 
 	return matrix_transitions;
 

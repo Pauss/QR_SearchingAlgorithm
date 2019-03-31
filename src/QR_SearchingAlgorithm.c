@@ -25,7 +25,7 @@ int main()
 {
 
 	clock_t begin = clock();
-	srand(time(NULL));
+	srand(time(NULL)*1000);
 
 	T_FILE_DIM* file_dim;
  	T_FILE_ERRORS check_file = file_no_error;
@@ -54,8 +54,8 @@ int main()
 
 		//GA relevant
 		T_SELECTION_METHOD selection_method = tournament;  //tournament; roulette_wheel
-		T_OPERATOR_METHOD operator1 = interchanging; //flip //interchanging
-		T_OPERATOR_METHOD operator2 = uniform; //_1point; uniform; RRC
+		T_OPERATOR_METHOD operator1 = flip; //flip //interchanging; interchanging_abs; reversing
+		T_OPERATOR_METHOD operator2 = _1point; //_1point; uniform; RRC; _1point_simple;
 		intercept = installed;
 
 		file_dim = get_file_dimensions();
@@ -91,9 +91,9 @@ int main()
 			printf("Performing GA Search\n");
 
 			if (NULL != file_dim) {
-				naive_alg();
-				//GA_naive_alg(selection_method, operator1, operator2);
-				//GA_simulated_annealing(operator1, operator2);
+				//naive_alg();
+				GA_naive_alg(selection_method, operator1, no_operator);
+				//GA_simulated_annealing(operator1, no_operator);
 			}
 			break;
 		}

@@ -80,11 +80,16 @@ boolean criterion(double RSS, uint8 n, uint8 k, double* result) {
 	}
 
 
-	static double best_s = 10000;
+	static double best_s = MAX_FITNESS;
 
-	if(n)
+	if(n > 0 && RSS>0)
 	{
+
 		*result = (double) (n + n * log(2 * M_PI) + n * log(RSS / n) + 2 * (k + 1));
+	}
+	else
+	{
+		*result = MAX_FITNESS;
 	}
 
 	if (*result <= best_s) {
@@ -113,6 +118,7 @@ void build_individual (T_INDIVIDUAL* GA_individual, gsl_vector* rand_model, uint
 
 	GA_individual->submodel = sub_model_matrix(GA_individual->columns);
 	GA_individual->RSS = RSS_compute(GA_individual->submodel);
+
 	GA_individual->fitness_value = 0;
 	GA_individual->selection_probability = 0;
 	GA_individual->selected = FALSE;
@@ -301,12 +307,14 @@ void selection_roulette_wheel(T_INDIVIDUAL* population, uint8* size, uint8 model
 
 
 /*=========================================*/
-/*This function apply crossover on 2 individuals on a random single position*/
+/*This function apply crossover on 2 individuals on a random single position */
 /*=========================================*/
-void crossover_1point(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2) {
+void crossover_1point_simple(gsl_vector* bit_individ_1,
+		gsl_vector *bit_individ_2) {
 
 	uint8 r = 0, i;
-	while (r == 0 || r == bit_individ_1->size) {
+
+	while (r == 0 ) {
 		r = rand() % bit_individ_1->size;
 	}
 
@@ -314,6 +322,48 @@ void crossover_1point(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2) {
 		double t = gsl_vector_get(bit_individ_1, i);
 		gsl_vector_set(bit_individ_1, i, gsl_vector_get(bit_individ_2, i));
 		gsl_vector_set(bit_individ_2, i, t);
+	}
+
+}
+
+/*=========================================*/
+/*This function apply crossover on 2 individuals on a random single position but keeping parent's number of genes*/
+/*=========================================*/
+void crossover_1point(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2) {
+
+	uint8 r = 0, i, nr;
+	boolean condition = FALSE; //keeping same number of genes
+	nr = get_number_locus(bit_individ_1);
+
+
+	gsl_vector* temp1 = gsl_vector_alloc(bit_individ_1->size);
+	gsl_vector* temp2 = gsl_vector_alloc(bit_individ_1->size);
+
+	//condition = TRUE;
+
+
+	while (condition == FALSE) {
+
+		gsl_vector_memcpy(temp1, bit_individ_1);
+		gsl_vector_memcpy(temp2, bit_individ_2);
+
+	    r = rand() % (bit_individ_1->size);
+
+		for (i = r; i < bit_individ_1->size; i++) {
+			double t = gsl_vector_get(temp1, i);
+			gsl_vector_set(temp1, i, gsl_vector_get(temp2, i));
+			gsl_vector_set(temp2, i, t);
+		}
+
+		if ((get_number_locus(temp1)
+				== get_number_locus(temp2)) && get_number_locus(temp1) == nr ) {
+			condition = TRUE;
+
+			gsl_vector_memcpy(bit_individ_1, temp1);
+			gsl_vector_memcpy(bit_individ_2, temp2);
+
+		}
+
 	}
 }
 
@@ -344,6 +394,8 @@ void crossover_uniform(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2) {
 
 /*=========================================*/
 /*This function apply crossover on 2 individuals using random respectful crossover (RRC) method*/
+/*Genes that are same in both parents, are keep in both children */
+/*And the rest of them are randomly chosen between children*/
 /*=========================================*/
 void crossover_RRC(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2) {
 
@@ -418,6 +470,25 @@ void mutation_flip(gsl_vector* bit_columns) {
 	gsl_vector_free(aux);
 }
 
+
+/*=========================================*/
+/*This function apply mutation on individuals on a 2 random positions, by switchig it's elements*/
+/*=========================================*/
+void mutation_interchanging_abs(gsl_vector* bit_columns) {
+
+	uint8 pos1 = 0;
+	uint8 pos2 = 0;
+
+	while((pos1 == pos2) || (gsl_vector_get(bit_columns, pos1) == gsl_vector_get(bit_columns, pos2)))
+	{
+		pos1 = rand() % (bit_columns->size);
+		pos2 = rand() % (bit_columns->size);
+
+	}
+
+	gsl_vector_swap_elements(bit_columns, pos1, pos2);
+}
+
 /*=========================================*/
 /*This function apply mutation on individuals on a 2 random positions, by switchig it's elements*/
 /*=========================================*/
@@ -426,10 +497,11 @@ void mutation_interchanging (gsl_vector* bit_columns) {
 	uint8 pos1 = 0;
 	uint8 pos2 = 0;
 
-	while(pos1 == pos2)
+	while((pos1 == pos2))
 	{
 		pos1 = rand() % (bit_columns->size);
 		pos2 = rand() % (bit_columns->size);
+
 	}
 
 	gsl_vector_swap_elements(bit_columns, pos1, pos2);
@@ -459,11 +531,12 @@ void mutation_reversing (gsl_vector* bit_columns) {
 /*=========================================*/
 void new_population_computed(T_INDIVIDUAL* temp_population, uint8 new_size, uint8 n, T_OPERATOR_METHOD op)
 {
+
 	gsl_vector* temp_mutation;
 	gsl_vector* temp_crossover1;
 	gsl_vector* temp_crossover2;
 
-	if (op < _1point) {
+	if (op < _1point_simple) {
 
 
 		//Apply mutation on selected individuals
@@ -478,11 +551,15 @@ void new_population_computed(T_INDIVIDUAL* temp_population, uint8 new_size, uint
 
 			case interchanging: {mutation_interchanging(temp_mutation);break;}
 
+			case interchanging_abs: {mutation_interchanging_abs(temp_mutation);break;}
+
 			case reversing: {mutation_reversing(temp_mutation);break;}
 
 			default:break;}
 
 			build_individual(&temp_population[i], temp_mutation, n);
+
+			gsl_vector_free(temp_mutation);
 
 		}
 
@@ -509,7 +586,12 @@ void new_population_computed(T_INDIVIDUAL* temp_population, uint8 new_size, uint
 				gsl_vector_memcpy(temp_crossover2,
 						temp_population[i + 1].bit_columns);
 
+
+
 				switch (op) {
+
+				case _1point_simple: {crossover_1point_simple(temp_crossover1, temp_crossover2);break;}
+
 				case _1point: {crossover_1point(temp_crossover1, temp_crossover2);break;}
 
 				case RRC: {crossover_RRC(temp_crossover1, temp_crossover2);break;}
@@ -521,6 +603,9 @@ void new_population_computed(T_INDIVIDUAL* temp_population, uint8 new_size, uint
 				build_individual(&temp_population[i], temp_crossover1, n);
 
 				build_individual(&temp_population[i + 1], temp_crossover2, n);
+
+				gsl_vector_free(temp_crossover1);
+				gsl_vector_free(temp_crossover2);
 
 			}
 		}
@@ -696,13 +781,13 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 	uint8 model_size_n = main_model->size2;
 	uint8 model_size_k = PERCENTAJE(PERCENTAJE_OF_GENES, main_model->size2) ;
 	uint8 population_size = PERCENTAJE(PERCENTAJE_OF_CHROMOSOMES, main_model->size1);
-	uint8 iterations = NR_ITERATIONS;
-	uint8 converge_value = 0;
+	uint16 iterations = NR_ITERATIONS;
+	uint16 converge_value = 0;
 	boolean converge = FALSE;
 	boolean last_converge = FALSE;
 
 	uint8 best_solution_index = 0;
-	uint8 generation = 1;
+	uint16 generation = 1;
 
 	double result = 1;
 	double MIN = (double) MIN_FITNESS;
@@ -742,7 +827,7 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 		 */
 
 		switch (method) {
-		case tournament: selection_tournament(GA_population, population_size, PERCENTAJE(TOURNAMENT_K, model_size_k)); break;
+		case tournament: selection_tournament(GA_population, population_size, PERCENTAJE(PERCENTAJE_OF_TOURNAMENT_K, model_size_k)); break;
 
 		case roulette_wheel: selection_roulette_wheel(GA_population, &population_size, model_size_n); break;
 
@@ -762,7 +847,7 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 				fitness_func(&GA_population[i], model_size_n, model_size_k, &result);
 			}
 
-			//print_population(GA_population, population_size);
+			print_population(GA_population, population_size);
 
 			//get BEST
 			best_solution_index = get_index_of_BEST(GA_population,
@@ -840,7 +925,7 @@ void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 
 	for (uint8 i = 0; i < NR_ITERATIONS; i++) {
 
-		printf("\n==========#Iteration  %d#===========", i);
+		//printf("\n==========#Iteration  %d#===========", i);
 
 		copy_individual(&neighbor_individual, &current_individual);
 
@@ -860,7 +945,7 @@ void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 		if (current_individual.fitness_value < MIN_fitness) {
 			MIN_fitness = current_individual.fitness_value;
 			copy_individual(&best_individual, &current_individual);
-
+			printf("\n==========#Iteration  %d#===========", i);
 			print_individual(neighbor_individual);
 		}
 	}
