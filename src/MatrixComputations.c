@@ -155,11 +155,41 @@ void add_submatrix(gsl_matrix* R, gsl_matrix* sub_matrix, uint8 index1, uint8 in
 /*=========================================*/
 /*This function delete Intercept column from the model after it adds Intercept to all columns*/
 /*=========================================*/
-void add_intercept(gsl_matrix* R)
+gsl_matrix* add_intercept(gsl_matrix* R)
 {
 
-	delete_column(R, 0);
-	gsl_matrix_add_constant(R, 1);
+	//delete_column(R, 0);
+
+	gsl_vector* intercept_column = gsl_vector_alloc(R->size1);
+
+    gsl_vector* temp_column = gsl_vector_alloc(R->size1);
+
+	gsl_matrix* temp_matix = gsl_matrix_alloc(R->size1, R->size2+1);
+
+	gsl_vector_set_all(intercept_column, 1);
+
+	gsl_matrix_set_col(temp_matix, 0, intercept_column);
+
+	for( uint8 i = 1; i < temp_matix->size2; i++){
+
+		gsl_matrix_get_col(temp_column, R, i-1);
+
+		gsl_matrix_set_col(temp_matix, i, temp_column );
+	}
+
+	return temp_matix;
+
+
+/*	gsl_matrix_memcpy(R, temp_matix);*/
+
+
+/*	gsl_vector* intercept_column = gsl_vector_alloc(R->size1);
+
+	gsl_matrix_get_col(intercept_column, R, 0);
+
+	gsl_vector_add_constant(intercept_column, 1);
+
+	gsl_matrix_set_col(R, 0, intercept_column);*/
 
 }
 

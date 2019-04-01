@@ -53,7 +53,7 @@ void set_A_matrix(T_FILE_DIM* file_dim) {
 
 	if(intercept)
 	{
-		add_intercept(main_model_A);
+		//add_intercept(main_model_A);
 	}
 }
 
@@ -138,27 +138,37 @@ double RSS_compute(gsl_matrix* QR) {
 
 	double RSS = INIT;
 
-	gsl_vector * x = gsl_vector_alloc(QR->size2);
-	gsl_vector * E = gsl_vector_alloc(QR->size1);
-	gsl_vector* tau = gsl_vector_alloc(MIN_VALUE(QR->size1, QR->size2));
-	gsl_matrix* temp_QR = gsl_matrix_alloc(QR->size1, QR->size2);
+	gsl_matrix* intercept_QR = gsl_matrix_alloc(QR->size1, QR->size2+1);
 
-	if (QR->size2 > 0) {
+	if (QR->size1 != 0 && QR->size2 != 0) {
 
-		gsl_matrix_memcpy(temp_QR, QR);
+		if (intercept) {
 
-		gsl_linalg_QR_decomp(temp_QR, tau);
+			intercept_QR = add_intercept(QR);
+		}
+		else
+		{
+			intercept_QR->size2--;
+			gsl_matrix_memcpy(intercept_QR, QR);
+		}
 
-		gsl_linalg_QR_lssolve(temp_QR, tau, solution_y, x, E);
+		gsl_vector * x = gsl_vector_alloc(intercept_QR->size2);
+		gsl_vector * E = gsl_vector_alloc(intercept_QR->size1);
+		gsl_vector* tau = gsl_vector_alloc(
+				MIN_VALUE(intercept_QR->size1, intercept_QR->size2));
 
-		/* The least squares solution minimizes the Euclidean norm of the residual, ||Ax - b||.*/
+		gsl_linalg_QR_decomp(intercept_QR, tau);
+
+		gsl_linalg_QR_lssolve(intercept_QR, tau, solution_y, x, E);
+
+		//The least squares solution minimizes the Euclidean norm of the residual, ||Ax - b||.
 		RSS = euclidean_norm(E);
 
+		gsl_vector_free(x);
+		gsl_vector_free(E);
+		gsl_vector_free(tau);
+		gsl_matrix_free(intercept_QR);
 	}
-	gsl_vector_free(x);
-	gsl_vector_free(E);
-	gsl_vector_free(tau);
-	gsl_matrix_free(temp_QR);
 
 	return (RSS);
 }

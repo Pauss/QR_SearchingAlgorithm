@@ -28,7 +28,7 @@ boolean product_matrix(gsl_matrix* M, gsl_matrix* M2, gsl_matrix* result);
 void    add_submatrix(gsl_matrix* R, gsl_matrix* sub_matrix, uint8 index1, uint8 index2);
 void    delete_column(gsl_matrix* R, uint8 col);
 double  euclidean_norm(gsl_vector* V);
-void 	add_intercept(gsl_matrix* R);
+gsl_matrix* 	add_intercept(gsl_matrix* R);
 
 /*=========================================*/
 #endif
