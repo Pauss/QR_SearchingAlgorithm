@@ -25,7 +25,7 @@ int main()
 {
 
 	clock_t begin = clock();
-	srand(time(NULL)*1000);
+	srand(time(NULL)*SEED_RAND);
 
 	T_FILE_DIM* file_dim;
  	T_FILE_ERRORS check_file = file_no_error;
@@ -49,6 +49,7 @@ int main()
 		 * 3. Even more nice strategy using GA (Genetic Algorithm)*/
 
 		T_SEARCH_STRATEGIES strategy = naive_search;//GA_search; naive_search
+
 		//efficient method relevant
 		T_EFFICIENT_METHOD columns_method = columns_removal;//columns_transitions; columns_removal;
 

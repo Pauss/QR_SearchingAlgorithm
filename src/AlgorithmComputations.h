@@ -14,7 +14,6 @@
 #define MAX_VALUE(X, Y)  ((X) < (Y) ? (Y) : (X))
 #define ABS_VALUE(X) ((X) < 0 ? -(X) : (X))
 #define NR_ELEMENTS 2u
-
 /*=========================================*/
 /*enumerations*/
 

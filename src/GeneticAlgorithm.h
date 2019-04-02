@@ -23,10 +23,10 @@
 /*===========Genetic Algorithm=============*/
 #define PERCENTAJE_OF_CHROMOSOMES 70u
 #define PERCENTAJE_OF_GENES 55u//55u
-#define CONVERGE 30u
+#define CONVERGE 25u
 #define MAX_FITNESS 100000
 /*==========Tournament Selection===========*/
-#define PERCENTAJE_OF_TOURNAMENT_K 30u
+#define PERCENTAJE_OF_TOURNAMENT_K 40u
 /*==========Simulated Annealing============*/
 #define TEMP 100000 //10000 100000 100000
 #define COOLING_RATE 0.86//0.003 0.98 0.330 0.729 0.85

@@ -13,6 +13,7 @@
 #include <sys/time.h>
 /*=========================================*/
 /*define*/
+#define SEED_RAND 1000u
 /*=========================================*/
 /*enumerations*/
 typedef enum

@@ -812,7 +812,7 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 	//generate population
 	generate_population(GA_population, population_size, model_size_n, model_size_k);
 
-	//apply fitness to all individuals
+	//get fitness of all individuals
 	for(uint8 i = 0 ;i < population_size; i++){
 		fitness_func(&GA_population[i], model_size_n, model_size_k, &result);
 	}
@@ -859,7 +859,7 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 						&result);
 			}
 
-			print_population(GA_population, population_size);
+			//print_population(GA_population, population_size);
 
 			//get BEST
 			best_solution_index = get_index_of_BEST(GA_population,
@@ -925,8 +925,6 @@ void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 	print_individual(current_individual);
 
 	for (uint8 i = 0; i < NR_ITERATIONS; i++) {
-
-		//printf("\n==========#Iteration  %d#===========", i);
 
 		copy_individual(&neighbor_individual, &current_individual);
 
