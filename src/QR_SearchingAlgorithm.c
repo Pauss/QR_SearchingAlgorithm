@@ -48,15 +48,15 @@ int main()
 		 * 2. Efficient search with QR decomposition applied only on first step. Save some time tho..
 		 * 3. Even more nice strategy using GA (Genetic Algorithm)*/
 
-		T_SEARCH_STRATEGIES strategy = naive_search;//GA_search; naive_search
+		T_SEARCH_STRATEGIES strategy = GA_SA;//GA_search; naive_search //GA_SA // efficient_search
 
 		//efficient method relevant
-		T_EFFICIENT_METHOD columns_method = columns_removal;//columns_transitions; columns_removal;
+		T_EFFICIENT_METHOD columns_method = columns_transitions;//columns_transitions; columns_removal;
 
 		//GA relevant
-		T_SELECTION_METHOD selection_method = roulette_wheel;  //tournament; roulette_wheel
-		T_OPERATOR_METHOD operator1 = interchanging_abs; //flip //interchanging; interchanging_abs; reversing
-		T_OPERATOR_METHOD operator2 = _1point; //_1point; uniform; RRC; _1point_simple; no_operator
+		T_SELECTION_METHOD selection_method = tournament;  //tournament; roulette_wheel
+		T_OPERATOR_METHOD operator1 = flip; //flip //interchanging; interchanging_abs; reversing
+		T_OPERATOR_METHOD operator2 = RRC; //_1point; uniform; RRC; _1point_simple; no_operator
 		intercept = installed; //installed //not_installed
 
 		file_dim = get_file_dimensions();
@@ -64,51 +64,47 @@ int main()
 		if (NULL != file_dim) {
 			set_y_vector(file_dim);
 			set_A_matrix(file_dim);
-		}
 
-		switch(strategy)
-		{
-		case naive_search:{
+			switch(strategy)
+			{
+			case naive_search:{
 
-			printf("Performing Naive Search\n");
+				printf("Performing Naive Search\n");
 
-			if (NULL != file_dim) {
 				naive_alg();
 
+				break;
 			}
-			break;
-		}
-		case efficient_search:{
+			case efficient_search:{
 
-			printf("Performing Efficient Search\n");
+				printf("Performing Efficient Search\n");
 
-			if (NULL != file_dim) {
 				efficient_alg(columns_method);
-			}
-			break;
-		}
-		case GA_search:{
-			printf("Performing GA Search\n");
 
-			if (NULL != file_dim) {
+				break;
+			}
+			case GA_search:{
+				printf("Performing GA Search\n");
+
 				GA_naive_alg(selection_method, operator1, operator2);
+
+				break;
 			}
-			break;
-		}
-		case GA_SA:{
-			printf("Performing GA Simulated Annealing Search\n");
-			if (NULL != file_dim) {
+			case GA_SA:{
+				printf("Performing GA Simulated Annealing Search\n");
+
 				GA_simulated_annealing(operator1, operator2);
+
+				break;
 			}
-			break;
-		}
-		default: {
-			/*TODO*/
-			break;
-		}
+			default: {
+				/*TODO*/
+				break;
+			}
+
+			}
 
 		}
-
 
 	}
 	else

@@ -4,6 +4,7 @@
 /*=========================================*/
 /*include*/
 #include "Types.h"
+#include "Config.h"
 #include "MatrixComputations.h"
 #include "AlgorithmComputations.h"
 #include "GeneticAlgorithm.h"

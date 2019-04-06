@@ -24,8 +24,8 @@ typedef enum
 /*typedef*/
 typedef struct
 {
-	uint8 lines;
-	uint8 columns;
+	uint16 lines;
+	uint16 columns;
 	double** matrix;
 
 }T_FILE_DIM;

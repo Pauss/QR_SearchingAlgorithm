@@ -36,8 +36,8 @@ void convert_to_gsl(T_FILE_DIM* file_dim, gsl_matrix *M) {
 void print_matrix(gsl_matrix *M) {
 
 	printf("\n");
-	for (uint8 i = 0; i < M->size1; i++) {
-		for (uint8 j = 0; j < M->size2; j++) {
+	for (uint16 i = 0; i < M->size1; i++) {
+		for (uint16 j = 0; j < M->size2; j++) {
 			printf("m(%d,%d) = %f\t", i, j, gsl_matrix_get(M, i, j));
 		}
 		printf("\n");
@@ -51,7 +51,7 @@ void print_matrix(gsl_matrix *M) {
 void print_vector (gsl_vector *V) {
 
 	printf("\n");
-	for (uint8 i = 0; i < V->size; i++) {
+	for (uint16 i = 0; i < V->size; i++) {
 
 			printf("v(%d) = %f ", i, gsl_vector_get(V, i));
 	}
@@ -68,9 +68,9 @@ boolean product_matrix_vector(gsl_matrix* M, gsl_vector* v, gsl_vector* result) 
 		return FALSE;
 
 	} else {
-		for (uint8 i = 0; i < M->size1; i++) {
+		for (uint16 i = 0; i < M->size1; i++) {
 			double S = 0;
-			for (uint8 j = 0; j < M->size2; j++) {
+			for (uint16 j = 0; j < M->size2; j++) {
 
 				S += (double) gsl_matrix_get(M, i, j) * gsl_vector_get(v, j);
 			}
@@ -98,7 +98,7 @@ boolean product_matrix(gsl_matrix* M, gsl_matrix* M2, gsl_matrix* result) {
 		return FALSE;
 
 	} else {
-		for (uint8 i = 0; i < M2->size2; i++) {
+		for (uint16 i = 0; i < M2->size2; i++) {
 			gsl_matrix_get_col(column, M2, i);
 
 			product_matrix_vector(M, column, product);
@@ -122,7 +122,7 @@ double euclidean_norm(gsl_vector* V) {
 
 	double sum = INIT;
 
-	for (uint8 i = INIT; i < V->size; i++) {
+	for (uint16 i = INIT; i < V->size; i++) {
 		sum += pow((gsl_vector_get(V, i)), SCALE_2);
 
 	}
@@ -139,8 +139,8 @@ void add_submatrix(gsl_matrix* R, gsl_matrix* sub_matrix, uint8 index1, uint8 in
 {
 	double l_element;
 
-	for (uint8 i = 0; i < sub_matrix->size1; i++) {
-		for (uint8 j = 0; j < sub_matrix->size2; j++) {
+	for (uint16 i = 0; i < sub_matrix->size1; i++) {
+		for (uint16 j = 0; j < sub_matrix->size2; j++) {
 
 			l_element = gsl_matrix_get(sub_matrix, i, j);
 
@@ -166,7 +166,7 @@ gsl_matrix* add_intercept(gsl_matrix* R)
 
 	gsl_matrix_set_col(temp_matix, 0, intercept_column);
 
-	for( uint8 i = 1; i < temp_matix->size2; i++){
+	for( uint16 i = 1; i < temp_matix->size2; i++){
 
 		gsl_matrix_get_col(temp_column, R, i-1);
 
@@ -180,7 +180,7 @@ gsl_matrix* add_intercept(gsl_matrix* R)
 /*=========================================*/
 /*This function delete a column from a given matrix*/
 /*=========================================*/
-void delete_column(gsl_matrix* R, uint8 col) {
+void delete_column(gsl_matrix* R, uint16 col) {
 
 	gsl_matrix* l_matrix = gsl_matrix_alloc(R->size1, R->size2 - 1);
 	gsl_vector* l_vector = gsl_vector_alloc(R->size1);
@@ -195,14 +195,14 @@ void delete_column(gsl_matrix* R, uint8 col) {
 
 		{
 
-			for (uint8 i = 0; i < col; i++) {
+			for (uint16 i = 0; i < col; i++) {
 				gsl_matrix_get_col(l_vector, R, i);
 				gsl_matrix_set_col(l_matrix, i, l_vector);
 			}
 
 		}
 
-		for (uint8 i = col + 1; i < R->size2; i++) {
+		for (uint16 i = col + 1; i < R->size2; i++) {
 			gsl_matrix_get_col(l_vector, R, i);
 			gsl_matrix_set_col(l_matrix, i - 1, l_vector);
 		}

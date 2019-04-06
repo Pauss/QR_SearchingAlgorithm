@@ -20,22 +20,6 @@
 #include <time.h>
 /*=========================================*/
 /*define*/
-/*===========Genetic Algorithm=============*/
-#define PERCENTAJE_OF_CHROMOSOMES 70u
-#define PERCENTAJE_OF_GENES 55u//55u
-#define CONVERGE 25u
-#define MAX_FITNESS 100000
-/*==========Tournament Selection===========*/
-#define PERCENTAJE_OF_TOURNAMENT_K 40u
-/*==========Simulated Annealing============*/
-#define TEMP 100000 //10000 100000 100000
-#define COOLING_RATE 0.86//0.003 0.98 0.330 0.729 0.85
-#define NR_ITERATIONS 200u
-/*================Crossover================*/
-#define REFERENCE_PROBABILITY 0.5
-#define NR_OF_ATTEMPTS 10u
-/*macro definition function*/
-#define PERCENTAJE(x, y) ( ((x) > 0 && (y) > 0) ? ((float)(x)/100) * (y) : 0)
 /*=========================================*/
 /*enumerations*/
 
@@ -61,6 +45,17 @@ typedef enum
 	no_operator = 8u
 }T_OPERATOR_METHOD;
 
+typedef enum
+{
+	data_no_error = 0,
+	data_index_out_of_range,
+	data_nr_of_columns_0,
+	data_nr_of_columns_high,
+	data_nr_of_individuals_0,
+	data_nr_of_individuals_high
+
+}DATA_ERRORS;
+
 /*=========================================*/
 /*typedef*/
 
@@ -75,9 +70,9 @@ typedef struct{
 }T_INDIVIDUAL;
 /*=========================================*/
 /*external functions*/
-boolean get_random_model(gsl_vector* my_random_model, uint8 n, uint8 size_A);
-boolean criterion (double RSS, uint8 n, uint8 k, double* result);
-void fitness_func(T_INDIVIDUAL* individual, uint8 model_size_n, uint8 model_size_k, double* result);
+boolean get_random_model(gsl_vector* my_random_model, uint16 n, uint16 size_A);
+boolean criterion (double RSS, uint16 n, uint16 k, double* result);
+void fitness_func(T_INDIVIDUAL* individual, uint16 model_size_n, uint16 model_size_k, double* result);
 void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2);
 void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2);
 /*=========================================*/

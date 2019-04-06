@@ -66,7 +66,7 @@ static boolean get_dimension_file(void) {
 
 	int8 *l_line = (int8 *) malloc(sizeof(int8) * MAX_LINE);
 	boolean l_inword = FALSE;
-	uint8 curent_columns = INIT;
+	uint16 curent_columns = INIT;
 
 	file_dimensions.columns = INIT;
 
@@ -123,9 +123,9 @@ static boolean get_dimension_file(void) {
 static boolean get_matrix_from_file(void) {
 
 	/*line index*/
-	uint8 i = INIT;
+	uint16 i = INIT;
 	/*column index*/
-	uint8 j = INIT;
+	uint16 j = INIT;
 	char* line1 = (char*) malloc(sizeof(char) * MAX_LINE);
 
 	/*set pointer to the start of file*/
@@ -183,7 +183,7 @@ T_FILE_ERRORS fileIsValid(int8* name_file) {
 	/* dynamic memory allocation for the matrix
 	 * in case there is a big amount of data to compute*/
 	file_dimensions.matrix = malloc((file_dimensions.lines) * sizeof(double*));
-	for (uint8 i = 0; i < file_dimensions.lines; ++i)
+	for (uint16 i = 0; i < file_dimensions.lines; ++i)
 		file_dimensions.matrix[i] = malloc((file_dimensions.columns) * sizeof(double));
 
 	/*populate the matrix with data from file*/
