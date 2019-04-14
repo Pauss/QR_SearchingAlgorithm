@@ -44,7 +44,8 @@ void 				 set_y_vector(T_FILE_DIM* file_dim);
 void 			     set_A_matrix(T_FILE_DIM* file_dim);
 void 			     efficient_alg(T_EFFICIENT_METHOD method);
 gsl_matrix* 		 get_A_matrix();
-gsl_matrix* 		 sub_model_matrix(gsl_vector* matrix_combination);
+gsl_matrix* 		 submodel_matrix(uint16* matrix_combination, uint16 size);
+//void 				 submodel_matrix2(void* matrix_combination, gsl_matrix* matrix_transitions);
 double 				 RSS_compute(gsl_matrix* QR);
 extern gsl_vector* solution_y;
 /*=========================================*/

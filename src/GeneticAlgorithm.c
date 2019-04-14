@@ -14,98 +14,89 @@
 /*=========================================*/
 /*private functions*/
 /*=========================================*/
-static void generate_population(T_INDIVIDUAL* GA_population, uint16 size, uint16 n, uint16 k);
-static void generate_individual(T_INDIVIDUAL* individual, uint16 n, uint16 k);
-static DATA_ERRORS convert_submodels(gsl_vector* bit_model, gsl_vector* model);
-static void build_individual (T_INDIVIDUAL* GA_individual, gsl_vector* rand_model, uint16 columns);
-static void new_population_computed(T_INDIVIDUAL* temp_population, uint16 new_size, uint16 n, T_OPERATOR_METHOD op);
+static void generate_population(T_INDIVIDUAL2* GA_population, uint16 size, uint16 n, uint16 k);
+static void generate_individual(T_INDIVIDUAL2* individual, uint16 n, uint16 k);
+static DATA_ERRORS convert_submodels(uint8* bit_model, uint16* model, uint16* size);
+static void build_individual (T_INDIVIDUAL2* GA_individual, uint8* rand_model, uint16 columns);
+static void new_population_computed(T_INDIVIDUAL2* temp_population, uint16 new_size, uint16 n, T_OPERATOR_METHOD op);
 
-static void copy_individual(T_INDIVIDUAL* dest, T_INDIVIDUAL* src);
-static void copy_individual_into_population(T_INDIVIDUAL* dest, T_INDIVIDUAL* src, uint16 index1,uint16 index2);
-static void copy_population(T_INDIVIDUAL* dest, T_INDIVIDUAL* src, uint16 new_size);
+static void copy_individual(T_INDIVIDUAL2* dest, T_INDIVIDUAL2* src);
+static void copy_individual_into_population(T_INDIVIDUAL2* dest, T_INDIVIDUAL2* src, uint16 index1,uint16 index2);
+static void copy_population(T_INDIVIDUAL2* dest, T_INDIVIDUAL2* src, uint16 new_size);
 
-static void probability_selection(T_INDIVIDUAL* population, uint16 size);
-static void population_selected(T_INDIVIDUAL* population,
-		T_INDIVIDUAL* temp_population, uint16 size, uint16* new_size);
-static void selection_roulette_wheel(T_INDIVIDUAL* population, uint16* size, uint16 model_size_n);
+static void probability_selection(T_INDIVIDUAL2* population, uint16 size);
+static void population_selected(T_INDIVIDUAL2* population,
+		T_INDIVIDUAL2* temp_population, uint16 size, uint16* new_size);
+static void selection_roulette_wheel(T_INDIVIDUAL2* population, uint16* size, uint16 model_size_n);
 
-static DATA_ERRORS shuffle_array(T_INDIVIDUAL* population, uint16 size);
-static void selection_tournament(T_INDIVIDUAL* population, uint16 size, uint16 k);
+static DATA_ERRORS shuffle_array(T_INDIVIDUAL2* population, uint16 size);
+static void selection_tournament(T_INDIVIDUAL2* population, uint16 size, uint16 k);
 
-static boolean neighbor_acceptance(T_INDIVIDUAL* current, T_INDIVIDUAL* neighbor, double temperature);
+static boolean neighbor_acceptance(T_INDIVIDUAL2* current, T_INDIVIDUAL2* neighbor, double temperature);
 
-static void crossover_1point_simple(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2);
-static void crossover_1point(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2);
-static void crossover_uniform(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2);
-static void crossover_RRC(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2);
+static void crossover_1point_simple(uint8* bit_individ_1, uint8 *bit_individ_2, uint16 size);
+static void crossover_1point(uint8* bit_individ_1, uint8 *bit_individ_2, uint16 size);
+static void crossover_uniform(uint8* bit_individ_1, uint8 *bit_individ_2, uint16 size);
+static void crossover_RRC(uint8* bit_individ_1, uint8 *bit_individ_2, uint16 size);
 
-static void mutation_flip(gsl_vector* bit_columns);
-static void mutation_interchanging_abs(gsl_vector* bit_columns);
-static void mutation_interchanging (gsl_vector* bit_columns);
-static void mutation_reversing (gsl_vector* bit_columns);
+static void mutation_flip(uint8* bit_columns, uint16 size);
+static void mutation_interchanging_abs(uint8* bit_columns, uint16 size);
+static void mutation_interchanging (uint8* bit_columns, uint16 size);
+static void mutation_reversing (uint8* bit_columns, uint16 size);
 
-static uint8 get_index_of_BEST(T_INDIVIDUAL* population, uint16 size);
-static uint8 get_number_locus(gsl_vector *bit_individ);
+static uint16 get_index_of_BEST(T_INDIVIDUAL2* population, uint16 size);
+static uint16 get_number_locus(uint8 *bit_individ, uint16 size);
 
-static void print_individual(T_INDIVIDUAL* individual);
-static void print_population(T_INDIVIDUAL* population, uint16 size);
+static void print_individual(T_INDIVIDUAL2* individual);
+static void print_population(T_INDIVIDUAL2* population, uint16 size);
 
 static uint16 get_nr_genes(uint16 columns);
 
 /*=========================================*/
 /*This function compute a possible subset of ModelMatrix*/
 /*=========================================*/
-boolean get_random_model(gsl_vector* my_random_model, uint16 n, uint16 size_A) {
-	uint16 i = n;
+void get_random_model(uint8* my_random_model, uint16 k, uint16 n) {
 
-	gsl_vector_set_zero(my_random_model);
+	uint16 i = k;
 
-	if (n >= my_random_model->size) {
-		return FALSE;
-	} else {
-		while (i) {
+	while (i) {
 
-			uint8 r = rand() % (size_A);
+		uint16 r = rand() % (n);
 
-			//for getting n random columns
-			while (gsl_vector_get(my_random_model, r) == 1) {
-				r = rand() % (size_A);
-			}
-
-			gsl_vector_set(my_random_model, r, 1);
-			i--;
+		//for getting n random columns
+		while (my_random_model[r] == 1) {
+			r = rand() % (n);
 		}
-	}
 
-	return TRUE;
+		my_random_model[r] = 1;
+		i--;
+	}
 
 }
 
-static DATA_ERRORS convert_submodels(gsl_vector* bit_model, gsl_vector* model) {
+static DATA_ERRORS convert_submodels(uint8* bit_model, uint16* model, uint16* size) {
 	uint16 found = 0;
 	DATA_ERRORS ret_val = data_no_error;
 
-	if (bit_model->size == 0) {
+	if (*size == 0) {
 
 		ret_val = data_nr_of_columns_0;
 	}
 
 	else {
 
-		model->size = bit_model->size;
-		gsl_vector_set_zero(model);
-
-		for (uint8 j = 0; j < bit_model->size; j++) {
+		for (uint8 j = 0; j < *size; j++) {
 			//if column was selected for sub-model set it with column number
-			if (gsl_vector_get(bit_model, j) == 1) {
-
-				gsl_vector_set(model, found, j);
+			if (bit_model[j] == 1) {
+				model[found] = j;
 				found++;
 			}
 		}
 
 		if (found) {
-			model->size = found;
+
+			*size = found;
+			//model = realloc(model, sizeof(uint16) * found);
 		}
 
 		else {
@@ -131,7 +122,7 @@ boolean criterion(double RSS, uint16 n, uint16 k, double* result) {
 
 	static double best_s = MAX_FITNESS;
 
-	if (n > 0 && RSS > 0) {
+	if (n > 0 && RSS > 0 && k > 0) {
 
 		*result = (double) (n + n * log(2 * M_PI) + n * log(RSS / n)
 				+ 2 * (k + 1)); //(K+1)
@@ -152,77 +143,83 @@ boolean criterion(double RSS, uint16 n, uint16 k, double* result) {
 /*=========================================*/
 /*This function build and assign to an individual all corresponding values*/
 /*=========================================*/
-static void build_individual (T_INDIVIDUAL* GA_individual, gsl_vector* rand_model, uint16 columns)
+static void build_individual (T_INDIVIDUAL2* GA_individual, uint8* rand_model, uint16 columns)
 {
 
 	DATA_ERRORS temp_error = data_no_error;
+	gsl_matrix* temp_submodel;
 
-	GA_individual->columns = gsl_vector_alloc(rand_model->size);
-	GA_individual->bit_columns = gsl_vector_alloc(rand_model->size);
-	GA_individual->submodel = gsl_matrix_alloc(columns, columns);
+	copy_vector8(GA_individual->bit_columns, rand_model, columns);
 
-	gsl_vector_memcpy(GA_individual->bit_columns, rand_model);
+	temp_error = convert_submodels(rand_model, GA_individual->columns, &columns);
 
-	temp_error = convert_submodels(rand_model, GA_individual->columns);
+	GA_individual->size = columns;
 
 	if (temp_error == data_no_error) {
-		GA_individual->submodel = sub_model_matrix(GA_individual->columns);
-		GA_individual->RSS = RSS_compute(GA_individual->submodel);
+
+
+		temp_submodel = submodel_matrix(GA_individual->columns, GA_individual->size);
+		GA_individual->RSS = RSS_compute(temp_submodel);
 		GA_individual->fitness_value = MAX_FITNESS;
 		GA_individual->selection_probability = 0;
 		GA_individual->selected = FALSE;
 	} else {
-		printf("\nBuild_individual: error: %d", temp_error);
+
 		GA_individual->fitness_value = MAX_FITNESS;
 		GA_individual->selection_probability = 0;
 		GA_individual->selected = FALSE;
-		print_individual(GA_individual);
+
 	}
+	//gsl_matrix_free(temp_submodel);
 }
 
 /*=========================================*/
 /*This function implements generation of population*/
 /*=========================================*/
-static void generate_population(T_INDIVIDUAL* GA_population, uint16 size, uint16 n, uint16 k)
+static void generate_population(T_INDIVIDUAL2* GA_population, uint16 size, uint16 n, uint16 k)
 {
-	gsl_vector* random_model = gsl_vector_alloc(n);
+	//uint8* random_model = (uint8*) calloc(n, sizeof(uint8));
 
 	//generate population
-	for (uint8 i = 0; i < size; i++) {
+	for (uint16 i = 0; i < size; i++) {
 
-		if (FALSE != get_random_model(random_model, k, n)) {
+/*		get_random_model(random_model, k, n);
 
-			build_individual(&GA_population[i], random_model, n);
+		build_individual(&GA_population[i], random_model, n);
 
-			//if size changes
-			random_model->size = n;
-		}
+		//if size changes
+		random_model = realloc(random_model, sizeof(boolean) * n);*/
 
-
+		individual_init(&GA_population[i]);
+		generate_individual(&GA_population[i], n, k);
 	}
+
+	//free(random_model);
 
 }
 
 /*=========================================*/
 /*This function implements generation of an individual*/
 /*=========================================*/
-static void generate_individual(T_INDIVIDUAL* individual, uint16 n, uint16 k)
+static void generate_individual(T_INDIVIDUAL2* individual, uint16 n, uint16 k)
 {
-	gsl_vector* random_model = gsl_vector_alloc(n);
+	uint8* random_model = (uint8*) calloc(n, sizeof(uint8));
 
-	if (FALSE != get_random_model(random_model, k, n)) {
+	if (n) {
+		get_random_model(random_model, k, n);
 
 		build_individual(individual, random_model, n);
 
 		//if size changes
-		random_model->size = n;
+		random_model = realloc(random_model, sizeof(uint8) * n);
 	}
+	free(random_model);
 }
 
 /*=========================================*/
 /*This function implements Roultte Wheel selection*/
 /*=========================================*/
-static void probability_selection(T_INDIVIDUAL* population, uint16 size) {
+static void probability_selection(T_INDIVIDUAL2* population, uint16 size) {
 	double sum_fitness = 0;
 	double sum_probabilities = 0;
 
@@ -253,25 +250,22 @@ static void probability_selection(T_INDIVIDUAL* population, uint16 size) {
 /*=========================================*/
 /*This function implements a shuffle array elements method 'Fisher–Yates shuffle*/
 /*=========================================*/
-static DATA_ERRORS shuffle_array(T_INDIVIDUAL* population, uint16 size) {
+static DATA_ERRORS shuffle_array(T_INDIVIDUAL2* population, uint16 size) {
 
 	DATA_ERRORS ret_val = data_no_error;
-	T_INDIVIDUAL temp_population[size];
+	T_INDIVIDUAL2 temp_individual;
+
+	individual_init(&temp_individual);
 
 	if (size) {
 
-		for (uint8 i = size - 1; i > 0; i--) {
-			uint8 j = rand() % i;
+		for (uint16 i = size - 1; i > 0; i--) {
+			uint16 j = rand() % i;
 
-			copy_individual_into_population(temp_population, population, j, i);
-			copy_individual_into_population(temp_population, population, i, j);
-
-			copy_individual_into_population(population, temp_population, i, i);
-			copy_individual_into_population(population, temp_population, j, j);
-
+			copy_individual(&temp_individual, &population[i]);
+			copy_individual_into_population(population, population, i, j);
+			copy_individual_into_population(population, &temp_individual, j , 0);
 		}
-
-		copy_population(population, temp_population, size);
 
 	}
 
@@ -280,18 +274,20 @@ static DATA_ERRORS shuffle_array(T_INDIVIDUAL* population, uint16 size) {
 		printf("Shuffle array: error: %d", ret_val);
 	}
 
+	individual_dealloc(&temp_individual);
+
 	return ret_val;
 }
 /*=========================================*/
 /*This function gets index of best individual, best fitness output*/
 /*=========================================*/
-static uint8 get_index_of_BEST(T_INDIVIDUAL* population, uint16 size){
+static uint16 get_index_of_BEST(T_INDIVIDUAL2* population, uint16 size){
 
 	uint16 best_index = 0;
 
 	double min = population[best_index].fitness_value;
 
-	for(uint8 index = 1; index< size; index++){
+	for(uint16 index = 1; index< size; index++){
 		if(population[index].fitness_value < min)
 		{
 			min = population[index].fitness_value;
@@ -302,11 +298,10 @@ static uint8 get_index_of_BEST(T_INDIVIDUAL* population, uint16 size){
 	return best_index;
 }
 
-
 /*=========================================*/
 /*This function implements Tournament selection*/
 /*=========================================*/
-static void selection_tournament(T_INDIVIDUAL* population, uint16 size, uint16 k) {
+static void selection_tournament(T_INDIVIDUAL2* population, uint16 size, uint16 k) {
 
 	/*Steps:
 	 * 1. Pick k random individuals from population (shuffled population)
@@ -314,19 +309,25 @@ static void selection_tournament(T_INDIVIDUAL* population, uint16 size, uint16 k
 	 * 3. repeat step 1 and 2 until selected desired number of individuals
 	 */
 
-	T_INDIVIDUAL temp_population[size];
+	T_INDIVIDUAL2 temp_population[size];
 
-	T_INDIVIDUAL pool_population[size];
+	T_INDIVIDUAL2 pool_population[size];
 
-	for (uint8 i = 0; i < size; i++) {
+	for(uint16 i = 0 ; i< size; i++)
+	{
+		individual_init(&temp_population[i]);
+		individual_init(&pool_population[i]);
+	}
+
+	for (uint16 i = 0; i < size; i++) {//size; i++) {
 		copy_population(temp_population, population, size);
 
 		if(shuffle_array(temp_population, size) == data_no_error)
 		{
 			//get best k individuals from tournament
-			uint8 index1 = get_index_of_BEST(temp_population, k);
+			uint16 index1 = get_index_of_BEST(temp_population, k);
 
-			copy_individual_into_population(pool_population, temp_population, i,
+			copy_individual_into_population(&pool_population, &temp_population, i,
 					index1);
 		}
 
@@ -334,11 +335,11 @@ static void selection_tournament(T_INDIVIDUAL* population, uint16 size, uint16 k
 
 }
 
-static void selection_roulette_wheel(T_INDIVIDUAL* population, uint16* size, uint16 model_size_n)
+static void selection_roulette_wheel(T_INDIVIDUAL2* population, uint16* size, uint16 model_size_n)
 {
 
-	T_INDIVIDUAL temp_population[*size];
-	T_INDIVIDUAL temp_pool[*size];
+	T_INDIVIDUAL2 temp_population[*size];
+	T_INDIVIDUAL2 temp_pool[*size];
 
 	uint16 temp_size = 0;
 	uint16 temp_pool_size = *size;
@@ -354,6 +355,8 @@ static void selection_roulette_wheel(T_INDIVIDUAL* population, uint16* size, uin
 		{
 			for (uint8 i = 0; i < temp_pool_size; i++) {
 				if (temp_size < *size) {
+
+					individual_init(&temp_population[temp_size]);
 					copy_individual_into_population(temp_population, temp_pool,
 							temp_size, i);
 					++temp_size;
@@ -374,19 +377,18 @@ static void selection_roulette_wheel(T_INDIVIDUAL* population, uint16* size, uin
 /*=========================================*/
 /*This function apply crossover on 2 individuals on a random single position */
 /*=========================================*/
-static void crossover_1point_simple(gsl_vector* bit_individ_1,
-		gsl_vector *bit_individ_2) {
+static void crossover_1point_simple(uint8* bit_individ_1, uint8 *bit_individ_2, uint16 size) {
 
 	uint16 r = 0, i;
 
 	while (r == 0 ) {
-		r = rand() % bit_individ_1->size;
+		r = rand() % size;
 	}
 
-	for (i = r; i < bit_individ_1->size; i++) {
-		double t = gsl_vector_get(bit_individ_1, i);
-		gsl_vector_set(bit_individ_1, i, gsl_vector_get(bit_individ_2, i));
-		gsl_vector_set(bit_individ_2, i, t);
+	for (i = r; i < size; i++) {
+		double t = bit_individ_1[i];
+		bit_individ_1[i] = bit_individ_2[i];
+		bit_individ_2[i] = t;
 	}
 
 }
@@ -394,38 +396,33 @@ static void crossover_1point_simple(gsl_vector* bit_individ_1,
 /*=========================================*/
 /*This function apply crossover on 2 individuals on a random single position but keeping parent's number of genes*/
 /*=========================================*/
-static void crossover_1point(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2) {
+static void crossover_1point(uint8* bit_individ_1, uint8 *bit_individ_2, uint16 size) {
 
-	uint16 r = 0, i, nr;
+	uint16 r = 0, i;
 	boolean condition = FALSE; //keeping same number of genes
-	nr = bit_individ_1->size;
 
 	while (condition == FALSE) {
 
-		r = rand() % (bit_individ_1->size);
+		r = rand() % (size);
 
-		bit_individ_1->size = r;
-		bit_individ_2->size = r;
-
-		if (get_number_locus(bit_individ_1)
-				== get_number_locus(bit_individ_2)) {
+		if (get_number_locus(bit_individ_1 , r)
+				== get_number_locus(bit_individ_2, r)) {
 			condition = TRUE;
 		}
 
 	}
 
-	bit_individ_1->size = nr;
-	bit_individ_2->size = nr;
-
 	if (r) {
-		for (i = r; i < bit_individ_1->size; i++) {
-			double t = gsl_vector_get(bit_individ_1, i);
-			gsl_vector_set(bit_individ_1, i, gsl_vector_get(bit_individ_2, i));
-			gsl_vector_set(bit_individ_2, i, t);
+		for (i = r; i < size; i++) {
+			double t = bit_individ_1[i];
+			bit_individ_1[i] = bit_individ_2[i];
+			bit_individ_2[i] = t;
 		}
 	} else {
 
-		gsl_vector_swap(bit_individ_1, bit_individ_2);
+
+		vector_swap(bit_individ_1, bit_individ_2, size);
+		//gsl_vector_swap(bit_individ_1, bit_individ_2);
 
 	}
 
@@ -434,20 +431,20 @@ static void crossover_1point(gsl_vector* bit_individ_1, gsl_vector *bit_individ_
 /*=========================================*/
 /*This function apply crossover on 2 individuals using uniform_crossover method*/
 /*=========================================*/
-static void crossover_uniform(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2) {
+static void crossover_uniform(uint8* bit_individ_1, uint8 *bit_individ_2, uint16 size) {
 
-	for (uint8 i = 0; i < bit_individ_1->size; i++) {
+	for (uint8 i = 0; i < size; i++) {
 
-		double temp1 = gsl_vector_get(bit_individ_1, i);
-		double temp2 = gsl_vector_get(bit_individ_2, i);
+		double temp1 = bit_individ_1[i];
+		double temp2 = bit_individ_2[i];
 
 		if (temp1 != temp2) {
 			//random number between 0 and 1
 			double r = (double) (rand() / (double) (RAND_MAX));
 
 			if (r > REFERENCE_PROBABILITY) {
-				gsl_vector_set(bit_individ_1, i, temp2);
-				gsl_vector_set(bit_individ_2, i, temp1);
+				bit_individ_1[i] = temp2;
+				bit_individ_2[i] = temp1;
 
 			}
 
@@ -461,30 +458,30 @@ static void crossover_uniform(gsl_vector* bit_individ_1, gsl_vector *bit_individ
 /*Genes that are same in both parents, are keep in both children */
 /*And the rest of them are randomly chosen between children*/
 /*=========================================*/
-static void crossover_RRC(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2) {
+static void crossover_RRC(uint8* bit_individ_1, uint8 *bit_individ_2, uint16 size) {
 
 
-	for (uint8 i = 0; i < bit_individ_1->size; i++) {
+	for (uint8 i = 0; i < size; i++) {
 
-		double temp1 = gsl_vector_get(bit_individ_1, i);
-		double temp2 = gsl_vector_get(bit_individ_2, i);
+		double temp1 = bit_individ_1[i];
+		double temp2 = bit_individ_2[i];
 
 		if (temp1 != temp2) {
 			//random number between 0 and 1
 			double r = (double) (rand() / (double) (RAND_MAX));
 
 			if (r < REFERENCE_PROBABILITY) {
-				gsl_vector_set(bit_individ_1, i, 1);
+				bit_individ_1[i] = 1;
 			} else {
-				gsl_vector_set(bit_individ_1, i, 0);
+				bit_individ_1[i] = 0;
 			}
 
 			r = (double) (rand() / (double) (RAND_MAX));
 
 			if (r < REFERENCE_PROBABILITY) {
-				gsl_vector_set(bit_individ_2, i, 1);
+				bit_individ_2[i] = 1;
 			} else {
-				gsl_vector_set(bit_individ_2, i, 0);
+				bit_individ_2[i] = 0;
 			}
 
 		}
@@ -495,10 +492,10 @@ static void crossover_RRC(gsl_vector* bit_individ_1, gsl_vector *bit_individ_2) 
 /*=========================================*/
 /*This function counts number of bits set on 1*/
 /*=========================================*/
-static uint8 get_number_locus(gsl_vector *bit_individ) {
+static uint16 get_number_locus(uint8 *bit_individ, uint16 size) {
 	uint16 i, nr = 0;
-	for (i = 0; i < bit_individ->size; i++) {
-		if (gsl_vector_get(bit_individ, i) == 1)
+	for (i = 0; i < size; i++) {
+		if (bit_individ[i] == 1)
 			nr++;
 	}
 
@@ -508,83 +505,82 @@ static uint8 get_number_locus(gsl_vector *bit_individ) {
 /*=========================================*/
 /*This function apply mutation on individual on a n random positions, n also randomly chosen*/
 /*=========================================*/
-static void mutation_flip(gsl_vector* bit_columns) {
+static void mutation_flip(uint8* bit_columns, uint16 size) {
 	// get n random positions and change its value : if it's 0 become 1, and reverse;
 
-	gsl_vector* aux = gsl_vector_alloc(bit_columns->size);
+	uint8* aux = (uint8*) calloc(size, sizeof(uint8));
 
 	uint16 n_random_positions = 0;
 
 	while (n_random_positions == 0) {
-		n_random_positions = rand() % (bit_columns->size);
+		n_random_positions = rand() % (size);
 	}
 
 	while (n_random_positions) {
-		gsl_vector_memcpy(aux, bit_columns);
-		uint8 r = rand() % (aux->size);
-		uint8 temp_el = gsl_vector_get(aux, r);
+		copy_vector8(aux, bit_columns, size);
+		uint8 r = rand() % (size);
+		uint8 temp_el = aux[r];
 		temp_el ^= 1UL;
-		gsl_vector_set(aux, r, temp_el);
-
+		aux[r] = temp_el;
 		n_random_positions--;
 
 	}
 
-	gsl_vector_memcpy(bit_columns, aux);
-	gsl_vector_free(aux);
+	copy_vector8(bit_columns, aux, size);
+	free(aux);
 }
 
 
 /*=========================================*/
 /*This function apply mutation on individuals on a 2 random positions, by switching it's elements*/
 /*=========================================*/
-static void mutation_interchanging_abs(gsl_vector* bit_columns) {
+static void mutation_interchanging_abs(uint8* bit_columns, uint16 size) {
 
 	uint16 pos1 = 0;
 	uint16 pos2 = 0;
 
-	while((pos1 == pos2) || (gsl_vector_get(bit_columns, pos1) == gsl_vector_get(bit_columns, pos2)))
+	while((pos1 == pos2) || (bit_columns[pos1] == bit_columns[pos2]))
 	{
-		pos1 = rand() % (bit_columns->size);
-		pos2 = rand() % (bit_columns->size);
+		pos1 = rand() % (size);
+		pos2 = rand() % (size);
 
 	}
 
-	gsl_vector_swap_elements(bit_columns, pos1, pos2);
+	vector_swap_elements(bit_columns, pos1, pos2);
 }
 
 /*=========================================*/
 /*This function apply mutation on individuals on a 2 random positions, by switchig it's elements*/
 /*=========================================*/
-static void mutation_interchanging (gsl_vector* bit_columns) {
+static void mutation_interchanging (uint8* bit_columns, uint16 size) {
 
 	uint16 pos1 = 0;
 	uint16 pos2 = 0;
 
 	while((pos1 == pos2))
 	{
-		pos1 = rand() % (bit_columns->size);
-		pos2 = rand() % (bit_columns->size);
+		pos1 = rand() % (size);
+		pos2 = rand() % (size);
 
 	}
 
-	gsl_vector_swap_elements(bit_columns, pos1, pos2);
+	vector_swap_elements(bit_columns, pos1, pos2);
 }
 
 /*=========================================*/
 /*This function apply mutation on individuals that are after one random position, by reversing it's bit value*/
 /*=========================================*/
-static void mutation_reversing (gsl_vector* bit_columns) {
+static void mutation_reversing (uint8* bit_columns, uint16 size) {
 
 	uint16 pos = 0;
 	uint8 temp_el = 0;
 
-	pos = rand() % (bit_columns->size - 1);
+	pos = rand() % (size - 1);
 
-	for (uint8 i = pos + 1; i < bit_columns->size; i++) {
-		temp_el = gsl_vector_get(bit_columns, i);
+	for (uint8 i = pos + 1; i < size; i++) {
+		temp_el = bit_columns[i];
 		temp_el ^= 1UL;
-		gsl_vector_set(bit_columns, i, temp_el);
+		bit_columns[i] = temp_el;
 	}
 }
 
@@ -592,37 +588,34 @@ static void mutation_reversing (gsl_vector* bit_columns) {
 /*=========================================*/
 /*This function compute new population using selection method*/
 /*=========================================*/
-static void new_population_computed(T_INDIVIDUAL* temp_population, uint16 new_size, uint16 n, T_OPERATOR_METHOD op)
+static void new_population_computed(T_INDIVIDUAL2* temp_population, uint16 new_size, uint16 columns, T_OPERATOR_METHOD op)
 {
 
-	gsl_vector* temp_mutation;
-	gsl_vector* temp_crossover1;
-	gsl_vector* temp_crossover2;
+	uint8* temp_mutation = (uint8*) calloc(columns, sizeof(uint8));
+	uint8* temp_crossover1 = (uint8*) calloc(columns, sizeof(uint8));
+	uint8* temp_crossover2 = (uint8*) calloc(columns, sizeof(uint8));
 
 	if (op < _1point_simple) {
 
 
 		//Apply mutation on selected individuals
-		for (uint8 i = 0; i < new_size; i++) {
-			temp_mutation = gsl_vector_alloc(
-					temp_population[i].bit_columns->size);
+		for (uint16 i = 0; i < new_size; i++) {
 
-			gsl_vector_memcpy(temp_mutation, temp_population[i].bit_columns);
+			copy_vector8(temp_mutation, temp_population[i].bit_columns, columns);
 
 			switch (op) {
-			case flip: {mutation_flip(temp_mutation);break;}
+			case flip: {mutation_flip(temp_mutation, columns);break;}
 
-			case interchanging: {mutation_interchanging(temp_mutation);break;}
+			case interchanging: {mutation_interchanging(temp_mutation, columns);break;}
 
-			case interchanging_abs: {mutation_interchanging_abs(temp_mutation);break;}
+			case interchanging_abs: {mutation_interchanging_abs(temp_mutation, columns);break;}
 
-			case reversing: {mutation_reversing(temp_mutation);break;}
+			case reversing: {mutation_reversing(temp_mutation, columns);break;}
 
 			default:break;}
 
-			build_individual(&temp_population[i], temp_mutation, n);
+			build_individual(&temp_population[i], temp_mutation, columns);
 
-			gsl_vector_free(temp_mutation);
 
 		}
 
@@ -639,36 +632,26 @@ static void new_population_computed(T_INDIVIDUAL* temp_population, uint16 new_si
 		{
 			//Apply crossover on selected individuals
 			for (uint8 i = 0; i < new_size; i += 2) {
-				temp_crossover1 = gsl_vector_alloc(
-						temp_population[i].bit_columns->size);
 
-				temp_crossover2 = gsl_vector_alloc(
-						temp_population[i + 1].bit_columns->size);
-
-				gsl_vector_memcpy(temp_crossover1, temp_population[i].bit_columns);
-				gsl_vector_memcpy(temp_crossover2,
-						temp_population[i + 1].bit_columns);
-
-
+				copy_vector8(temp_crossover1, temp_population[i].bit_columns, columns);
+				copy_vector8(temp_crossover2, temp_population[i+1].bit_columns, columns);
 
 				switch (op) {
 
-				case _1point_simple: {crossover_1point_simple(temp_crossover1, temp_crossover2);break;}
+				case _1point_simple: {crossover_1point_simple(temp_crossover1, temp_crossover2, columns);break;}
 
-				case _1point: {crossover_1point(temp_crossover1, temp_crossover2);break;}
+				case _1point: {crossover_1point(temp_crossover1, temp_crossover2, columns);break;}
 
-				case RRC: {crossover_RRC(temp_crossover1, temp_crossover2);break;}
+				case RRC: {crossover_RRC(temp_crossover1, temp_crossover2, columns);break;}
 
-				case reversing: {crossover_uniform(temp_crossover1, temp_crossover2);break;}
+				case uniform: {crossover_uniform(temp_crossover1, temp_crossover2, columns);break;}
 
 				default:break;}
 
-				build_individual(&temp_population[i], temp_crossover1, n);
 
-				build_individual(&temp_population[i + 1], temp_crossover2, n);
+				build_individual(&temp_population[i], temp_crossover1, columns);
+				build_individual(&temp_population[i + 1], temp_crossover2, columns);
 
-				gsl_vector_free(temp_crossover1);
-				gsl_vector_free(temp_crossover2);
 
 			}
 		}
@@ -679,84 +662,83 @@ static void new_population_computed(T_INDIVIDUAL* temp_population, uint16 new_si
 		/*nothing to do*/
 	}
 
+	free(temp_mutation);
+	free(temp_crossover1);
+	free(temp_crossover2);
+
 }
 
 /*=========================================*/
 /*This function copy values of a source population into destination population */
 /*=========================================*/
-static void copy_population(T_INDIVIDUAL* dest, T_INDIVIDUAL* src, uint16 new_size) {
+static void copy_population(T_INDIVIDUAL2* dest, T_INDIVIDUAL2* src, uint16 new_size) {
 	for (uint8 i = 0; i < new_size; i++) {
+
+		dest[i].size = src[i].size;
+		dest[i].size_bit = src[i].size_bit;
 		dest[i].RSS = src[i].RSS;
 		dest[i].fitness_value = src[i].fitness_value;
 		dest[i].selected = src[i].selected;
 		dest[i].selection_probability = src[i].selection_probability;
 
-		dest[i].columns = gsl_vector_alloc(src[i].columns->size);
-		dest[i].bit_columns = gsl_vector_alloc(src[i].bit_columns->size);
-		dest[i].submodel = gsl_matrix_alloc(src[i].submodel->size1,
-				src[i].submodel->size2);
-
-		gsl_vector_memcpy(dest[i].columns, src[i].columns);
-		gsl_vector_memcpy(dest[i].bit_columns, src[i].bit_columns);
-		gsl_matrix_memcpy(dest[i].submodel, src[i].submodel);
-
+		copy_vector16(dest[i].columns, src[i].columns, src[i].size);
+		copy_vector8(dest[i].bit_columns, src[i].bit_columns, src[i].size_bit);
 	}
 }
 
 /*=========================================*/
 /*This function copy values of a source individual into another individual */
 /*=========================================*/
-static void copy_individual(T_INDIVIDUAL* dest, T_INDIVIDUAL* src) {
+static void copy_individual(T_INDIVIDUAL2* dest, T_INDIVIDUAL2* src) {
 
+	dest->size = src->size;
+	dest->size_bit = src->size_bit;
 	dest->RSS = src->RSS;
 	dest->fitness_value = src->fitness_value;
 	dest->selected = src->selected;
 	dest->selection_probability = src->selection_probability;
 
-	dest->columns = gsl_vector_alloc(src->columns->size);
-	dest->bit_columns = gsl_vector_alloc(src->bit_columns->size);
-	dest->submodel = gsl_matrix_alloc(src->submodel->size1,
-			src->submodel->size2);
-
-	gsl_vector_memcpy(dest->columns, src->columns);
-	gsl_vector_memcpy(dest->bit_columns, src->bit_columns);
-	gsl_matrix_memcpy(dest->submodel, src->submodel);
+	copy_vector16(dest->columns, src->columns, src->size);
+	copy_vector8(dest->bit_columns, src->bit_columns, src->size_bit);
 
 }
 
 /*=========================================*/
 /*This function copy an individual from a population to another population*/
 /*=========================================*/
-static void copy_individual_into_population(T_INDIVIDUAL* dest, T_INDIVIDUAL* src, uint16 index1,
-		uint16 index2) {
+static void copy_individual_into_population(T_INDIVIDUAL2* dest, T_INDIVIDUAL2* src, uint16 index1, uint16 index2) {
 
-	dest[index1].RSS = src[index2].RSS;
-	dest[index1].fitness_value = src[index2].fitness_value;
-	dest[index1].selected = src[index2].selected;
-	dest[index1].selection_probability = src[index2].selection_probability;
 
-	dest[index1].columns = gsl_vector_alloc(src[index2].columns->size);
-	dest[index1].bit_columns = gsl_vector_alloc(src[index2].bit_columns->size);
-	dest[index1].submodel = gsl_matrix_alloc(src[index2].submodel->size1,
-			src[index2].submodel->size2);
+	if ((NULL != src[index2].bit_columns)) {
 
-	gsl_vector_memcpy(dest[index1].columns, src[index2].columns);
-	gsl_vector_memcpy(dest[index1].bit_columns, src[index2].bit_columns);
-	gsl_matrix_memcpy(dest[index1].submodel, src[index2].submodel);
+		dest[index1].size = src[index2].size;
+		dest[index1].size_bit = src[index2].size_bit;
+		dest[index1].RSS = src[index2].RSS;
+		dest[index1].fitness_value = src[index2].fitness_value;
+		dest[index1].selected = src[index2].selected;
+		dest[index1].selection_probability = src[index2].selection_probability;
+
+		copy_vector16(dest[index1].columns, src[index2].columns, src[index2].size);
+		copy_vector8(dest[index1].bit_columns, src[index2].bit_columns, src[index2].size_bit);
+
+	} else {
+		printf("\ncopy_individual_into_population : index out of bound\n");
+	}
 
 }
 
 /*=========================================*/
 /*This function compute new population using selection method*/
 /*=========================================*/
-static void population_selected(T_INDIVIDUAL* population,
-		T_INDIVIDUAL* temp_population, uint16 size, uint16* new_size) {
+static void population_selected(T_INDIVIDUAL2* population, T_INDIVIDUAL2* temp_population, uint16 size, uint16* new_size) {
 
 	uint16 temp_index = 0;
 
 	for (uint8 i = 0; i < size; i++) {
 
 		if (FALSE != population[i].selected) {
+
+			individual_init(&temp_population[temp_index]);
 
 			copy_individual_into_population(temp_population, population, temp_index, i);
 
@@ -771,23 +753,20 @@ static void population_selected(T_INDIVIDUAL* population,
 /*=========================================*/
 /*This function prints to the console all data of an individual*/
 /*=========================================*/
-static void print_individual(T_INDIVIDUAL* individual)
+static void print_individual(T_INDIVIDUAL2* individual)
 {
 	printf("\nColumns:");
-	if(individual->columns != NULL)
-	{
-		print_vector(individual->columns);
+	if (individual->columns != NULL) {
+		print_vector16(individual->columns, individual->size);
 	}
-	if (individual->submodel != NULL) {
-		//print_matrix(individual->submodel);
-	}
+
 	printf("Fitness Value: %f\n", individual->fitness_value);
 }
 
 /*=========================================*/
 /*This function prints to the console all data of all individuals in a population*/
 /*=========================================*/
-static void print_population(T_INDIVIDUAL* population, uint16 size) {
+static void print_population(T_INDIVIDUAL2* population, uint16 size) {
 	for (uint16 i = 0; i < size; i++) {
 
 		print_individual(&population[i]);
@@ -797,9 +776,9 @@ static void print_population(T_INDIVIDUAL* population, uint16 size) {
 /*=========================================*/
 /*This function calculate fitness function of each individual and return index of the best*/
 /*=========================================*/
-void fitness_func(T_INDIVIDUAL* individual, uint16 model_size_n, uint16 model_size_k, double* result)
+void fitness_func(T_INDIVIDUAL2* individual, uint16 model_size_n, uint16 model_size_k, double* result)
 {
-	criterion(individual->RSS, model_size_n, individual->columns->size, result);
+	criterion(individual->RSS, model_size_n, individual->size, result);
 
 	//in each case update fitness value of each individual
 	individual->fitness_value = *result;
@@ -808,7 +787,7 @@ void fitness_func(T_INDIVIDUAL* individual, uint16 model_size_n, uint16 model_si
 /*=========================================*/
 /*This function implements a method for acceptance of a neighbor */
 /*=========================================*/
-static boolean neighbor_acceptance(T_INDIVIDUAL* current, T_INDIVIDUAL* neighbor, double temperature){
+static boolean neighbor_acceptance(T_INDIVIDUAL2* current, T_INDIVIDUAL2* neighbor, double temperature){
 
 	boolean is_accepted = FALSE;
 
@@ -840,7 +819,7 @@ static uint16 get_nr_genes(uint16 columns)
 {
 	uint16 ret_val = 0;
 
-	if(FIXED_NR_GENES != 0 && columns > 0){
+	if(FIXED_NR_GENES == 0 && columns > 0){
 
 		while(ret_val == 0){
 			ret_val = rand() % columns;
@@ -866,30 +845,32 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 	uint16 generation = INIT;
 	uint16 model_size_n = main_model->size2;
 	uint16 model_size_k = get_nr_genes(main_model->size2);
-	uint16 population_size = PERCENTAJE(PERCENTAJE_OF_CHROMOSOMES, main_model->size1);
-	uint8 best_solution_index = INIT;
+	uint16 population_size = (uint16)PERCENTAJE(PERCENTAJE_OF_CHROMOSOMES, main_model->size1);
+	uint16 best_solution_index = INIT;
 	boolean b_converge = FALSE;
 	boolean last_converge = FALSE;
 
 	double result = 1;
 	double MIN = (double) MAX_FITNESS;
 
-	T_INDIVIDUAL GA_population[population_size];
-	T_INDIVIDUAL best_solution;
-
-	if(model_size_k == 0)
+	if(model_size_k == 0 || population_size == 0)
 	{
-		printf("\nPercentaje value of genes is invalid, set a bigger value!");
+		printf("\nPercentaje value of genes or population size is invalid, set a bigger value!");
 		converge_value = 0;
 	}
-	else
-	{
+	else {
+
+		T_INDIVIDUAL2 GA_population[population_size];
+		T_INDIVIDUAL2 best_solution;
+
+		individual_init(&best_solution);
+
 		//generate population
 		generate_population(GA_population, population_size, model_size_n,
 				model_size_k);
 
 		//get fitness of all individuals
-		for (uint8 i = 0; i < population_size; i++) {
+		for (uint16 i = 0; i < population_size; i++) {
 			fitness_func(&GA_population[i], model_size_n, model_size_k,
 					&result);
 		}
@@ -902,79 +883,118 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 			MIN = GA_population[best_solution_index].fitness_value;
 			copy_individual(&best_solution,
 					&GA_population[best_solution_index]);
-		}
-	}
-
-	//repeat until converge
-	while (converge_value < CONVERGE)
-
-	{
-
-		printf("\n==========#Generation %d#===========", ++generation);
-
-		/*select best individual for next generation (x %)
-		 * 1. Roulette Wheel -> how % from SUM of all Results represents each Result)
-		 * 2. Tournament Selection -> first selects two individuals with uniform probability -> chooses the one with the highest fitness.
-		 * 3. Truncation Selection -> simply selects at random from the population having first eliminated K number of the least fit individuals
-		 */
-
-		switch (method) {
-		case tournament: selection_tournament(GA_population, population_size, PERCENTAJE(PERCENTAJE_OF_TOURNAMENT_K, model_size_k)); break;
-
-		case roulette_wheel: selection_roulette_wheel(GA_population, &population_size, model_size_n); break;
-
-		default: /*No method selected*/	break;
 
 		}
 
-		new_population_computed(GA_population, population_size, model_size_n, op2);
-		new_population_computed(GA_population, population_size, model_size_n, op1);
+		//repeat until converge
+		while (converge_value < CONVERGE)
 
-		if (population_size) {
+		{
 
-			//apply fitness to all individuals
-			for (uint8 i = 0; i < population_size; i++) {
-				fitness_func(&GA_population[i], model_size_n, model_size_k,
-						&result);
+			//printf("\n==========#Generation %d#===========", ++generation);
+
+			/*select best individual for next generation (x %)
+			 * 1. Roulette Wheel -> how % from SUM of all Results represents each Result)
+			 * 2. Tournament Selection -> first selects two individuals with uniform probability -> chooses the one with the highest fitness.
+			 * 3. Truncation Selection -> simply selects at random from the population having first eliminated K number of the least fit individuals
+			 */
+
+			switch (method) {
+			case tournament: selection_tournament(GA_population, population_size, PERCENTAJE(PERCENTAJE_OF_TOURNAMENT_K, model_size_k)); break;
+
+			case roulette_wheel: selection_roulette_wheel(GA_population, &population_size, model_size_n); break;
+
+			default: /*No method selected*/	break;
+
 			}
 
-			//print_population(GA_population, population_size);
+			new_population_computed(GA_population, population_size,
+					model_size_n, op2);
+			new_population_computed(GA_population, population_size,
+					model_size_n, op1);
 
-			//get BEST
-			best_solution_index = get_index_of_BEST(GA_population,
-					population_size);
+			converge_value++;
 
-			if (GA_population[best_solution_index].fitness_value < MIN)
 
-			{
-				MIN = GA_population[best_solution_index].fitness_value;
-				copy_individual(&best_solution,
-						&GA_population[best_solution_index]);
+			if (population_size) {
 
-				b_converge = FALSE;
-				//reset counter in case converge is not consecutively met
-				converge_value = INIT;
+				//apply fitness to all individuals
+				for (uint8 i = 0; i < population_size; i++) {
+					fitness_func(&GA_population[i], model_size_n, model_size_k,
+							&result);
+				}
+
+				//print_population(GA_population, population_size);
+
+				//get BEST
+				best_solution_index = get_index_of_BEST(GA_population,
+						population_size);
+
+				if (GA_population[best_solution_index].fitness_value < MIN)
+
+				{
+					MIN = GA_population[best_solution_index].fitness_value;
+					copy_individual(&best_solution,
+							&GA_population[best_solution_index]);
+
+					b_converge = FALSE;
+					//reset counter in case converge is not consecutively met
+					converge_value = INIT;
+
+				} else {
+					b_converge = TRUE;
+
+					if (last_converge) {
+						converge_value++;
+					}
+				}
 
 			} else {
-				b_converge = TRUE;
-
-				if (last_converge) {
-					converge_value++;
-				}
+				//if no individuals got selected in new population then search must be stopped
+				converge_value = CONVERGE;
 			}
 
-		} else {
-			//if no individuals got selected in new population then search must be stopped
-			converge_value = CONVERGE;
+			last_converge = b_converge;
+
 		}
 
-		last_converge = b_converge;
+		printf("\nBEST");
+		print_individual(&best_solution);
 
+		individual_dealloc(&best_solution);
 	}
 
-	printf("\nBEST");
-	print_individual(&best_solution);
+}
 
+/*=========================================*/
+/*This function implements a constructor for individual*/
+/*=========================================*/
+void individual_init(T_INDIVIDUAL2* individual)
+{
+	uint16 columns = get_A_matrix()->size2;
+	individual->size = 0;
+	individual->size_bit = columns;
+	individual->columns = (uint16*) calloc(columns, sizeof(uint16));
+	individual->bit_columns = (uint8*) calloc(columns, sizeof(uint8));
+	individual->RSS = 0;
+	individual->fitness_value = MAX_FITNESS;
+	individual->selected = FALSE;
+	individual->selection_probability = 0;
+}
+
+/*=========================================*/
+/*This function implements a de-constructor for individual*/
+/*=========================================*/
+void individual_dealloc(T_INDIVIDUAL2* individual)
+{
+	individual->size = 0;
+	individual->size_bit = 0;
+	individual->RSS = 0;
+	individual->fitness_value = MAX_FITNESS;
+	individual->selected = FALSE;
+	individual->selection_probability = 0;
+	free(individual->columns);
+	free(individual->bit_columns);
 }
 
 /*=========================================*/
@@ -982,14 +1002,18 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 /*=========================================*/
 void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 
-	gsl_matrix * main_model = get_A_matrix();
-
-	uint16 model_size_n = main_model->size2;
-	uint16 model_size_k = get_nr_genes(main_model->size2);
+	uint16 model_size_n = get_A_matrix()->size2;
+	uint16 model_size_k = get_nr_genes(model_size_n);
 	uint16 interation = 0;
-	T_INDIVIDUAL current_individual;
-	T_INDIVIDUAL neighbor_individual;
-	T_INDIVIDUAL best_individual;
+
+	T_INDIVIDUAL2 current_individual;
+	T_INDIVIDUAL2 neighbor_individual;
+	T_INDIVIDUAL2 best_individual;
+
+	individual_init(&current_individual);
+	individual_init(&neighbor_individual);
+	individual_init(&best_individual);
+
 	double result = 1;
 	double MIN_fitness;
 	double temperature = TEMP;
@@ -1007,7 +1031,6 @@ void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 
 		copy_individual(&best_individual, &current_individual);
 
-		print_individual(&current_individual);
 	}
 
 	for (; interation < NR_ITERATIONS; interation++) {
@@ -1029,7 +1052,9 @@ void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 
 		if (current_individual.fitness_value < MIN_fitness) {
 			MIN_fitness = current_individual.fitness_value;
+
 			copy_individual(&best_individual, &current_individual);
+
 			printf("\n==========#Iteration  %d#===========", interation);
 			print_individual(&neighbor_individual);
 		}
@@ -1038,5 +1063,10 @@ void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 
 	printf("\nBEST");
 	print_individual(&best_individual);
+
+	individual_dealloc(&current_individual);
+	individual_dealloc(&neighbor_individual);
+	individual_dealloc(&best_individual);
+
 }
 

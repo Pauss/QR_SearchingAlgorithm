@@ -221,13 +221,14 @@ void print_steps(double Rss_model, gsl_combination* columns_transitions)
 {
 	FILE* f;
 
-	f = fopen("Output_steps", "a+");
+	f = fopen("Output_steps.txt", "a+");
 
-	fputs("\n=========New sub-model=========\n",f);
-	fputs("Columns that form sub-model: \n",f);
+	fprintf(f, "\n=========New sub-model=========\n");
+	//fprintf(f, "Columns that form sub-model: \n");
 	gsl_combination_fprintf(f, columns_transitions,"%u ");
-	fputs("\n", f);
-	if (Rss_model > INIT) {
+
+	fprintf(f,"\nRSS: %lf", Rss_model);
+/*	if (Rss_model > INIT) {
 		while (Rss_model > INIT) {
 			fputs("->",f);
 			Rss_model--;
@@ -239,7 +240,7 @@ void print_steps(double Rss_model, gsl_combination* columns_transitions)
 			fputs("<-",f);
 			Rss_model++;
 		}
-	}
-	fputs("\n===============================\n",f);
+	}*/
+	//fprintf(f, "\n===============================\n");
 	fclose(f);
 }

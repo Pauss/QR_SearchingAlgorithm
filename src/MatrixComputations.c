@@ -46,14 +46,108 @@ void print_matrix(gsl_matrix *M) {
 }
 
 /*=========================================*/
+/*Function to copy a 8bit vector*/
+/*=========================================*/
+void copy_vector8(uint8 *dest, uint8* src, uint16 size) {
+
+	for (uint16 i = 0; i < size; i++) {
+
+		dest[i] = src[i];
+	}
+}
+
+/*=========================================*/
+/*Function to swap 2 elements of a vector*/
+/*=========================================*/
+void vector_swap_elements(uint8 *vector, uint16 index1, uint16 index2) {
+
+	uint8 temp = 0;
+
+	if(NULL != &vector[index1] && NULL != &vector[index2] )
+	{
+		temp = vector[index1];
+		vector[index1] = vector[index2];
+		vector[index2] = temp;
+	}
+	else
+	{
+		printf("\nCopy_vector: index out of range\n");
+	}
+
+}
+
+/*=========================================*/
+/*Function to swap 2 vector*/
+/*=========================================*/
+void vector_swap(uint8 *vector, uint8 *vector2, uint16 size) {
+
+	uint8 temp = 0;
+
+	for (uint16 i = 0; i < size; i++) {
+		if (NULL != &vector[i] && NULL != &vector[i]) {
+			temp = vector[i];
+			vector[i] = vector2[i];
+			vector2[i] = temp;
+		} else {
+			printf("\Vector_swap: index out of range\n");
+			break;
+		}
+	}
+
+}
+
+/*=========================================*/
+/*Function to copy a 8bit vector*/
+/*=========================================*/
+void copy_vector16(uint16 *dest, uint16* src, uint16 size) {
+
+	for (uint16 i = 0; i < size; i++) {
+
+		dest[i] = src[i];
+	}
+}
+
+/*=========================================*/
 /*Function to print a gsl_vector*/
 /*=========================================*/
-void print_vector (gsl_vector *V) {
+void print_vector16 (uint16 *v, uint16 size) {
 
 	printf("\n");
-	for (uint16 i = 0; i < V->size; i++) {
 
-			printf("v(%d) = %f ", i, gsl_vector_get(V, i));
+	if (size) {
+		for (uint16 i = 0; i < size; i++) {
+
+			printf("v(%d) = %d; ", i, v[i]);
+		}
+	} else {
+		printf("\nEmpty model");
+	}
+	printf("\n");
+}
+
+/*=========================================*/
+/*Function to print a gsl_vector*/
+/*=========================================*/
+void print_vector8 (uint8 *v, uint16 size) {
+
+	printf("\n");
+
+	for (uint16 i = 0; i < size; i++) {
+
+			printf("v(%d) = %d ", i, v[i]);
+	}
+	printf("\n");
+}
+
+/*=========================================*/
+/*Function to print a gsl_vector*/
+/*=========================================*/
+void print_vector (gsl_vector* v) {
+
+	printf("\n");
+	for (uint16 i = 0; i < v->size; i++) {
+
+			printf("v(%d) = %f ", i, v->data[i]);
 	}
 	printf("\n");
 }

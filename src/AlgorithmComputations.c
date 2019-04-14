@@ -179,21 +179,21 @@ double RSS_compute(gsl_matrix* QR) {
 /*=========================================*/
 void naive_alg(void) {
 
-	//remove("Output_Steps");
+	remove("Output_Steps.txt");
 
-	gsl_vector* columns_selected;
-	T_INDIVIDUAL solution;
-	solution.columns = gsl_vector_alloc(main_model_A->size2);
+	gsl_matrix* my_model =  gsl_matrix_alloc(main_model_A->size1, main_model_A->size2);
+	gsl_combination * columns_transitions;
+	T_INDIVIDUAL2 solution;
+	solution.columns = (uint16*) malloc(main_model_A->size2 * sizeof(uint16));
 
 	double result  = 1;
-	double new_RSS;
+	double new_RSS = 0;
 
 
 	/*computing all possible combinations of columns*/
 	for (uint16 i = 1; i <= main_model_A->size2; i++) {
 
-		gsl_combination * columns_transitions = gsl_combination_alloc(
-				main_model_A->size2, i);
+		columns_transitions = gsl_combination_alloc(main_model_A->size2, i);
 
 		/*set combinations with values from 0 to n-1*/
 		gsl_combination_init_first(columns_transitions);
@@ -201,60 +201,58 @@ void naive_alg(void) {
 		/*do combination while reaching all possible subsets*/
 		do {
 
-			columns_selected = gsl_vector_alloc(columns_transitions->k);
-			for(uint16 i = 0; i < columns_selected->size; i++)
-			{
-				columns_selected->data[i] = columns_transitions->data[i];
-			}
+			//get matrix model
+			my_model->size2 = columns_transitions->k;
+			submodel_matrix2(columns_transitions->data, my_model);
 
-			/*get matrix model*/
-			gsl_matrix* my_model = sub_model_matrix(columns_selected);
-
-			gsl_combination_fprintf(stdout, columns_transitions, "%u ");
-
+			//gsl_combination_fprintf(stdout, columns_transitions, "%u ");
 			new_RSS = RSS_compute(my_model);
-			printf("\nRSS: %lf\n", new_RSS);
+
+			//print_steps(new_RSS, columns_transitions);
+			//printf("\nRSS: %lf\n", new_RSS);
 
 			//if best solution is find then update model
-			if (FALSE != criterion(new_RSS, main_model_A->size2, columns_selected->size, &result)) {
-				solution.columns->size = columns_selected->size;
+			if (FALSE != criterion(new_RSS, main_model_A->size2, columns_transitions->k, &result)) {
+				solution.size = columns_transitions->k;
+				solution.columns = realloc(solution.columns, columns_transitions->k * sizeof(uint16));
 				solution.RSS = new_RSS;
 				solution.fitness_value = result;
-				gsl_vector_memcpy(solution.columns, columns_selected);
+
+				for (uint16 i = 0; i < solution.size; i++) {
+					solution.columns[i] = columns_transitions->data[i];
+				}
+
 			}
 
 		} while (GSL_SUCCESS == gsl_combination_next(columns_transitions));
 
+		gsl_combination_free(columns_transitions);
 
 	}
 
 	printf("\nValue of best solution based on criterion: %lf\nRSS: %lf",
 			solution.fitness_value, solution.RSS);
-	print_vector(solution.columns);
+	print_vector16(solution.columns, solution.size);
 
 }
 
 /*=========================================*/
 /*This function form a sub-model matrix*/
 /*=========================================*/
-gsl_matrix* sub_model_matrix(gsl_vector* matrix_combination) {
+gsl_matrix* submodel_matrix(uint16* matrix_combination, uint16 size) {
 
 	/*make a copy of full model matrix*/
-	gsl_matrix* matrix_transitions = gsl_matrix_alloc(main_model_A->size1,
-			matrix_combination->size);
-	gsl_vector * v;
+	gsl_matrix* matrix_transitions = gsl_matrix_alloc(main_model_A->size1, size);
+	gsl_vector * v = gsl_vector_alloc(main_model_A->size1);
 
 	gsl_matrix_set_zero(matrix_transitions);
 
-	for (uint16 i = 0; i < matrix_transitions->size2; i++) {
+	for (uint16 i = 0; i < size; i++) {
 
 		/* take each column index from full model matrix that is present in combination
 		 * and add it to sub-model*/
 
-		v = gsl_vector_alloc(main_model_A->size1);
-
-		gsl_matrix_get_col(v, main_model_A,
-				gsl_vector_get(matrix_combination, i));
+		gsl_matrix_get_col(v, main_model_A, matrix_combination[i]);
 
 		gsl_matrix_set_col(matrix_transitions, i, v);
 
@@ -265,6 +263,31 @@ gsl_matrix* sub_model_matrix(gsl_vector* matrix_combination) {
 	return matrix_transitions;
 
 }
+
+/*=========================================*/
+/*This function form a sub-model matrix*/
+/*=========================================*/
+void submodel_matrix2(size_t* matrix_combination, gsl_matrix* matrix_transitions) {
+
+	gsl_vector * v = gsl_vector_alloc(main_model_A->size1);
+
+	gsl_matrix_set_zero(matrix_transitions);
+
+	for (uint16 i = 0; i < matrix_transitions->size2; i++) {
+
+		/* take each column index from full model matrix that is present in combination
+		 * and add it to sub-model*/
+
+		gsl_matrix_get_col(v, main_model_A, matrix_combination[i]);
+
+		gsl_matrix_set_col(matrix_transitions, i, v);
+
+	}
+
+	gsl_vector_free(v);
+
+}
+
 
 /*=========================================*/
 /*This function calculates R* using R*x(approximated solution) */

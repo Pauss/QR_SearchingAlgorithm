@@ -60,21 +60,38 @@ typedef enum
 /*typedef*/
 
 typedef struct{
-	boolean selected;
-	double fitness_value;
-	double RSS;
-	double selection_probability;
-	gsl_vector* columns;
+	boolean  selected;
+	double   fitness_value;
+	double   RSS;
+	double   selection_probability;
+	uint16*  columns;
+	uint8*   bit_columns;
+	uint16 	 size;
+	uint16 	 size_bit;
+
+}T_INDIVIDUAL2;
+
+/*typedef*/
+
+typedef struct{
+	boolean  selected;
+	double   fitness_value;
+	double   RSS;
+	double   selection_probability;
+	gsl_vector*  columns;
 	gsl_vector* bit_columns;
-	gsl_matrix* submodel;
+
 }T_INDIVIDUAL;
+
 /*=========================================*/
 /*external functions*/
-boolean get_random_model(gsl_vector* my_random_model, uint16 n, uint16 size_A);
+void get_random_model(uint8* my_random_model, uint16 k, uint16 n);
 boolean criterion (double RSS, uint16 n, uint16 k, double* result);
-void fitness_func(T_INDIVIDUAL* individual, uint16 model_size_n, uint16 model_size_k, double* result);
+void fitness_func(T_INDIVIDUAL2* individual, uint16 model_size_n, uint16 model_size_k, double* result);
 void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2);
 void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2);
+void individual_init(T_INDIVIDUAL2* individual);
+void individual_dealloc(T_INDIVIDUAL2* individual);
 /*=========================================*/
 
 #endif /* SRC_GENETICALGORITHM_H_ */
