@@ -35,7 +35,7 @@ double  euclidean_norm(gsl_vector* V);
 boolean compute_matrix_inverse(gsl_matrix * M);
 boolean product_matrix_vector(gsl_matrix* M, gsl_vector* v, gsl_vector* result);
 boolean product_matrix(gsl_matrix* M, gsl_matrix* M2, gsl_matrix* result);
-gsl_matrix* add_intercept(gsl_matrix* R);
+void    add_intercept(gsl_matrix* R, gsl_matrix* intercept_QR);
 
 /*=========================================*/
 #endif

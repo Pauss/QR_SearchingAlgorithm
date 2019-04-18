@@ -819,16 +819,18 @@ static uint16 get_nr_genes(uint16 columns)
 {
 	uint16 ret_val = 0;
 
-	if(FIXED_NR_GENES == 0 && columns > 0){
+	if (FIXED_NR_GENES == 0 && columns > 0) {
 
-		while(ret_val == 0){
+		while (ret_val == 0) {
 			ret_val = rand() % columns;
 		}
 	}
 
-	else
-	{
-		ret_val = PERCENTAJE(PERCENTAJE_OF_GENES, columns);
+	else if (FIXED_NR_GENES == 1) {
+
+		ret_val = (uint16) PERCENTAJE(PERCENTAJE_OF_GENES, columns);
+	} else {
+		printf("\nNumber of columns is 0, set a bigger percentaje");
 	}
 
 	return ret_val;
@@ -899,7 +901,7 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 			 * 3. Truncation Selection -> simply selects at random from the population having first eliminated K number of the least fit individuals
 			 */
 
-			switch (method) {
+			switch (3) {
 			case tournament: selection_tournament(GA_population, population_size, PERCENTAJE(PERCENTAJE_OF_TOURNAMENT_K, model_size_k)); break;
 
 			case roulette_wheel: selection_roulette_wheel(GA_population, &population_size, model_size_n); break;
@@ -913,13 +915,11 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 			new_population_computed(GA_population, population_size,
 					model_size_n, op1);
 
-			converge_value++;
-
 
 			if (population_size) {
 
 				//apply fitness to all individuals
-				for (uint8 i = 0; i < population_size; i++) {
+				for (uint16 i = 0; i < population_size; i++) {
 					fitness_func(&GA_population[i], model_size_n, model_size_k,
 							&result);
 				}

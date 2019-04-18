@@ -11,10 +11,10 @@
 /*define*/
 /*===========Genetic Algorithm=============*/
 #define PERCENTAJE_OF_CHROMOSOMES 100u //70
-#define CONVERGE 500u
+#define CONVERGE 50u
 #define MAX_FITNESS 100000
-#define FIXED_NR_GENES 0u
-#define PERCENTAJE_OF_GENES 30u//55u
+#define FIXED_NR_GENES 1u
+#define PERCENTAJE_OF_GENES 6u//55u
 /*=========================================*/
 /*==========Tournament Selection===========*/
 /*=========================================*/

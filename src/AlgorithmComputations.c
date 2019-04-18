@@ -138,13 +138,13 @@ double RSS_compute(gsl_matrix* QR) {
 
 	double RSS = INIT;
 
-	gsl_matrix* intercept_QR = gsl_matrix_alloc(QR->size1, QR->size2+1);
+	if ((QR->size1 != 0 && QR->size2 != 0) && ( QR->size1 > QR->size2+1)) {
 
-	if ((QR->size1 != 0 && QR->size2 != 0) &&( intercept_QR->size1 > intercept_QR->size2)) {
+		gsl_matrix* intercept_QR = gsl_matrix_alloc(QR->size1, QR->size2+1);
 
 		if (intercept) {
 
-			intercept_QR = add_intercept(QR);
+			add_intercept(QR, intercept_QR);
 		}
 		else
 		{

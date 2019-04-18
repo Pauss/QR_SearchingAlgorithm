@@ -89,7 +89,7 @@ void vector_swap(uint8 *vector, uint8 *vector2, uint16 size) {
 			vector[i] = vector2[i];
 			vector2[i] = temp;
 		} else {
-			printf("\Vector_swap: index out of range\n");
+			printf("\nVector_swap: index out of range\n");
 			break;
 		}
 	}
@@ -247,27 +247,32 @@ void add_submatrix(gsl_matrix* R, gsl_matrix* sub_matrix, uint8 index1, uint8 in
 /*=========================================*/
 /*This function delete Intercept column from the model after it adds Intercept to all columns*/
 /*=========================================*/
-gsl_matrix* add_intercept(gsl_matrix* R)
+void add_intercept(gsl_matrix* R, gsl_matrix* temp_matrix)
 {
 
 	gsl_vector* intercept_column = gsl_vector_alloc(R->size1);
 
     gsl_vector* temp_column = gsl_vector_alloc(R->size1);
 
-	gsl_matrix* temp_matix = gsl_matrix_alloc(R->size1, R->size2+1);
-
 	gsl_vector_set_all(intercept_column, INTERCEPT_VALUE);
 
-	gsl_matrix_set_col(temp_matix, 0, intercept_column);
+	gsl_matrix_set_col(temp_matrix, 0, intercept_column);
 
-	for( uint16 i = 1; i < temp_matix->size2; i++){
+	for( uint16 i = 1; i < temp_matrix->size2; i++){
+		if(temp_column->size == temp_matrix->size1)
+		{
 
-		gsl_matrix_get_col(temp_column, R, i-1);
+			gsl_matrix_get_col(temp_column, R, i - 1);
 
-		gsl_matrix_set_col(temp_matix, i, temp_column );
+			gsl_matrix_set_col(temp_matrix, i, temp_column);
+		} else {
+			printf(
+					"\n Add_intercept: intercept column and matrix number of lines are not equal");
+		}
 	}
 
-	return temp_matix;
+	gsl_vector_free(intercept_column);
+	gsl_vector_free(temp_column);
 
 }
 

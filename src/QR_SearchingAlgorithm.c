@@ -55,8 +55,8 @@ int main()
 
 		//GA relevant
 		T_SELECTION_METHOD selection_method = roulette_wheel;  //tournament; roulette_wheel
-		T_OPERATOR_METHOD operator1 = flip; //flip //interchanging; interchanging_abs; reversing
-		T_OPERATOR_METHOD operator2 = RRC; //_1point; uniform; RRC; _1point_simple; no_operator
+		T_OPERATOR_METHOD operator1 = interchanging_abs; //flip //interchanging; interchanging_abs; reversing
+		T_OPERATOR_METHOD operator2 = _1point; //_1point; uniform; RRC; _1point_simple; no_operator
 		intercept = installed; //installed //not_installed
 
 		file_dim = get_file_dimensions();
