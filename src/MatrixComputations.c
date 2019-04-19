@@ -114,10 +114,10 @@ void print_vector16 (uint16 *v, uint16 size) {
 
 	printf("\n");
 
-	if (size) {
+	if (size != 0 && v != NULL) {
 		for (uint16 i = 0; i < size; i++) {
 
-			printf("v(%d) = %d; ", i, v[i]);
+			printf("v(%d) = %d; ", i, v[i]+1);
 		}
 	} else {
 		printf("\nEmpty model");
@@ -147,7 +147,7 @@ void print_vector (gsl_vector* v) {
 	printf("\n");
 	for (uint16 i = 0; i < v->size; i++) {
 
-			printf("v(%d) = %f ", i, v->data[i]);
+			printf("v(%d) = %f ", i, v->data[i]+1);
 	}
 	printf("\n");
 }

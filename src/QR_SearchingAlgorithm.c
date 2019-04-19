@@ -48,15 +48,15 @@ int main()
 		 * 2. Efficient search with QR decomposition applied only on first step. Save some time tho..
 		 * 3. Even more nice strategy using GA (Genetic Algorithm)*/
 
-		T_SEARCH_STRATEGIES strategy = naive_search;//GA_search; naive_search //GA_SA // efficient_search
+		T_SEARCH_STRATEGIES strategy = GA_SA;//GA_search; naive_search //GA_SA // efficient_search
 
 		//efficient method relevant
 		T_EFFICIENT_METHOD columns_method = columns_transitions;//columns_transitions; columns_removal;
 
 		//GA relevant
-		T_SELECTION_METHOD selection_method = roulette_wheel;  //tournament; roulette_wheel
-		T_OPERATOR_METHOD operator1 = interchanging_abs; //flip //interchanging; interchanging_abs; reversing
-		T_OPERATOR_METHOD operator2 = _1point; //_1point; uniform; RRC; _1point_simple; no_operator
+		T_SELECTION_METHOD selection_method = tournament;  //tournament; roulette_wheel; building_blocks
+		T_OPERATOR_METHOD operator1 = flip; //flip //interchanging; interchanging_abs; reversing
+		T_OPERATOR_METHOD operator2 = RRC; //_1point; uniform; RRC; _1point_simple; no_operator
 		intercept = installed; //installed //not_installed
 
 		file_dim = get_file_dimensions();

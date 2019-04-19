@@ -21,7 +21,7 @@ static void build_individual (T_INDIVIDUAL2* GA_individual, uint8* rand_model, u
 static void new_population_computed(T_INDIVIDUAL2* temp_population, uint16 new_size, uint16 n, T_OPERATOR_METHOD op);
 
 static void copy_individual(T_INDIVIDUAL2* dest, T_INDIVIDUAL2* src);
-static void copy_individual_into_population(T_INDIVIDUAL2* dest, T_INDIVIDUAL2* src, uint16 index1,uint16 index2);
+static void copy_individual_into_population(T_INDIVIDUAL2* dest, T_INDIVIDUAL2* src, uint16 index1, uint16 index2);
 static void copy_population(T_INDIVIDUAL2* dest, T_INDIVIDUAL2* src, uint16 new_size);
 
 static void probability_selection(T_INDIVIDUAL2* population, uint16 size);
@@ -31,6 +31,9 @@ static void selection_roulette_wheel(T_INDIVIDUAL2* population, uint16* size, ui
 
 static DATA_ERRORS shuffle_array(T_INDIVIDUAL2* population, uint16 size);
 static void selection_tournament(T_INDIVIDUAL2* population, uint16 size, uint16 k);
+
+static boolean selection_building_blocks(T_INDIVIDUAL2* population, T_INDIVIDUAL2* schema, uint16* size, uint16 size_k);
+static boolean individual_match_schema(T_INDIVIDUAL2* individual,T_INDIVIDUAL2* schema);
 
 static boolean neighbor_acceptance(T_INDIVIDUAL2* current, T_INDIVIDUAL2* neighbor, double temperature);
 
@@ -163,6 +166,8 @@ static void build_individual (T_INDIVIDUAL2* GA_individual, uint8* rand_model, u
 		GA_individual->fitness_value = MAX_FITNESS;
 		GA_individual->selection_probability = 0;
 		GA_individual->selected = FALSE;
+
+		gsl_matrix_free(temp_submodel);
 	} else {
 
 		GA_individual->fitness_value = MAX_FITNESS;
@@ -170,7 +175,7 @@ static void build_individual (T_INDIVIDUAL2* GA_individual, uint8* rand_model, u
 		GA_individual->selected = FALSE;
 
 	}
-	//gsl_matrix_free(temp_submodel);
+
 }
 
 /*=========================================*/
@@ -178,23 +183,16 @@ static void build_individual (T_INDIVIDUAL2* GA_individual, uint8* rand_model, u
 /*=========================================*/
 static void generate_population(T_INDIVIDUAL2* GA_population, uint16 size, uint16 n, uint16 k)
 {
-	//uint8* random_model = (uint8*) calloc(n, sizeof(uint8));
+	uint8* random_model = (uint8*) calloc(n, sizeof(uint8));
 
 	//generate population
 	for (uint16 i = 0; i < size; i++) {
-
-/*		get_random_model(random_model, k, n);
-
-		build_individual(&GA_population[i], random_model, n);
-
-		//if size changes
-		random_model = realloc(random_model, sizeof(boolean) * n);*/
 
 		individual_init(&GA_population[i]);
 		generate_individual(&GA_population[i], n, k);
 	}
 
-	//free(random_model);
+	free(random_model);
 
 }
 
@@ -211,13 +209,13 @@ static void generate_individual(T_INDIVIDUAL2* individual, uint16 n, uint16 k)
 		build_individual(individual, random_model, n);
 
 		//if size changes
-		random_model = realloc(random_model, sizeof(uint8) * n);
+		//random_model = realloc(random_model, sizeof(uint8) * n);
 	}
 	free(random_model);
 }
 
 /*=========================================*/
-/*This function implements Roultte Wheel selection*/
+/*This function compute probability of each individual to be selected in next generation*/
 /*=========================================*/
 static void probability_selection(T_INDIVIDUAL2* population, uint16 size) {
 	double sum_fitness = 0;
@@ -246,6 +244,40 @@ static void probability_selection(T_INDIVIDUAL2* population, uint16 size) {
 	}
 
 }
+
+/*=========================================*/
+/*This function identifies if an individual match with a Schema*/
+/*=========================================*/
+static boolean individual_match_schema(T_INDIVIDUAL2* individual,T_INDIVIDUAL2* schema) {
+
+	boolean ret_val = TRUE;
+
+	if ((schema->size == 0) || (schema->columns == NULL)) {
+		ret_val = FALSE;
+	}
+
+	if ((individual->size == 0) || (individual->columns == NULL)) {
+		ret_val = FALSE;
+	}
+
+	if (schema->size > individual->size) {
+		ret_val = FALSE;
+	}
+
+	else {
+
+		for (uint16 i = 0; i < schema->size_bit/2; i++) {
+			if (schema->bit_columns[i] == 1)
+				if (individual->bit_columns[i] == 0) {
+					ret_val = FALSE;
+				}
+		}
+	}
+
+	return ret_val;
+
+}
+
 
 /*=========================================*/
 /*This function implements a shuffle array elements method 'Fisher–Yates shuffle*/
@@ -327,7 +359,7 @@ static void selection_tournament(T_INDIVIDUAL2* population, uint16 size, uint16 
 			//get best k individuals from tournament
 			uint16 index1 = get_index_of_BEST(temp_population, k);
 
-			copy_individual_into_population(&pool_population, &temp_population, i,
+			copy_individual_into_population(pool_population, temp_population, i,
 					index1);
 		}
 
@@ -335,6 +367,9 @@ static void selection_tournament(T_INDIVIDUAL2* population, uint16 size, uint16 
 
 }
 
+/*=========================================*/
+/*This function implements Roulette Wheel selection*/
+/*=========================================*/
 static void selection_roulette_wheel(T_INDIVIDUAL2* population, uint16* size, uint16 model_size_n)
 {
 
@@ -373,6 +408,56 @@ static void selection_roulette_wheel(T_INDIVIDUAL2* population, uint16* size, ui
 
 }
 
+/*=========================================*/
+/*This function implements Building- Blocks Hypothesis*/
+/*=========================================*/
+static boolean selection_building_blocks(T_INDIVIDUAL2* population, T_INDIVIDUAL2* schema, uint16* size, uint16 size_k)
+{
+
+	T_INDIVIDUAL2 temp_population[*size];
+	T_INDIVIDUAL2 temp_schema;
+
+	uint16 temp_size = 0;
+	uint16 r = 0;
+	double mean_fitness_h = 0;
+	double mean_fitness;
+	double result = 1;
+	boolean ret_val = FALSE;
+
+	for (uint16 i = 0; i < *size; i++) {
+		if (individual_match_schema(&population[i], schema) != FALSE) {
+			individual_init(&temp_population[temp_size]);
+			copy_individual_into_population(temp_population, population,
+					temp_size, i);
+			mean_fitness_h = population[i].fitness_value;
+			temp_size++;
+		}
+
+		mean_fitness = population[i].fitness_value;
+	}
+
+	if (temp_size > 0) {
+		if (((double) 1 / temp_size * mean_fitness_h) >= mean_fitness) {
+
+			copy_population(population, temp_population, temp_size);
+
+			*size = temp_size;
+
+			ret_val = TRUE;
+		} else {
+
+			while (r == 0) {
+				r = rand() % schema->size_bit;
+			}
+
+			generate_individual(schema, schema->size_bit, r);
+			fitness_func(schema, schema->size_bit, r, &result);
+
+		}
+	}
+
+	return ret_val;
+}
 
 /*=========================================*/
 /*This function apply crossover on 2 individuals on a random single position */
@@ -851,6 +936,9 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 	uint16 best_solution_index = INIT;
 	boolean b_converge = FALSE;
 	boolean last_converge = FALSE;
+	T_INDIVIDUAL2 Schema;
+	individual_init(&Schema);
+	generate_individual(&Schema, model_size_n, model_size_k);
 
 	double result = 1;
 	double MIN = (double) MAX_FITNESS;
@@ -901,10 +989,13 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 			 * 3. Truncation Selection -> simply selects at random from the population having first eliminated K number of the least fit individuals
 			 */
 
-			switch (3) {
+			switch (method) {
 			case tournament: selection_tournament(GA_population, population_size, PERCENTAJE(PERCENTAJE_OF_TOURNAMENT_K, model_size_k)); break;
 
 			case roulette_wheel: selection_roulette_wheel(GA_population, &population_size, model_size_n); break;
+
+			case building_blocks: if(FALSE == selection_building_blocks(GA_population, &Schema, &population_size, model_size_k))
+								    { selection_building_blocks(GA_population, &best_solution, &population_size, model_size_k);} break;
 
 			default: /*No method selected*/	break;
 

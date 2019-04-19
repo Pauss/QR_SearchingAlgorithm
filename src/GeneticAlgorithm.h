@@ -26,7 +26,8 @@
 typedef enum
 {
 	roulette_wheel = 0,
-	tournament
+	tournament,
+	building_blocks
 }T_SELECTION_METHOD;
 
 typedef enum
