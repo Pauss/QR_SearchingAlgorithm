@@ -36,7 +36,7 @@ int main()
 
 	/* check validity of a file
 	 * if valid extract matrix from file*/
-	check_file = fileIsValid("DataSetG.txt"); //house //data_invalid //DataSetG
+	check_file = fileIsValid("house.txt"); //house //data_invalid //DataSetG
 
 	if( file_no_error == check_file)
 	{
@@ -48,15 +48,15 @@ int main()
 		 * 2. Efficient search with QR decomposition applied only on first step. Save some time tho..
 		 * 3. Even more nice strategy using GA (Genetic Algorithm)*/
 
-		T_SEARCH_STRATEGIES strategy = GA_SA;//GA_search; naive_search //GA_SA // efficient_search
+		T_SEARCH_STRATEGIES strategy = GA_search;//GA_search; naive_search //GA_SA // efficient_search
 
 		//efficient method relevant
 		T_EFFICIENT_METHOD columns_method = columns_transitions;//columns_transitions; columns_removal;
 
 		//GA relevant
-		T_SELECTION_METHOD selection_method = tournament;  //tournament; roulette_wheel; building_blocks
+		T_SELECTION_METHOD selection_method = roulette_wheel;  //tournament; roulette_wheel; building_blocks
 		T_OPERATOR_METHOD operator1 = flip; //flip //interchanging; interchanging_abs; reversing
-		T_OPERATOR_METHOD operator2 = RRC; //_1point; uniform; RRC; _1point_simple; no_operator
+		T_OPERATOR_METHOD operator2 = uniform; //_1point; uniform; RRC; _1point_simple; no_operator
 		intercept = installed; //installed //not_installed
 
 		file_dim = get_file_dimensions();
@@ -87,6 +87,7 @@ int main()
 				printf("Performing GA Search\n");
 
 				GA_naive_alg(selection_method, operator1, operator2);
+				//GA_BB_alg(operator1, operator2);
 
 				break;
 			}

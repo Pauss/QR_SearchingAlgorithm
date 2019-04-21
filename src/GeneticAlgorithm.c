@@ -266,7 +266,7 @@ static boolean individual_match_schema(T_INDIVIDUAL2* individual,T_INDIVIDUAL2* 
 
 	else {
 
-		for (uint16 i = 0; i < schema->size_bit/2; i++) {
+		for (uint16 i = 0; i < schema->size_bit; i++) {
 			if (schema->bit_columns[i] == 1)
 				if (individual->bit_columns[i] == 0) {
 					ret_val = FALSE;
@@ -411,49 +411,46 @@ static void selection_roulette_wheel(T_INDIVIDUAL2* population, uint16* size, ui
 /*=========================================*/
 /*This function implements Building- Blocks Hypothesis*/
 /*=========================================*/
-static boolean selection_building_blocks(T_INDIVIDUAL2* population, T_INDIVIDUAL2* schema, uint16* size, uint16 size_k)
+static boolean selection_building_blocks(T_INDIVIDUAL2* population, T_INDIVIDUAL2* schemas, uint16* size, uint16 size_s)
 {
 
 	T_INDIVIDUAL2 temp_population[*size];
-	T_INDIVIDUAL2 temp_schema;
-
 	uint16 temp_size = 0;
-	uint16 r = 0;
-	double mean_fitness_h = 0;
-	double mean_fitness;
-	double result = 1;
 	boolean ret_val = FALSE;
 
 	for (uint16 i = 0; i < *size; i++) {
-		if (individual_match_schema(&population[i], schema) != FALSE) {
-			individual_init(&temp_population[temp_size]);
-			copy_individual_into_population(temp_population, population,
-					temp_size, i);
-			mean_fitness_h = population[i].fitness_value;
-			temp_size++;
+
+		//printf("\nINDIVIDUAL:\n");
+		//print_individual(&population[i]);
+
+		for(uint16 j = 0; j < size_s; j++)
+		{
+
+			//printf("\nSCHEMA:\n");
+		    //print_individual(&schemas[j]);
+
+
+			if (individual_match_schema(&population[i], &schemas[j]) != FALSE) {
+
+				//TODO
+				//use royal road functions
+
+				individual_init(&temp_population[temp_size]);
+				copy_individual_into_population(temp_population, population,
+						temp_size, i);
+				temp_size++;
+				break;
+			}
+
 		}
 
-		mean_fitness = population[i].fitness_value;
 	}
 
 	if (temp_size > 0) {
-		if (((double) 1 / temp_size * mean_fitness_h) >= mean_fitness) {
 
 			copy_population(population, temp_population, temp_size);
-
 			*size = temp_size;
 
-			ret_val = TRUE;
-		} else {
-
-			while (r == 0) {
-				r = rand() % schema->size_bit;
-			}
-
-			generate_individual(schema, schema->size_bit, r);
-			fitness_func(schema, schema->size_bit, r, &result);
-
-		}
 	}
 
 	return ret_val;
@@ -897,8 +894,9 @@ static boolean neighbor_acceptance(T_INDIVIDUAL2* current, T_INDIVIDUAL2* neighb
 	return is_accepted;
 
 }
+
 /*=========================================*/
-/*This function implements calculates number of genes by random or fixed number*/
+/*This function calculates number of genes by random or fixed number*/
 /*=========================================*/
 static uint16 get_nr_genes(uint16 columns)
 {
@@ -922,6 +920,128 @@ static uint16 get_nr_genes(uint16 columns)
 }
 
 /*=========================================*/
+/*This function calculates mean fitness of a population*/
+/*=========================================*/
+static double get_mean_fitness(T_INDIVIDUAL2* population, uint16 size)
+{
+	double ret_val = 0;
+
+
+	for (uint16 i = 0; i < size; i++) {
+
+		ret_val += population[i].fitness_value;
+
+	}
+
+	if (size > 0 && ret_val > 0) {
+		ret_val /= size;
+	}
+
+	return ret_val;
+}
+
+static void generate_schemas(T_INDIVIDUAL2* schemas, uint16 size)
+{
+
+	T_INDIVIDUAL2 temp_schema;
+	uint16 columns_schema = 0;
+
+	individual_init(&temp_schema);
+
+	if(size > 0)
+	{
+		columns_schema = (uint16)(temp_schema.size_bit/size);
+	}
+
+	for (uint16 i = 0; i < size; i++) {
+
+		generate_individual(&temp_schema, temp_schema.size_bit, columns_schema);
+
+		individual_init(&schemas[i]);
+					copy_individual_into_population(schemas, &temp_schema,
+							i, 0);
+
+	    individual_dealloc(&temp_schema);
+		individual_init(&temp_schema);
+	}
+
+}
+
+/*=========================================*/
+/*This function generates a number of schemas*/
+/*=========================================*/
+static void build_schemas(T_INDIVIDUAL2* schemas, uint16 size_schemas, T_INDIVIDUAL2* population, uint16 size)
+{
+	double mean_fitness = 0;
+	double mean_schema_fitness = 0;
+	double result = 1;
+
+	T_INDIVIDUAL2 temp_schema;
+
+	uint16 columns_schema;
+	uint16 individuals_s;
+	uint16 temp_i = 0;
+
+	individual_init(&temp_schema);
+
+	if(size > 0)
+	{
+		columns_schema = (uint16)(temp_schema.size_bit/size_schemas);
+	}
+
+	mean_fitness = get_mean_fitness(population, size);
+
+
+	while (temp_i < size_schemas) {
+
+		mean_schema_fitness = 0;
+		individuals_s = 0;
+
+		generate_individual(&temp_schema, temp_schema.size_bit, columns_schema);
+		fitness_func(&temp_schema, temp_schema.size_bit, columns_schema, &result);
+
+		for (uint16 i = 0; i < size; i++) {
+			if (individual_match_schema(&population[i], &temp_schema) != FALSE) {
+				mean_schema_fitness = population[i].fitness_value;
+				individuals_s++;
+			}
+		}
+
+		if(mean_schema_fitness)
+		{
+			mean_schema_fitness /= individuals_s;
+		}
+
+
+		if(temp_schema.fitness_value > mean_fitness)
+		{
+			individual_init(&schemas[temp_i]);
+			copy_individual_into_population(schemas, &temp_schema, temp_i, 0);
+			temp_i++;
+		}
+
+		individual_dealloc(&temp_schema);
+		individual_init(&temp_schema);
+
+	}
+
+
+	if(mean_schema_fitness)
+	{
+		mean_schema_fitness /= individuals_s;
+	}
+
+	if(mean_fitness)
+	{
+		mean_fitness /= individuals_s;
+	}
+
+	//printf("\nSchemas\n");
+	//print_population(schemas, size_schemas);
+
+}
+
+/*=========================================*/
 /*This function implements a naive approach of genetic algorithm*/
 /*=========================================*/
 void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
@@ -938,7 +1058,7 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 	boolean last_converge = FALSE;
 	T_INDIVIDUAL2 Schema;
 	individual_init(&Schema);
-	generate_individual(&Schema, model_size_n, model_size_k);
+	generate_individual(&Schema, model_size_n, 2);
 
 	double result = 1;
 	double MIN = (double) MAX_FITNESS;
@@ -994,12 +1114,15 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 
 			case roulette_wheel: selection_roulette_wheel(GA_population, &population_size, model_size_n); break;
 
-			case building_blocks: if(FALSE == selection_building_blocks(GA_population, &Schema, &population_size, model_size_k))
-								    { selection_building_blocks(GA_population, &best_solution, &population_size, model_size_k);} break;
+			case building_blocks: if(FALSE != selection_building_blocks(GA_population, &Schema, &population_size, model_size_k))
+								    {
+										//selection_building_blocks(GA_population, &best_solution, &population_size, model_size_k);
+								    } break;
 
 			default: /*No method selected*/	break;
 
 			}
+
 
 			new_population_computed(GA_population, population_size,
 					model_size_n, op2);
@@ -1056,6 +1179,158 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 	}
 
 }
+
+
+/*=========================================*/
+/*This function implements a naive approach of genetic algorithm with Building Blocks */
+/*=========================================*/
+void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
+{
+
+	uint16 converge_value = INIT;
+	uint16 generation = INIT;
+	uint16 model_size_n = get_A_matrix()->size2;
+	uint16 model_size_k = get_nr_genes(model_size_n);
+	uint16 population_size = (uint16)PERCENTAJE(PERCENTAJE_OF_CHROMOSOMES, get_A_matrix()->size1);
+	uint16 nr_schemas = (uint16)PERCENTAJE(PERCENTAJE_OF_SCHEMAS, model_size_n);
+	uint16 best_solution_index = INIT;
+	boolean b_converge = FALSE;
+	boolean last_converge = FALSE;
+
+
+	double result = 1;
+	double MIN = (double) MAX_FITNESS;
+
+	if(model_size_k == 0 || population_size == 0)
+	{
+		printf("\nPercentaje value of genes or population size is invalid, set a bigger value!");
+		converge_value = 0;
+	}
+	else {
+
+		T_INDIVIDUAL2 GA_population[population_size];
+		T_INDIVIDUAL2 best_solution;
+
+		individual_init(&best_solution);
+
+		//generate population
+		generate_population(GA_population, population_size, model_size_n,
+				model_size_k);
+
+		//get fitness of all individuals
+		for (uint16 i = 0; i < population_size; i++) {
+			fitness_func(&GA_population[i], model_size_n, model_size_k,
+					&result);
+		}
+		//get BEST
+		best_solution_index = get_index_of_BEST(GA_population, population_size);
+
+		if (GA_population[best_solution_index].fitness_value < MIN)
+
+		{
+			MIN = GA_population[best_solution_index].fitness_value;
+			copy_individual(&best_solution,
+					&GA_population[best_solution_index]);
+
+		}
+
+		if (nr_schemas == 0 || population_size == 0) {
+			printf(
+					"\nPercentaje value of schemas size is invalid, set a bigger value!");
+			converge_value = 0;
+		} else {
+			//generates schemas -> a schema is valid only if mean fitness of individuals that contain schema is bigger then mean fitness
+			T_INDIVIDUAL2 Schemas[nr_schemas];
+			build_schemas(Schemas, nr_schemas, GA_population, population_size);
+
+			//repeat until converge
+			while (converge_value < CONVERGE)
+
+			{
+
+				//printf("\n==========#Generation %d#===========", ++generation);
+
+				/*select best individual for next generation (x %)
+				 * 1. Roulette Wheel -> how % from SUM of all Results represents each Result)
+				 * 2. Tournament Selection -> first selects two individuals with uniform probability -> chooses the one with the highest fitness.
+				 * 3. Truncation Selection -> simply selects at random from the population having first eliminated K number of the least fit individuals
+				 */
+
+				if (FALSE
+						!= selection_building_blocks(GA_population, Schemas,
+								&population_size, nr_schemas)) {
+					//selection_building_blocks(GA_population, &best_solution, &population_size, model_size_k);
+
+					//compute new population
+					//calculate rate of individual (Royal Road Function)
+					//if rate 0, individual is not accepted for new generation of population
+
+					//print_population(GA_population, population_size);
+				}
+				else
+				{
+					printf("Population not changed");
+				}
+
+				new_population_computed(GA_population, population_size,
+						model_size_n, op2);
+				new_population_computed(GA_population, population_size,
+						model_size_n, op1);
+
+				//update if schemas don't fit anymore
+				//build_schemas(Schemas, nr_schemas, GA_population, population_size);
+
+				if (population_size) {
+
+					//apply fitness to all individuals
+					for (uint16 i = 0; i < population_size; i++) {
+						fitness_func(&GA_population[i], model_size_n,
+								model_size_k, &result);
+					}
+
+					//print_population(GA_population, population_size);
+
+					//get BEST
+					best_solution_index = get_index_of_BEST(GA_population,
+							population_size);
+
+					if (GA_population[best_solution_index].fitness_value < MIN)
+
+					{
+						MIN = GA_population[best_solution_index].fitness_value;
+						copy_individual(&best_solution,
+								&GA_population[best_solution_index]);
+
+						b_converge = FALSE;
+						//reset counter in case converge is not consecutively met
+						converge_value = INIT;
+
+					} else {
+						b_converge = TRUE;
+
+						if (last_converge) {
+							converge_value++;
+						}
+					}
+
+				} else {
+					//if no individuals got selected in new population then search must be stopped
+					converge_value = CONVERGE;
+				}
+
+				last_converge = b_converge;
+
+			}
+
+			printf("\nBEST");
+			print_individual(&best_solution);
+
+			individual_dealloc(&best_solution);
+		}
+	}
+
+}
+
 
 /*=========================================*/
 /*This function implements a constructor for individual*/
