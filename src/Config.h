@@ -11,14 +11,14 @@
 /*define*/
 /*===========Genetic Algorithm=============*/
 #define PERCENTAJE_OF_CHROMOSOMES 100u //70
-#define CONVERGE 50u
+#define CONVERGE 500u
 #define MAX_FITNESS 100000
 #define FIXED_NR_GENES 0u
-#define PERCENTAJE_OF_GENES 6u//55u
+#define PERCENTAJE_OF_GENES 30u//55u
 /*=========================================*/
 /*===========BUilding BLocks===============*/
 /*=========================================*/
-#define PERCENTAJE_OF_SCHEMAS 40u //70
+#define PERCENTAJE_OF_SCHEMAS 70u //70
 /*=========================================*/
 /*==========Tournament Selection===========*/
 /*=========================================*/
@@ -26,8 +26,8 @@
 /*=========================================*/
 /*==========Simulated Annealing============*/
 /*=========================================*/
-#define TEMP 100000 //10000 100000 100000 // 10000000
-#define COOLING_RATE 0.75//0.003 0.98 0.330 0.729 0.85/ 0.86 /0.95
+#define TEMP 1000000 //10000 100000 100000 // 10000000
+#define COOLING_RATE 0.85//0.003 0.98 0.330 0.729 0.85/ 0.86 /0.95
 #define NR_ITERATIONS 100u
 /*=========================================*/
 /*================Crossover================*/
