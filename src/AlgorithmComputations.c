@@ -205,8 +205,11 @@ void naive_alg(void) {
 			my_model->size2 = columns_transitions->k;
 			submodel_matrix2(columns_transitions->data, my_model);
 
-			//gsl_combination_fprintf(stdout, columns_transitions, "%u ");
+			gsl_combination_fprintf(stdout, columns_transitions, "%u ");
+
 			new_RSS = RSS_compute(my_model);
+
+			printf("\nRSS: %lf\n", new_RSS);
 
 			//print_steps(new_RSS, columns_transitions);
 			//printf("\nRSS: %lf\n", new_RSS);
@@ -347,7 +350,7 @@ void efficient_RSS(gsl_vector* C, gsl_vector* RSS_models, const double RSS)
 	for (uint16 i = 0; i < n; i++) {
 		double el = gsl_vector_get(C, (n - i));
 
-		printf("\nElement: %lf\n", el);
+		//printf("\nElement: %lf\n", el);
 
 		result += (double) pow(el, 2);
 
@@ -372,7 +375,7 @@ void efficient_RSS_D(gsl_vector* C, gsl_vector* RSS_models, const double RSS, ui
 	for (uint16 i = 0; i < Model_size; i++) {
 		double el = gsl_vector_get(C, (Model_size - i));
 
-		printf("\nElement: %lf\n", el);
+		//printf("\nElement: %lf\n", el);
 
 		result += (double) pow(el, 2);
 
@@ -422,8 +425,8 @@ void compute_rotation_angle(gsl_matrix* R, gsl_matrix* rotation, uint8 column)
 	result = (double) sqrt(pow(a, 2) + pow(b, 2));
 	result = result * sign_r_element(a, b);
 
-	printf("\na: %lf\n", a);
-	printf("b: %lf\n", b);
+	//printf("\na: %lf\n", a);
+	//printf("b: %lf\n", b);
 
 	if (result == 0) {
 		cos = 1;
@@ -435,15 +438,15 @@ void compute_rotation_angle(gsl_matrix* R, gsl_matrix* rotation, uint8 column)
 
 	}
 
-	printf("\nsin: %lf\n", sin);
-	printf("cos: %lf\n", cos);
-	printf("\nres: %lf\n", result);
+	//printf("\nsin: %lf\n", sin);
+	//printf("cos: %lf\n", cos);
+	//printf("\nres: %lf\n", result);
 
 	gsl_matrix_set_all(rotation, cos);
 	gsl_matrix_set(rotation, 0, 1, sin);
 	gsl_matrix_set(rotation, 1, 0, (-1) * sin);
 
-	print_matrix(rotation);
+	//print_matrix(rotation);
 
 	//update matrix R with the elements of vector [r,0]
 	gsl_matrix_set(R, column, column, result);
@@ -505,33 +508,33 @@ static void column_removal_retriangularization_R(gsl_matrix* R, uint16 column1)
 	//number of total rotations: number of columns of R* minus 1(columns of C)- index of column removed
 	max_number_retriangularization = R->size2 - column1 - 1;
 
-	print_matrix(R);
+	//print_matrix(R);
 
 	for (uint16 i = 0; i < max_number_retriangularization; i++)
 
 	{
 
-		printf("\n################################################");
+/*		printf("\n################################################");
 		printf("\n#################Iteration%d#####################\n",i);
-		printf("################################################\n");
+		printf("################################################\n");*/
 
 		//computes new r element of R*, where rotation is applied in order to get 0 under diagonal
 		compute_rotation_angle(R, rotation, column1);
 
-		print_matrix(R);
+		//print_matrix(R);
 
 		//update the rest of 2 rows of R that were affected by re-triangularization
 		matrix_substract = gsl_matrix_submatrix(R, column1, column2, 2,
 				R->size2 - column2);
 
-		print_matrix(&matrix_substract.matrix);
+		//print_matrix(&matrix_substract.matrix);
 
 		M1 = gsl_matrix_alloc(2, matrix_substract.matrix.size2);
 
 
 		product_matrix(rotation, &matrix_substract.matrix, M1);
 
-		print_matrix(M1);
+		//print_matrix(M1);
 
 		add_submatrix(R, M1, column1, column2);
 
@@ -539,7 +542,7 @@ static void column_removal_retriangularization_R(gsl_matrix* R, uint16 column1)
 		column2++;
 		gsl_matrix_free(M1);
 
-		print_matrix(R);
+		//print_matrix(R);
 	}
 
 	gsl_matrix_free(rotation);
@@ -586,7 +589,7 @@ void efficient_alg(T_EFFICIENT_METHOD method)
 	gsl_matrix* base_R_byQ;
 	gsl_vector* RSS_models;
 
-	print_matrix(main_model_A);
+	//print_matrix(main_model_A);
 
 	QR_decomposition(main_model_A, &matrix_components);
 
@@ -599,8 +602,8 @@ void efficient_alg(T_EFFICIENT_METHOD method)
 	get_base_R(matrix_components.R, matrix_components.solution, base_R);
 	get_base_R_byQ(matrix_components.R, matrix_components.QtransposeY, base_R_byQ);
 
-	printf("\nColumn of data for RSS computation, using C = R*x(approximated solution)\n");
-	print_matrix(base_R);
+/*	printf("\nColumn of data for RSS computation, using C = R*x(approximated solution)\n");
+	print_matrix(base_R);*/
 
 	gsl_matrix* elimination_R = gsl_matrix_alloc(base_R->size1, base_R->size2);
 	gsl_matrix_memcpy(elimination_R, base_R);
@@ -612,12 +615,14 @@ void efficient_alg(T_EFFICIENT_METHOD method)
 
 	efficient_RSS(&view_C.vector, RSS_models, matrix_components.RSS);
 
+	printf("\nHHRSS: %lf\n", matrix_components.RSS);
+	printf("\nHHRSS: %lf\n", RSS_compute(matrix_components.model));
+
 	printf("\nRSS of Main model.\n");
 
 	print_vector(RSS_models);
 
-	//
-	method = 1;
+	//method = 1;
 
 	switch (method) {
 	case columns_transitions: {

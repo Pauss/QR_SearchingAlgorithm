@@ -22,7 +22,9 @@ typedef enum
 	naive_search = 0,
 	efficient_search,
 	GA_search,
-	GA_SA
+	GA_search_BB,
+	GA_SA,
+	GA_HC
 }T_SEARCH_STRATEGIES;
 
 typedef enum

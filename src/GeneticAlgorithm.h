@@ -26,8 +26,7 @@
 typedef enum
 {
 	roulette_wheel = 0,
-	tournament,
-	building_blocks
+	tournament
 }T_SELECTION_METHOD;
 
 typedef enum
@@ -91,6 +90,7 @@ boolean criterion (double RSS, uint16 n, uint16 k, double* result);
 void fitness_func(T_INDIVIDUAL2* individual, uint16 model_size_n, uint16 model_size_k, double* result);
 void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2);
 void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2);
+void GA_hill_climbing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2);
 void individual_init(T_INDIVIDUAL2* individual);
 void individual_dealloc(T_INDIVIDUAL2* individual);
 /*=========================================*/

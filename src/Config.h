@@ -22,13 +22,14 @@
 /*=========================================*/
 /*==========Tournament Selection===========*/
 /*=========================================*/
-#define PERCENTAJE_OF_TOURNAMENT_K 30u
+#define PERCENTAJE_OF_TOURNAMENT_K 40u
 /*=========================================*/
 /*==========Simulated Annealing============*/
 /*=========================================*/
 #define TEMP 1000000 //10000 100000 100000 // 10000000
 #define COOLING_RATE 0.85//0.003 0.98 0.330 0.729 0.85/ 0.86 /0.95
-#define NR_ITERATIONS 100u
+/*This parameter is also used in Hill Climbing*/
+#define NR_ITERATIONS 1000u
 /*=========================================*/
 /*================Crossover================*/
 /*=========================================*/
