@@ -21,13 +21,25 @@
 /*=========================================*/
 void convert_to_gsl(T_FILE_DIM* file_dim, gsl_matrix *M) {
 
-	for (uint8 i = 0; i < file_dim->lines; i++) {
-		for (uint8 j = 0; j < file_dim->columns; j++) {
+	for (uint16 i = 0; i < file_dim->lines; i++) {
+		for (uint16 j = 0; j < file_dim->columns; j++) {
 			gsl_matrix_set(M, i, j, file_dim->matrix[i][j]);
 		}
 
 	}
+}
 
+/*=========================================*/
+/*Function to convert double vector to gsl_vector type*/
+/*=========================================*/
+void convert_vector_to_gsl(T_FILE_DIM* file_dim, gsl_matrix *M) {
+
+	for (uint16 i = 0; i < file_dim->lines; i++) {
+		for (uint16 j = 0; j < file_dim->columns; j++) {
+			gsl_matrix_set(M, i, j, file_dim->matrix[i][j]);
+		}
+
+	}
 }
 
 /*=========================================*/
@@ -108,7 +120,7 @@ void copy_vector16(uint16 *dest, uint16* src, uint16 size) {
 }
 
 /*=========================================*/
-/*Function to print a gsl_vector*/
+/*Function to print a vector of type uint16*/
 /*=========================================*/
 void print_vector16 (uint16 *v, uint16 size) {
 
@@ -126,7 +138,7 @@ void print_vector16 (uint16 *v, uint16 size) {
 }
 
 /*=========================================*/
-/*Function to print a gsl_vector*/
+/*Function to print a vector of type uint8*/
 /*=========================================*/
 void print_vector8 (uint8 *v, uint16 size) {
 
@@ -140,14 +152,27 @@ void print_vector8 (uint8 *v, uint16 size) {
 }
 
 /*=========================================*/
-/*Function to print a gsl_vector*/
+/*Function to print vector of coefficients/
 /*=========================================*/
-void print_vector (gsl_vector* v) {
+void print_vector_coeficient(gsl_vector* v) {
 
 	printf("\n");
 	for (uint16 i = 0; i < v->size; i++) {
 
 			printf("v(%d) = %f ", i, v->data[i]+1);
+	}
+	printf("\n");
+}
+
+/*=========================================*/
+/*Function to print a gsl vector/
+/*=========================================*/
+void print_vector(gsl_vector* v) {
+
+	printf("\n");
+	for (uint16 i = 0; i < v->size; i++) {
+
+			printf("v(%d) = %f ", i, v->data[i]);
 	}
 	printf("\n");
 }

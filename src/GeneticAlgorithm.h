@@ -93,6 +93,7 @@ void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2);
 void GA_hill_climbing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2);
 void individual_init(T_INDIVIDUAL2* individual);
 void individual_dealloc(T_INDIVIDUAL2* individual);
+double individual_RSS_computation(T_INDIVIDUAL2* individual);
 /*=========================================*/
 
 #endif /* SRC_GENETICALGORITHM_H_ */

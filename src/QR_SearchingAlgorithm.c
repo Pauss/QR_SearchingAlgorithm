@@ -36,7 +36,7 @@ int main()
 
 	/* check validity of a file
 	 * if valid extract matrix from file*/
-	check_file = fileIsValid("data_invalid.txt"); //house //data_invalid //DataSetG
+	check_file = fileIsValid("house.txt"); //house //data_invalid //DataSetG
 
 	if( file_no_error == check_file)
 	{
@@ -48,7 +48,7 @@ int main()
 		 * 2. Efficient search with QR decomposition applied only on first step. Save some time tho..
 		 * 3. Even more nice strategy using GA (Genetic Algorithm)*/
 
-		T_SEARCH_STRATEGIES strategy = efficient_search;//GA_search; GA_search_BB; naive_search //GA_SA // GA_HC // efficient_search
+		T_SEARCH_STRATEGIES strategy = GA_search;//GA_search; GA_search_BB; naive_search //GA_SA // GA_HC // efficient_search
 
 		//efficient method relevant
 		T_EFFICIENT_METHOD columns_method = columns_removal;//columns_transitions; columns_removal;
@@ -56,7 +56,7 @@ int main()
 		//GA relevant
 		T_SELECTION_METHOD selection_method = roulette_wheel;  //tournament; roulette_wheel;
 		T_OPERATOR_METHOD operator1 = flip; //flip //interchanging; interchanging_abs; reversing
-		T_OPERATOR_METHOD operator2 = uniform; //_1point; uniform; RRC; _1point_simple; no_operator
+		T_OPERATOR_METHOD operator2 = RRC; //_1point; uniform; RRC; _1point_simple; no_operator
 		intercept = installed; //installed //not_installed
 
 		file_dim = get_file_dimensions();
@@ -64,6 +64,7 @@ int main()
 		if (NULL != file_dim) {
 			set_y_vector(file_dim);
 			set_A_matrix(file_dim);
+			set_model_elements();
 
 			switch(strategy)
 			{
@@ -79,7 +80,7 @@ int main()
 
 				printf("Performing Efficient Search\n");
 
-				//naive_alg();
+				naive_alg();
 				efficient_alg(columns_method);
 
 				break;
@@ -118,6 +119,7 @@ int main()
 			case GA_HC:{
 				printf("Performing Hill Climbing Search\n");
 
+				naive_alg();
 				GA_hill_climbing(operator1, operator2);
 
 				break;

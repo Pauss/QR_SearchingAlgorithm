@@ -48,6 +48,9 @@ gsl_matrix* 		 submodel_matrix(uint16* matrix_combination, uint16 size);
 //void 				 submodel_matrix2(void* matrix_combination, gsl_matrix* matrix_transitions);
 double 				 RSS_compute(gsl_matrix* QR);
 extern gsl_vector* solution_y;
+Model_QR_components* get_model_elements(void);
+void column_removal_retriangularization_R(gsl_matrix* R, uint16 column1);
+void get_submodels_Rss(gsl_matrix* Model, void (*f_method)(gsl_matrix* M, uint16 index) , double RSS, gsl_vector* RSS_models, uint16 column, uint16 Model_columns);
 /*=========================================*/
 
 #endif /* SRC_ALGORITHMCOMPUTATIONS_H_ */

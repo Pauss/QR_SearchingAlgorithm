@@ -164,14 +164,35 @@ static void build_individual(T_INDIVIDUAL2* GA_individual, uint8* rand_model,
 	if (temp_error == data_no_error) {
 
 		GA_individual->size = columns;
+
+		clock_t begin1 = clock();
+		struct timespec start, end;
+		clock_gettime(CLOCK_MONOTONIC, &start);
+
 		temp_submodel = submodel_matrix(GA_individual->columns,
 				GA_individual->size);
 		GA_individual->RSS = RSS_compute(temp_submodel);
+
+		// GA_individual->RSS = individual_RSS_computation(GA_individual);
+
+		//clock_t end = clock();
+		clock_gettime(CLOCK_MONOTONIC, &end);
+
+		double time_taken;
+		time_taken = (end.tv_sec - start.tv_sec) * 1e9;
+		time_taken = (time_taken + (end.tv_nsec - start.tv_nsec)) * 1e-9;
+
+		//long double time_spent = (long double)(end - begin1) / CLOCKS_PER_SEC / 1000;
+		//printf("EXECUTION TIME %f", time_taken);
+
+
+		//printf("\nRSS_val: %lf\n",individual_RSS_computation(GA_individual));
+
 		GA_individual->fitness_value = MAX_FITNESS;
 		GA_individual->selection_probability = 0;
 		GA_individual->selected = FALSE;
 
-		gsl_matrix_free(temp_submodel);
+		//gsl_matrix_free(temp_submodel);
 
 	} else {
 
@@ -1461,6 +1482,58 @@ void individual_dealloc(T_INDIVIDUAL2* individual)
 }
 
 /*=========================================*/
+/*This function implements a de-constructor for individual*/
+/*=========================================*/
+double individual_RSS_computation(T_INDIVIDUAL2* individual)
+{
+	gsl_matrix* base_R;
+	gsl_vector* RSS_models;
+	uint16 columns_removal = 0;
+
+	double RSS_all = get_model_elements()->RSS;
+
+	//printf("\nRSS_all: %lf\n", RSS_all);
+
+	base_R = gsl_matrix_alloc(get_model_elements()->R->size1, get_model_elements()->R->size2+1);
+
+	get_base_R(get_model_elements()->R, get_model_elements()->solution, base_R);
+
+	//print_matrix(base_R);
+
+
+
+	gsl_matrix* elimination_R = gsl_matrix_alloc(base_R->size1, base_R->size2);
+	gsl_matrix_memcpy(elimination_R, base_R);
+
+	//print_matrix(elimination_R);
+
+	uint16 nSubmodels = elimination_R->size2 - 1;
+	RSS_models = gsl_vector_alloc(nSubmodels);
+	uint16 Model_columns = elimination_R->size2;
+
+/*	printf("\n################################################");
+	printf("\n##########Applying Columns Removal##############\n");
+	printf("################################################\n");*/
+
+	//Applying re-triangularization after deleting a column
+
+/*	print_individual(individual);
+	printf("\nPrint individual RSS: %lf\n", individual->RSS);*/
+
+	for(uint16 i = 0; i < individual->size_bit; i++)
+	{
+		if(individual->bit_columns[i] == 0)
+		{
+			get_submodels_Rss(elimination_R,column_removal_retriangularization_R, RSS_all, RSS_models, i-columns_removal+1, Model_columns);
+			columns_removal++;
+		}
+	}
+
+	return RSS_models->data[0];
+
+}
+
+/*=========================================*/
 /*This function implements Simulate Annealing algorithm*/
 /*=========================================*/
 void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
@@ -1602,3 +1675,5 @@ void GA_hill_climbing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 	individual_dealloc(&best_individual);
 
 }
+
+
