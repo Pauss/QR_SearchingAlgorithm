@@ -11,14 +11,14 @@
 /*define*/
 /*===========Genetic Algorithm=============*/
 #define PERCENTAJE_OF_CHROMOSOMES 100u //70
-#define CONVERGE 50u
+#define CONVERGE 200u
 #define MAX_FITNESS 100000
 #define FIXED_NR_GENES 0u
 #define PERCENTAJE_OF_GENES 30u//55u
 /*=========================================*/
 /*===========BUilding BLocks===============*/
 /*=========================================*/
-#define PERCENTAJE_OF_SCHEMAS 70u //70
+#define PERCENTAJE_OF_SCHEMAS 60u //70
 /*=========================================*/
 /*==========Tournament Selection===========*/
 /*=========================================*/
@@ -35,6 +35,10 @@
 /*=========================================*/
 #define REFERENCE_PROBABILITY 0.5
 #define NR_OF_ATTEMPTS 10u
+/*=========================================*/
+/*============Efficient alg================*/
+/*=========================================*/
+#define USE_ELIMINATION 1u
 /*=========================================*/
 /*macro definition function*/
 /*=========================================*/

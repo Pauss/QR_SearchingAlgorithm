@@ -165,28 +165,15 @@ static void build_individual(T_INDIVIDUAL2* GA_individual, uint8* rand_model,
 
 		GA_individual->size = columns;
 
-		clock_t begin1 = clock();
-		struct timespec start, end;
-		clock_gettime(CLOCK_MONOTONIC, &start);
+		if (USE_ELIMINATION) {
+			GA_individual->RSS = individual_RSS_computation(GA_individual);
+		}
 
-		temp_submodel = submodel_matrix(GA_individual->columns,
-				GA_individual->size);
-		GA_individual->RSS = RSS_compute(temp_submodel);
-
-		// GA_individual->RSS = individual_RSS_computation(GA_individual);
-
-		//clock_t end = clock();
-		clock_gettime(CLOCK_MONOTONIC, &end);
-
-		double time_taken;
-		time_taken = (end.tv_sec - start.tv_sec) * 1e9;
-		time_taken = (time_taken + (end.tv_nsec - start.tv_nsec)) * 1e-9;
-
-		//long double time_spent = (long double)(end - begin1) / CLOCKS_PER_SEC / 1000;
-		//printf("EXECUTION TIME %f", time_taken);
-
-
-		//printf("\nRSS_val: %lf\n",individual_RSS_computation(GA_individual));
+		else {
+			temp_submodel = submodel_matrix(GA_individual->columns,
+					GA_individual->size);
+			GA_individual->RSS = RSS_compute(temp_submodel);
+		}
 
 		GA_individual->fitness_value = MAX_FITNESS;
 		GA_individual->selection_probability = 0;
