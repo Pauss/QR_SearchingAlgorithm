@@ -575,7 +575,7 @@ static void mutation_flip(uint8* bit_columns, uint16 size) {
 
 	while (n_random_positions) {
 		copy_vector8(aux, bit_columns, size);
-		uint8 r = rand() % (size);
+		uint16 r = rand() % (size);
 		uint8 temp_el = aux[r];
 		temp_el ^= 1UL;
 		aux[r] = temp_el;
