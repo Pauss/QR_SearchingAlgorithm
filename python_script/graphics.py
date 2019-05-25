@@ -42,26 +42,3 @@ def get_graphic():
 
 n = get_data("../output_individuals/Out_individuals.csv")
 get_graphic()
-
-
-'''
-# Data for plotting
-n = 10
-t = list()
-
-for i in range(n):
-    t.append(i**2)
-
-
-plt.figure()
-# linear
-# subplot: imparte figura in mai multe grafice: arg1 : nr de linii, arg2 nr de coloane, arg pe ce pozitie se afla graficul
-#plt.subplot(221)
-plt.plot(t, 'r')
-plt.yscale('linear')
-plt.title('linear2')
-plt.grid(True)
-
-plt.show()
-'''
-

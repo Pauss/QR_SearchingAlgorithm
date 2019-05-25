@@ -4,15 +4,9 @@
     <list default="true" id="67a9d59a-f5fd-40e3-9d29-cffbcb889832" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/../DataSetG.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../Data_Invalid.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Debug/QR_SearchingAlgorithm.exe" beforeDir="false" afterPath="$PROJECT_DIR$/../Debug/QR_SearchingAlgorithm.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Debug/src/FileOperations.o" beforeDir="false" afterPath="$PROJECT_DIR$/../Debug/src/FileOperations.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Output_steps" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../house.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/FileOperations.c" beforeDir="false" afterPath="$PROJECT_DIR$/../src/FileOperations.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/FileOperations.h" beforeDir="false" afterPath="$PROJECT_DIR$/../src/FileOperations.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/GeneticAlgorithm.c" beforeDir="false" afterPath="$PROJECT_DIR$/../src/GeneticAlgorithm.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/GeneticAlgorithm.h" beforeDir="false" afterPath="$PROJECT_DIR$/../src/GeneticAlgorithm.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/Types.h" beforeDir="false" afterPath="$PROJECT_DIR$/../src/Types.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/graphics.py" beforeDir="false" afterPath="$PROJECT_DIR$/graphics.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -25,8 +19,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/graphics.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="68">
-              <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
+            <state relative-caret-position="215">
+              <caret line="44" lean-forward="true" selection-start-line="44" selection-end-line="44" />
               <folding>
                 <element signature="e#20#51#0" expanded="true" />
               </folding>
@@ -85,6 +79,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RunDashboard">
@@ -218,8 +213,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/graphics.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="25" lean-forward="true" selection-start-line="25" selection-end-line="25" />
+        <state relative-caret-position="215">
+          <caret line="44" lean-forward="true" selection-start-line="44" selection-end-line="44" />
           <folding>
             <element signature="e#20#51#0" expanded="true" />
           </folding>
