@@ -213,34 +213,3 @@ void clean_file(void)
 	fclose(file);
 }
 
-/*=========================================*/
-/* this function print to a file number of steps algorithm makes at each sub_model
- * this is a more visual print*/
-/*=========================================*/
-void print_steps(double Rss_model, gsl_combination* columns_transitions)
-{
-	FILE* f;
-
-	f = fopen("Output_steps.txt", "a+");
-
-	fprintf(f, "\n=========New sub-model=========\n");
-	//fprintf(f, "Columns that form sub-model: \n");
-	gsl_combination_fprintf(f, columns_transitions,"%u ");
-
-	fprintf(f,"\nRSS: %lf", Rss_model);
-/*	if (Rss_model > INIT) {
-		while (Rss_model > INIT) {
-			fputs("->",f);
-			Rss_model--;
-		}
-	}
-	else
-	{
-		while (Rss_model < INIT ) {
-			fputs("<-",f);
-			Rss_model++;
-		}
-	}*/
-	//fprintf(f, "\n===============================\n");
-	fclose(f);
-}

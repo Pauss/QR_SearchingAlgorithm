@@ -11,7 +11,7 @@
 /*define*/
 /*===========Genetic Algorithm=============*/
 #define PERCENTAJE_OF_CHROMOSOMES 100u //70
-#define CONVERGE 200u
+#define CONVERGE 50u
 #define MAX_FITNESS 100000
 #define FIXED_NR_GENES 0u
 #define PERCENTAJE_OF_GENES 30u//55u
@@ -38,11 +38,19 @@
 /*=========================================*/
 /*============Efficient alg================*/
 /*=========================================*/
-#define USE_ELIMINATION 1u
+#define USE_ELIMINATION 0u
 /*=========================================*/
 /*macro definition function*/
 /*=========================================*/
 #define PERCENTAJE(x, y) ( ((x) > 0 && (y) > 0) ? ((float)(x)/100) * (y) : 0)
+/*=========================================*/
+/*default files for graphics*/
+/*=========================================*/
+#define OUTPUT_FILE "../output_individuals/Out_individuals.csv"
+#define REAL_DATA_PATH "../real_data/"
+#define GENERATED_DATA_PATH "../generated_data/"
+#define PATH_SIZE 255u
+#define USE_GRAPHICS 1u
 /*=========================================*/
 
 #endif /* SRC_CONFIG_H_ */

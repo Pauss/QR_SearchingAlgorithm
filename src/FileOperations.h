@@ -37,7 +37,6 @@ T_FILE_ERRORS fileIsValid(int8 *name_file);
 T_FILE_DIM*   get_file_dimensions(void);
 void 		  clean_file(void);
 void 		  remove_file(const int8* file_name);
-void 		  print_steps(double Rss_model, gsl_combination* columns_transitions);
 /*=========================================*/
 
 #endif

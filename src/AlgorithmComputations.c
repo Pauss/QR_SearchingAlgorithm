@@ -579,33 +579,8 @@ void column_removal_retriangularization_R(gsl_matrix* R, uint16 column1)
 
 void get_submodels_Rss(gsl_matrix* Model, void (*f_method)(gsl_matrix* M, uint16 index) , double RSS, gsl_vector* RSS_models, uint16 column, uint16 Model_columns)
 {
-	uint16 i = 0;
 
 	gsl_vector_view view_C;
-
-/*	for (uint16 j = 1; j < Model_columns - 2; j++) {
-
-		i = 1;
-
-		(*f_method)(Model, i);
-
-		view_C = gsl_matrix_column(Model, (Model->size2) - 1);
-
-		if (Model_columns != Model->size2) {
-
-			efficient_RSS_D(&view_C.vector, RSS_models, RSS, Model->size2 - 1,
-					Model_columns - 1);
-
-		} else {
-
-			efficient_RSS(&view_C.vector, RSS_models, RSS);
-		}
-
-		printf("\nRSS of new model.\n");
-
-		print_vector(RSS_models);
-
-	}*/
 
 	if (column < Model_columns) {
 		(*f_method)(Model, column);
@@ -622,12 +597,7 @@ void get_submodels_Rss(gsl_matrix* Model, void (*f_method)(gsl_matrix* M, uint16
 			efficient_RSS(&view_C.vector, RSS_models, RSS);
 		}
 
-/*		printf("\nRSS of new model.\n");
-
-		print_vector(RSS_models);*/
-
-	}
-
+}
 }
 
 /*=========================================*/
@@ -641,7 +611,7 @@ void efficient_alg(T_EFFICIENT_METHOD method)
 
 	//print_matrix(main_model_A);
 
-/*	QR_decomposition(main_model_A, &matrix_components);
+	QR_decomposition(main_model_A, &matrix_components);
 
 	const uint16 nRows = matrix_components.R->size1;
 	const uint16 nColumns = matrix_components.R->size2;
@@ -677,7 +647,7 @@ void efficient_alg(T_EFFICIENT_METHOD method)
 		printf("################################################\n");
 
 		//Applying re-triangularization after switching 2 columns
-		get_submodels_Rss(swap_R,columns_transition_retriangularization_R, matrix_components.RSS, RSS_models);
+		//get_submodels_Rss(swap_R,columns_transition_retriangularization_R, matrix_components.RSS, RSS_models);
 
 		break;
 	}
@@ -695,7 +665,7 @@ void efficient_alg(T_EFFICIENT_METHOD method)
 		printf("################################################\n");
 
 		//Applying re-triangularization after deleting a column
-		get_submodels_Rss(elimination_R,column_removal_retriangularization_R, matrix_components.RSS, RSS_models);
+		//get_submodels_Rss(elimination_R,column_removal_retriangularization_R, matrix_components.RSS, RSS_models);
 
 		break;
 	}
@@ -705,6 +675,6 @@ void efficient_alg(T_EFFICIENT_METHOD method)
 	}
 	}
 
-	gsl_matrix_free(base_R);*/
+	gsl_matrix_free(base_R);
 }
 

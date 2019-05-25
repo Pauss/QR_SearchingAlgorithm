@@ -1119,6 +1119,8 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 	double result = 1;
 	double MIN = (double) MAX_FITNESS;
 
+	fclose(fopen(OUTPUT_FILE, "w"));
+
 	if(model_size_k == 0 || population_size == 0)
 	{
 		printf("\nPercentaje value of genes or population size is invalid, set a bigger value!");
@@ -1188,6 +1190,12 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 
 				//print_population(GA_population, population_size);
 
+				if(USE_GRAPHICS)
+				{
+					print_steps_population(&GA_population, model_size_n, 1, 1);
+				}
+
+
 				//get BEST
 				best_solution_index = get_index_of_BEST(GA_population,
 						population_size);
@@ -1200,6 +1208,9 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 					b_converge = FALSE;
 					//reset counter in case converge is not consecutively met
 					converge_value = INIT;
+
+					//print_steps(&best_solution, 1 ,1);
+
 
 				} else {
 					b_converge = TRUE;
@@ -1527,7 +1538,7 @@ void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 
 	uint16 model_size_n = get_A_matrix()->size2;
 	uint16 model_size_k = get_nr_genes(model_size_n);
-	uint16 interation = 0;
+	uint16 iteration = 0;
 
 	T_INDIVIDUAL2 current_individual;
 	T_INDIVIDUAL2 neighbor_individual;
@@ -1541,9 +1552,11 @@ void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 	double MIN_fitness;
 	double temperature = TEMP;
 
+	fclose(fopen("OUTPUT_FILE", "w"));
+
 	if (model_size_k == 0) {
 		printf("\nPercentaje value of genes is invalid, set a bigger value!");
-		interation = NR_ITERATIONS;
+		iteration = NR_ITERATIONS;
 	} else {
 
 		generate_individual(&current_individual, model_size_n, model_size_k);
@@ -1556,7 +1569,7 @@ void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 
 	}
 
-	for (; interation < NR_ITERATIONS; interation++) {
+	for (; iteration < NR_ITERATIONS; iteration++) {
 
 		copy_individual(&neighbor_individual, &current_individual);
 
@@ -1578,8 +1591,13 @@ void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 
 			copy_individual(&best_individual, &current_individual);
 
-			printf("\n==========#Iteration  %d#===========", interation);
+			printf("\n==========#Iteration  %d#===========", iteration);
 			print_individual(&neighbor_individual);
+
+			if(USE_GRAPHICS)
+			{
+				print_steps(&current_individual, iteration, iteration);
+			}
 		}
 	}
 
@@ -1600,7 +1618,7 @@ void GA_hill_climbing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 
 	uint16 model_size_n = get_A_matrix()->size2;
 	uint16 model_size_k = get_nr_genes(model_size_n);
-	uint16 interation = 0;
+	uint16 iteration = 0;
 
 	T_INDIVIDUAL2 current_individual;
 	T_INDIVIDUAL2 neighbor_individual;
@@ -1613,9 +1631,11 @@ void GA_hill_climbing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 	double result = 1;
 	double MIN_fitness;
 
+	fclose(fopen(OUTPUT_FILE, "w"));
+
 	if (model_size_k == 0) {
 		printf("\nPercentaje value of genes is invalid, set a bigger value!");
-		interation = NR_ITERATIONS;
+		iteration = NR_ITERATIONS;
 	} else {
 
 		generate_individual(&current_individual, model_size_n, model_size_k);
@@ -1628,7 +1648,7 @@ void GA_hill_climbing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 
 	}
 
-	for (; interation < NR_ITERATIONS; interation++) {
+	for (; iteration < NR_ITERATIONS; iteration++) {
 
 		copy_individual(&neighbor_individual, &current_individual);
 
@@ -1648,9 +1668,16 @@ void GA_hill_climbing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 
 			copy_individual(&best_individual, &current_individual);
 
-			printf("\n==========#Iteration  %d#===========", interation);
+			printf("\n==========#Iteration  %d#===========", iteration);
 			print_individual(&neighbor_individual);
+
+			if(USE_GRAPHICS)
+			{
+				print_steps(&current_individual, iteration, iteration);
+			}
 		}
+
+
 	}
 
 
@@ -1663,4 +1690,52 @@ void GA_hill_climbing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 
 }
 
+/*=========================================*/
+/* this function print to a file number of steps algorithm makes at each sub_model
+ * this is a more visual print*/
+/*=========================================*/
+void print_steps(T_INDIVIDUAL2* individual, uint16 index, uint16 iteration)
+{
+	FILE* f;
 
+	f = fopen(
+	OUTPUT_FILE, "a+");
+
+	if (f != NULL)
+	{
+		fprintf(f,"%d,", iteration);
+		fprintf(f,"%lf,", individual->fitness_value);
+		fprintf(f,"%d\n", individual->size);
+
+	}
+
+	else
+	   printf("Couldn't open file\n");
+
+	fclose(f);
+}
+
+/*=========================================*/
+/* this function print to a file number of steps algorithm makes at each sub_model
+ * this is a more visual print*/
+/*=========================================*/
+void print_steps_population(T_INDIVIDUAL2* individuals, uint16 population_size, uint16 index, uint16 iteration)
+{
+	FILE* f;
+
+	f = fopen(OUTPUT_FILE, "a+");
+
+	if (f != NULL) {
+		for (uint16 i = 0; i < population_size; i++) {
+			fprintf(f, "%d,", iteration);
+			fprintf(f, "%lf,", individuals[i].fitness_value);
+			fprintf(f, "%d\n", individuals[i].size);
+		}
+
+	}
+
+	else
+		printf("Couldn't open file\n");
+
+	fclose(f);
+}
