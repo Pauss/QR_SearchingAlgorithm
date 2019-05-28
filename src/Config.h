@@ -11,7 +11,7 @@
 /*define*/
 /*===========Genetic Algorithm=============*/
 #define PERCENTAJE_OF_CHROMOSOMES 100u //70
-#define CONVERGE 50u
+#define CONVERGE 30u
 #define MAX_FITNESS 100000
 #define FIXED_NR_GENES 0u
 #define PERCENTAJE_OF_GENES 30u//55u
@@ -22,7 +22,7 @@
 /*=========================================*/
 /*==========Tournament Selection===========*/
 /*=========================================*/
-#define PERCENTAJE_OF_TOURNAMENT_K 40u
+#define PERCENTAJE_OF_TOURNAMENT_K 30u
 /*=========================================*/
 /*==========Simulated Annealing============*/
 /*=========================================*/

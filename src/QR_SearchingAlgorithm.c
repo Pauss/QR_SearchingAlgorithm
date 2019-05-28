@@ -38,7 +38,7 @@ int main()
 
  	strcpy(my_file, REAL_DATA_PATH);
 
- 	my_file = strcat(my_file, "house.txt");//house //data_invalid //DataSetG
+ 	my_file = strcat(my_file, "house.txt");//house //data_invalid //DataSetG // boston.txt //ozone.txt
 
  	printf(my_file);
 
@@ -56,7 +56,7 @@ int main()
 		 * 2. Efficient search with QR decomposition applied only on first step. Save some time tho..
 		 * 3. Even more nice strategy using GA (Genetic Algorithm)*/
 
-		T_SEARCH_STRATEGIES strategy = GA_search;//GA_search; GA_search_BB; naive_search //GA_SA // GA_HC // efficient_search
+		T_SEARCH_STRATEGIES strategy = GA_search_BB;//GA_search; GA_search_BB; naive_search //GA_SA // GA_HC // efficient_search
 
 		//efficient method relevant
 		T_EFFICIENT_METHOD columns_method = columns_removal;//columns_transitions; columns_removal;
@@ -64,7 +64,7 @@ int main()
 		//GA relevant
 		T_SELECTION_METHOD selection_method = roulette_wheel;  //tournament; roulette_wheel;
 		T_OPERATOR_METHOD operator1 = flip; //flip //interchanging; interchanging_abs; reversing
-		T_OPERATOR_METHOD operator2 = uniform; //_1point; uniform; RRC; _1point_simple; no_operator
+		T_OPERATOR_METHOD operator2 = RRC; //_1point; uniform; RRC; _1point_simple; no_operator
 		intercept = installed; //installed //not_installed
 
 		file_dim = get_file_dimensions();

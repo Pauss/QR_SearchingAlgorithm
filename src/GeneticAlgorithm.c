@@ -1163,6 +1163,8 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 			 * 3. Truncation Selection -> simply selects at random from the population having first eliminated K number of the least fit individuals
 			 */
 
+			++generation;
+
 			switch (method) {
 			case tournament: selection_tournament(GA_population, population_size, PERCENTAJE(PERCENTAJE_OF_TOURNAMENT_K, model_size_k)); break;
 
@@ -1192,7 +1194,7 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 
 				if(USE_GRAPHICS)
 				{
-					print_steps_population(&GA_population, model_size_n, 1, 1);
+					print_steps_population(&GA_population, model_size_n, 1, generation);
 				}
 
 
@@ -1309,7 +1311,7 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 		while (converge_value < CONVERGE)
 
 		{
-			generation++;
+			++generation;
 
 /*			if (FALSE
 					!= selection_building_blocks(GA_population, Schemas,
@@ -1346,6 +1348,13 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 
 					printf("\nSchmeas\n");
 					print_population(Schemas, temp_nr_schemas);
+
+					if(USE_GRAPHICS)
+					{
+						print_steps_population(&Schemas, temp_nr_schemas, 1, generation);
+					}
+
+
 
 				} else {
 					b_converge = TRUE;
@@ -1417,6 +1426,11 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 
 					printf("\nSchmeas\n");
 				    print_population(Schemas, temp_nr_schemas);
+
+					if(USE_GRAPHICS)
+					{
+						print_steps_population(&Schemas, temp_nr_schemas, 1, generation);
+					}
 
 
 				} else {
@@ -1552,7 +1566,7 @@ void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 	double MIN_fitness;
 	double temperature = TEMP;
 
-	fclose(fopen("OUTPUT_FILE", "w"));
+	fclose(fopen(OUTPUT_FILE, "w"));
 
 	if (model_size_k == 0) {
 		printf("\nPercentaje value of genes is invalid, set a bigger value!");
@@ -1698,14 +1712,18 @@ void print_steps(T_INDIVIDUAL2* individual, uint16 index, uint16 iteration)
 {
 	FILE* f;
 
-	f = fopen(
-	OUTPUT_FILE, "a+");
+	f = fopen(OUTPUT_FILE, "a+");
 
 	if (f != NULL)
 	{
 		fprintf(f,"%d,", iteration);
 		fprintf(f,"%lf,", individual->fitness_value);
-		fprintf(f,"%d\n", individual->size);
+		fprintf(f,"%d,", individual->size);
+		for(uint16 i = 0; i < individual->size; i++)
+		{
+			fprintf(f,"%d,", individual->columns[i]+1);
+		}
+		fprintf(f,"\n");
 
 	}
 
@@ -1729,7 +1747,14 @@ void print_steps_population(T_INDIVIDUAL2* individuals, uint16 population_size, 
 		for (uint16 i = 0; i < population_size; i++) {
 			fprintf(f, "%d,", iteration);
 			fprintf(f, "%lf,", individuals[i].fitness_value);
-			fprintf(f, "%d\n", individuals[i].size);
+			fprintf(f, "%d,", individuals[i].size);
+			for(uint16 j = 0; j < individuals[i].size; j++)
+			{
+				fprintf(f,"%d,", individuals[i].columns[j]+1);
+			}
+			fprintf(f,"\n");
+
+
 		}
 
 	}
