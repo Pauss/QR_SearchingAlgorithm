@@ -10,7 +10,7 @@
 
 /*=========================================*/
 /*include*/
-#include "QR_SearchingAlgorithm.h"
+//#include "QR_SearchingAlgorithm.h"
 #include "MatrixComputations.h"
 #include "AlgorithmComputations.h"
 #include "Types.h"
@@ -22,6 +22,31 @@
 /*define*/
 /*=========================================*/
 /*enumerations*/
+
+typedef enum
+{
+	data_no_error = 0,
+	data_index_out_of_range,
+	data_nr_of_columns_0,
+	data_nr_of_columns_high,
+	data_nr_of_individuals_0,
+	data_nr_of_individuals_high
+
+}DATA_ERRORS;
+
+/*=========================================*/
+/*typedef*/
+
+typedef enum
+{
+	naive_search = 0,
+	efficient_search,
+	GA_search,
+	GA_search_BB,
+	GA_SA,
+	GA_HC,
+	invalid_strategy
+}T_SEARCH_STRATEGIES;
 
 typedef enum
 {
@@ -45,19 +70,15 @@ typedef enum
 	no_operator = 8u
 }T_OPERATOR_METHOD;
 
-typedef enum
+typedef struct
 {
-	data_no_error = 0,
-	data_index_out_of_range,
-	data_nr_of_columns_0,
-	data_nr_of_columns_high,
-	data_nr_of_individuals_0,
-	data_nr_of_individuals_high
+	T_SEARCH_STRATEGIES strategy;
+	T_OPERATOR_METHOD op1;
+	T_OPERATOR_METHOD op2;
+	T_SELECTION_METHOD method;
+	char* my_file;
 
-}DATA_ERRORS;
-
-/*=========================================*/
-/*typedef*/
+}CMD_INPUTS;
 
 typedef struct{
 	boolean  selected;

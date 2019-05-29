@@ -5,7 +5,7 @@ ECHO ============================
 ECHO Run QR_SearchingAlgorithm
 ECHO ============================ 
 cd Debug 
-QR_SearchingAlgorithm.exe
+QR_SearchingAlgorithm.exe %1 %2 %3 %4 %5
 ECHO ============================
 ECHO Operation successfully ended
 ECHO ============================

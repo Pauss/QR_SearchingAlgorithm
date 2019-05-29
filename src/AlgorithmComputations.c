@@ -228,11 +228,11 @@ void naive_alg(void) {
 			my_model->size2 = columns_transitions->k;
 			submodel_matrix2(columns_transitions->data, my_model);
 
-			gsl_combination_fprintf(stdout, columns_transitions, "%u ");
+			//gsl_combination_fprintf(stdout, columns_transitions, "%u ");
 
 			new_RSS = RSS_compute(my_model);
 
-			printf("\nRSS: %lf\n", new_RSS);
+			//printf("\nRSS: %lf\n", new_RSS);
 
 			//print_steps(new_RSS, columns_transitions);
 			//printf("\nRSS: %lf\n", new_RSS);

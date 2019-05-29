@@ -8,6 +8,7 @@
 #include "Types.h"
 #include <gsl/gsl_combination.h>
 #include "GeneticAlgorithm.h"
+#include "QR_SearchingAlgorithm.h"
 /*=========================================*/
 /*define*/
 #define MIN_VALUE(X, Y)  ((X) < (Y) ? (X) : (Y))

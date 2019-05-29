@@ -1263,6 +1263,8 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 	double result = 1;
 	double MIN = (double) MAX_FITNESS;
 
+	fclose(fopen(OUTPUT_FILE, "w"));
+
 	if (model_size_k == 0 || population_size == 0) {
 		printf(
 				"\nPercentaje value of genes or population size is invalid, set a bigger value!");
