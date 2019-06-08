@@ -58,12 +58,14 @@ def get_graphic():
 
     ########################################
     # first graphic
-    # set up axes
-    # ax1 = plt.subplot(131)
-
     # scatter the data
+    index_min_fitness = fitness.index(min(fitness))
+    index_min = iterations[index_min_fitness]
+
+    x1fit = [min(iterations), index_min]
+    y1fit = [fitness[0], min(fitness)]
     ax1.scatter(iterations, fitness, c=iterations, s=fitness, marker=".", alpha=0.4)
-    ax1.plot(iterations, fitness)
+    ax1.plot(x1fit, y1fit, "r-")
 
     # customization
     ax1.set_xlabel('Iteration', fontdict=font)
@@ -74,7 +76,10 @@ def get_graphic():
 
     # second graphic
     # scatter the data
+    x2fit = nr_columns[index_min_fitness]
+    y2fit = min(fitness)
     ax2.scatter(nr_columns, fitness, c=nr_columns, s=fitness, marker=".", alpha=0.5)
+    ax2.plot(x2fit, y2fit, "r*")
 
     # customization
     ax2.set_xlabel('Number of columns', fontdict=font)
@@ -85,7 +90,14 @@ def get_graphic():
 
     # third graphic
     # scatter the data
+    x3fit = list()
+    y3fit = list()
+    for i in range(index_min_fitness, (index_min_fitness + nr_columns[index_min_fitness])):
+        x3fit.append(columns[i])
+        y3fit.append(min(fitness))
+
     ax3.scatter(columns, fitness, c=columns, s=fitness, marker=".", alpha=0.4)
+    ax3.plot(x3fit, y3fit, "r*")
 
     # customization
     ax3.set_xlabel('Individual columns', fontdict=font)
@@ -103,4 +115,8 @@ def get_graphic():
 
 
 n = get_data("../output_individuals/Out_individuals.csv")
-get_graphic()
+
+if n:
+    get_graphic()
+else:
+    print("Empty data, graphic picture could not be created")

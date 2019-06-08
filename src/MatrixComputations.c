@@ -129,7 +129,7 @@ void print_vector16 (uint16 *v, uint16 size) {
 	if (size != 0 && v != NULL) {
 		for (uint16 i = 0; i < size; i++) {
 
-			printf("v(%d) = %d; ", i, v[i]+1);
+			printf("v(%d) = %d ; ", i, v[i]+1);
 		}
 	} else {
 		printf("\nEmpty model");
@@ -146,7 +146,7 @@ void print_vector8 (uint8 *v, uint16 size) {
 
 	for (uint16 i = 0; i < size; i++) {
 
-			printf("v(%d) = %d ", i, v[i]);
+			printf("v(%d) = %d ;", i, v[i]);
 	}
 	printf("\n");
 }

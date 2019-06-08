@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="227b9698-ea02-4b22-aea0-eee01c5adfa1" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/r_generator.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Debug/QR_SearchingAlgorithm.exe" beforeDir="false" afterPath="$PROJECT_DIR$/../Debug/QR_SearchingAlgorithm.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Debug/src/MatrixComputations.o" beforeDir="false" afterPath="$PROJECT_DIR$/../Debug/src/MatrixComputations.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Debug/src/QR_SearchingAlgorithm.d" beforeDir="false" afterPath="$PROJECT_DIR$/../Debug/src/QR_SearchingAlgorithm.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../Debug/src/QR_SearchingAlgorithm.o" beforeDir="false" afterPath="$PROJECT_DIR$/../Debug/src/QR_SearchingAlgorithm.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../integration.bat" beforeDir="false" afterPath="$PROJECT_DIR$/../integration.bat" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../output_graphics/My_Graphic.png" beforeDir="false" afterPath="$PROJECT_DIR$/../output_graphics/My_Graphic.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../output_individuals/Out_individuals.csv" beforeDir="false" afterPath="$PROJECT_DIR$/../output_individuals/Out_individuals.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../python_script/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../python_script/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../python_script/graphics.py" beforeDir="false" afterPath="$PROJECT_DIR$/../python_script/graphics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/Config.h" beforeDir="false" afterPath="$PROJECT_DIR$/../src/Config.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/GeneticAlgorithm.c" beforeDir="false" afterPath="$PROJECT_DIR$/../src/GeneticAlgorithm.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/GeneticAlgorithm.h" beforeDir="false" afterPath="$PROJECT_DIR$/../src/GeneticAlgorithm.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/MatrixComputations.c" beforeDir="false" afterPath="$PROJECT_DIR$/../src/MatrixComputations.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/QR_SearchingAlgorithm.c" beforeDir="false" afterPath="$PROJECT_DIR$/../src/QR_SearchingAlgorithm.c" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mymatrix.txt">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/generate_data.R">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="153">
+              <caret line="21" column="79" selection-start-line="21" selection-start-column="79" selection-end-line="21" selection-end-column="79" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>1.038725</find>
+      <find>0.9890786</find>
+      <find>1.01148</find>
+      <find>0.0011463286</find>
+      <find>0.969939772</find>
+    </findStrings>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/generate-data-2.R" />
+        <option value="$PROJECT_DIR$/generate_data.R" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectConfigurationFiles">
+    <option name="files">
+      <list>
+        <option value="$PROJECT_DIR$/.idea/r_generator.iml" />
+        <option value="$PROJECT_DIR$/.idea/misc.xml" />
+        <option value="$PROJECT_DIR$/.idea/vcs.xml" />
+        <option value="$PROJECT_DIR$/.idea/modules.xml" />
+        <option value="$PROJECT_DIR$/.idea/libraries/R_User_Library.xml" />
+        <option value="$PROJECT_DIR$/.idea/dictionaries/Paus.xml" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="4" />
+    <option name="y" value="11" />
+    <option name="width" value="1346" />
+    <option name="height" value="698" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="r_generator" type="b2602c69:ProjectViewProjectNode" />
+              <item name="r_generator" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="C:/Program Files/R/R-3.4.1/bin/x64/R.exe" />
+    <property name="settings.editor.selected.configurable" value="RSettings" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="R.generate_data">
+    <configuration name="generate-data-2" type="RRunConfigurationType" factoryName="R" temporary="true">
+      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/generate-data-2.R" />
+      <option name="SCRIPT_ARGS" value="" />
+      <option name="WORKING_DIRECTORY_PATH" value="P:\licenta\QR_SearchingAlgorithm\r_generator" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <method v="2" />
+    </configuration>
+    <configuration name="generate_data" type="RRunConfigurationType" factoryName="R" temporary="true">
+      <option name="SCRIPT_PATH" value="$PROJECT_DIR$/generate_data.R" />
+      <option name="SCRIPT_ARGS" value="" />
+      <option name="WORKING_DIRECTORY_PATH" value="P:\licenta\QR_SearchingAlgorithm\r_generator" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="R.generate_data" />
+        <item itemvalue="R.generate-data-2" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="227b9698-ea02-4b22-aea0-eee01c5adfa1" name="Default Changelist" comment="" />
+      <created>1559651138902</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1559651138902</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
+    <layout>
+      <window_info id="Favorites" order="0" side_tool="true" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.1452345" />
+      <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Terminal" order="0" weight="0.32920355" />
+      <window_info anchor="bottom" id="Event Log" order="1" sideWeight="0.5007776" side_tool="true" weight="0.32920355" />
+      <window_info anchor="bottom" id="Messages" order="2" sideWeight="0.4992224" weight="0.32920355" />
+      <window_info anchor="bottom" id="Python Console" order="3" />
+      <window_info anchor="bottom" id="Message" order="4" />
+      <window_info anchor="bottom" id="Find" order="5" />
+      <window_info anchor="bottom" id="Version Control" order="6" />
+      <window_info anchor="bottom" id="Run" order="7" weight="0.19469027" />
+      <window_info anchor="bottom" id="Debug" order="8" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="10" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="11" weight="0.32920355" />
+      <window_info anchor="right" id="R Graphics" order="0" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="1" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="R Packages" order="2" />
+      <window_info anchor="right" id="Ant Build" order="3" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="4" weight="0.25" />
+    </layout>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/data.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="303">
+          <caret line="29" column="59" lean-forward="true" selection-start-line="29" selection-start-column="59" selection-end-line="29" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/generate-data-2.R" />
+    <entry file="file://$PROJECT_DIR$/mymatrix.txt">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/generate_data.R">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="21" column="79" selection-start-line="21" selection-start-column="79" selection-end-line="21" selection-end-column="79" />
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

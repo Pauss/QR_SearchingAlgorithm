@@ -42,6 +42,7 @@ int main(int argc, char **argv)
 
  	if (argc != NR_PARAMETERS) {
  		check_file = file_not_found;
+
 	} else {
 		read_inputs(&cmd_data, argv);
 		check_file = fileIsValid(cmd_data.my_file);
@@ -68,8 +69,17 @@ int main(int argc, char **argv)
 			set_A_matrix(file_dim);
 			set_model_elements();
 
+			if(USE_GRAPHICS == 1)
+			{
+				if (fopen(OUTPUT_FILE, "r"))
+				{
+					fclose(fopen(OUTPUT_FILE, "w"));
+				}
+			}
+
 			switch(cmd_data.strategy)
 			{
+
 			case naive_search:{
 
 				printf("\nPerforming Naive Search\n");
@@ -120,7 +130,6 @@ int main(int argc, char **argv)
 			}
 
 			}
-
 		}
 
 	}
@@ -134,6 +143,7 @@ int main(int argc, char **argv)
 		case file_not_found:
 		{
 			printf("\nERROR: File not found.\n");
+			printf(cmd_data.my_file);
 			break;
 		}
 		case file_dim_invalid:
@@ -159,6 +169,8 @@ int main(int argc, char **argv)
 	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 	printf("\nEXECUTION TIME %f\n", time_spent);
 
+	//fclose(stdout);
+	//fclose(stderr);
 	return 0;
 
 }
@@ -228,7 +240,7 @@ static void read_inputs(CMD_INPUTS* cmd_data, char** argv) {
 		cmd_data->strategy = invalid_strategy;
 	}
 
-	strcpy(cmd_data->my_file, REAL_DATA_PATH);
+	strcpy(cmd_data->my_file, GENERATED_DATA_PATH);
 
 	cmd_data->my_file = strcat(cmd_data->my_file, argv[5]);
 

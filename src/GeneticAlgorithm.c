@@ -56,6 +56,7 @@ static void print_individual(T_INDIVIDUAL2* individual);
 static void print_population(T_INDIVIDUAL2* population, uint16 size);
 
 static uint16 get_nr_genes(uint16 columns);
+static double abs_value(double val);
 
 /*=========================================*/
 /*This function compute a possible subset of ModelMatrix*/
@@ -77,6 +78,16 @@ void get_random_model(uint8* my_random_model, uint16 k, uint16 n) {
 		i--;
 	}
 
+}
+
+static double abs_value(double val)
+{
+	if(val < 0)
+	{
+		return (double)((-1)*val);
+	}
+
+	return val;
 }
 
 static DATA_ERRORS convert_submodels(uint8* bit_model, uint16* model, uint16* size) {
@@ -226,24 +237,46 @@ static void probability_selection(T_INDIVIDUAL2* population, uint16 size) {
 	double sum_probabilities = 0;
 
 	for (uint16 i = 0; i < size; i++) {
-		sum_fitness += population[i].fitness_value;
+
+		if(MAX_FITNESS != population[i].fitness_value)
+		{
+			double temp_fitness = abs_value((double)population[i].fitness_value);
+			sum_fitness += temp_fitness;
+		}
 	}
+	sum_fitness = abs_value(sum_fitness);
 
 	for (uint16 i = 0; i < size; i++) {
-		//it's used cumulative probability
-		population[i].selection_probability = sum_probabilities
-				+ (double) (population[i].fitness_value / sum_fitness);
-		sum_probabilities +=
-				(double) (population[i].fitness_value / sum_fitness);
+
+		if (MAX_FITNESS != population[i].fitness_value) {
+
+			if (INIT != sum_fitness) {
+				//it's used cumulative probability
+
+				double temp_fitness = abs_value((double)population[i].fitness_value);
+
+
+				population[i].selection_probability = (sum_probabilities)
+						+ (double)(temp_fitness / sum_fitness);
+				sum_probabilities += (double)(temp_fitness / sum_fitness);
+			}
+		}
+		else
+		{
+			population[i].selection_probability = 0;
+		}
 	}
+
 
 	for (uint16 i = 0; i < size - 1; i++) {
 
 		double r = (double) (rand() / (double) (RAND_MAX));
 
+
 		//r bigger than actual but less then next individual
-		if (population[i].selection_probability < r
-				&& r <= population[i + 1].selection_probability) {
+		if ((population[i].selection_probability < r
+				&& r <= population[i + 1].selection_probability) && (INIT != population[i].selection_probability)) {
+
 			population[i].selected = TRUE;
 		} else
 			population[i].selected = FALSE;
@@ -399,6 +432,8 @@ static void selection_roulette_wheel(T_INDIVIDUAL2* population, uint16* size, ui
 	uint16 temp_size = 0;
 	uint16 temp_pool_size = *size;
 
+	//printf("\n<IN FUNCTION selection_roulette_wheel> size: %d\n", *size);
+
 	do {
 
 		probability_selection(population, *size);
@@ -421,6 +456,8 @@ static void selection_roulette_wheel(T_INDIVIDUAL2* population, uint16* size, ui
 			}
 
 		}
+
+		//printf("\n<IN FUNCTION selection_roulette_wheel> temp_size: %d\n", temp_size);
 
 	} while (temp_size < *size);
 
@@ -1119,7 +1156,6 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 	double result = 1;
 	double MIN = (double) MAX_FITNESS;
 
-	fclose(fopen(OUTPUT_FILE, "w"));
 
 	if(model_size_k == 0 || population_size == 0)
 	{
@@ -1150,6 +1186,8 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 			set_BEST(&best_solution, &GA_population[best_solution_index], &MIN);
 		}
 
+		print_steps_population(&best_solution,1, 1, generation);
+
 		//repeat until converge
 		while (converge_value < CONVERGE)
 
@@ -1174,8 +1212,6 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 
 			}
 
-			//print_population(GA_population, population_size);
-
 			new_population_computed(GA_population, population_size,
 					model_size_n, op2);
 			new_population_computed(GA_population, population_size,
@@ -1190,11 +1226,9 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 							&result);
 				}
 
-				//print_population(GA_population, population_size);
-
 				if(USE_GRAPHICS)
 				{
-					print_steps_population(&GA_population, model_size_n, 1, generation);
+					print_steps_population(GA_population, model_size_n, 1, generation);
 				}
 
 
@@ -1212,6 +1246,7 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 					converge_value = INIT;
 
 					//print_steps(&best_solution, 1 ,1);
+					print_steps_population(&best_solution,1, 1, generation);
 
 
 				} else {
@@ -1263,7 +1298,6 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 	double result = 1;
 	double MIN = (double) MAX_FITNESS;
 
-	fclose(fopen(OUTPUT_FILE, "w"));
 
 	if (model_size_k == 0 || population_size == 0) {
 		printf(
@@ -1348,16 +1382,6 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 					//reset counter in case converge is not consecutively met
 					converge_value = INIT;
 
-					printf("\nSchmeas\n");
-					print_population(Schemas, temp_nr_schemas);
-
-					if(USE_GRAPHICS)
-					{
-						print_steps_population(&Schemas, temp_nr_schemas, 1, generation);
-					}
-
-
-
 				} else {
 					b_converge = TRUE;
 
@@ -1415,7 +1439,6 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 				}
 
 
-
 				best_solution_index2 = get_index_of_BEST(Schemas,
 						temp_nr_schemas);
 
@@ -1426,21 +1449,17 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 					//reset counter in case converge is not consecutively met
 					converge_value = INIT;
 
-					printf("\nSchmeas\n");
-				    print_population(Schemas, temp_nr_schemas);
-
-					if(USE_GRAPHICS)
-					{
-						print_steps_population(&Schemas, temp_nr_schemas, 1, generation);
-					}
-
-
 				} else {
 					b_converge = TRUE;
 
 					if (last_converge) {
 						converge_value++;
 					}
+				}
+
+				if(USE_GRAPHICS)
+				{
+					print_steps_population(Schemas, temp_nr_schemas, 1, generation);
 				}
 
 
@@ -1450,6 +1469,12 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 			}
 
 			last_converge = b_converge;
+
+			if(USE_GRAPHICS)
+			{
+				print_steps_population(&best_solution,1, 1, generation);
+			}
+
 
 		}
 
@@ -1515,7 +1540,6 @@ double individual_RSS_computation(T_INDIVIDUAL2* individual)
 	//print_matrix(base_R);
 
 
-
 	gsl_matrix* elimination_R = gsl_matrix_alloc(base_R->size1, base_R->size2);
 	gsl_matrix_memcpy(elimination_R, base_R);
 
@@ -1568,8 +1592,6 @@ void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 	double MIN_fitness;
 	double temperature = TEMP;
 
-	fclose(fopen(OUTPUT_FILE, "w"));
-
 	if (model_size_k == 0) {
 		printf("\nPercentaje value of genes is invalid, set a bigger value!");
 		iteration = NR_ITERATIONS;
@@ -1606,9 +1628,6 @@ void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 			MIN_fitness = current_individual.fitness_value;
 
 			copy_individual(&best_individual, &current_individual);
-
-			printf("\n==========#Iteration  %d#===========", iteration);
-			print_individual(&neighbor_individual);
 
 			if(USE_GRAPHICS)
 			{
@@ -1647,7 +1666,6 @@ void GA_hill_climbing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 	double result = 1;
 	double MIN_fitness;
 
-	fclose(fopen(OUTPUT_FILE, "w"));
 
 	if (model_size_k == 0) {
 		printf("\nPercentaje value of genes is invalid, set a bigger value!");
@@ -1683,9 +1701,6 @@ void GA_hill_climbing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 			MIN_fitness = current_individual.fitness_value;
 
 			copy_individual(&best_individual, &current_individual);
-
-			printf("\n==========#Iteration  %d#===========", iteration);
-			print_individual(&neighbor_individual);
 
 			if(USE_GRAPHICS)
 			{

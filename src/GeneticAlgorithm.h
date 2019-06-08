@@ -20,6 +20,7 @@
 #include <time.h>
 /*=========================================*/
 /*define*/
+#define ABS_VALUE(X) ((X) < 0 ? (-1)*(X) : (X))
 /*=========================================*/
 /*enumerations*/
 
@@ -106,17 +107,18 @@ typedef struct{
 
 /*=========================================*/
 /*external functions*/
-void get_random_model(uint8* my_random_model, uint16 k, uint16 n);
+void 	get_random_model(uint8* my_random_model, uint16 k, uint16 n);
 boolean criterion (double RSS, uint16 n, uint16 k, double* result);
-void fitness_func(T_INDIVIDUAL2* individual, uint16 model_size_n, uint16 model_size_k, double* result);
-void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2);
-void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2);
-void GA_hill_climbing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2);
-void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2);
-void individual_init(T_INDIVIDUAL2* individual);
-void individual_dealloc(T_INDIVIDUAL2* individual);
-double individual_RSS_computation(T_INDIVIDUAL2* individual);
-void   print_steps(T_INDIVIDUAL2* individual, uint16 index, uint16 iteration);
+void 	fitness_func(T_INDIVIDUAL2* individual, uint16 model_size_n, uint16 model_size_k, double* result);
+void 	GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2);
+void 	GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2);
+void 	GA_hill_climbing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2);
+void 	GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2);
+void 	individual_init(T_INDIVIDUAL2* individual);
+void 	individual_dealloc(T_INDIVIDUAL2* individual);
+double  individual_RSS_computation(T_INDIVIDUAL2* individual);
+void    print_steps(T_INDIVIDUAL2* individual, uint16 index, uint16 iteration);
+void	print_steps_population(T_INDIVIDUAL2* individuals, uint16 population_size, uint16 index, uint16 iteration);
 /*=========================================*/
 
 #endif /* SRC_GENETICALGORITHM_H_ */

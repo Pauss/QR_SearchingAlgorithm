@@ -1,0 +1,140 @@
+TIME: 7minutes
+CONFIG generated data : nobs = 50, nreg = 20, ntrue = 10, intercept = TRUE, sd = 0.01
+CONFIG ga : 70%population, converge 100, tournament selcetion 30%population
+CONFIG ga_sa: 1000 iterations, cooling rate 0,75
+CONFIG ga_hc: 1000 iterations
+CONFIG ga_bb: schema columns 60%invididual
+==========================================
+['ga', '1', '1', '2']
+Matching probability:  1.0
+
+
+['ga', '1', '2', '2']
+Matching probability:  0.0
+
+
+['ga', '1', '3', '2']
+Matching probability:  1.0
+
+
+['ga', '1', '4', '2']
+Matching probability:  0.0
+
+
+['ga', '2', '2', '2']
+Matching probability:  0.0
+
+
+['ga', '2', '3', '2']
+Matching probability:  0.0
+
+
+['ga', '2', '4', '2']
+Matching probability:  0.0
+
+
+['ga', '4', '4', '2']
+Matching probability:  1.0
+
+==========================================
+
+['ga_sa', '1', '1', '2']
+Matching probability:  61.0
+
+
+['ga_sa', '1', '2', '2']
+Matching probability:  59.0
+
+
+['ga_sa', '1', '3', '2']
+Matching probability:  61.0
+
+
+['ga_sa', '1', '4', '2']
+Matching probability:  60.0
+
+
+['ga_sa', '2', '2', '2']
+Matching probability:  0.0
+
+
+['ga_sa', '2', '3', '2']
+Matching probability:  18.0
+
+
+['ga_sa', '2', '4', '2']
+Matching probability:  6.0
+
+
+['ga_sa', '4', '4', '2']
+Matching probability:  0.0
+
+==========================================
+
+['ga_hc', '1', '1', '2']
+Matching probability:  61.0
+
+
+['ga_hc', '1', '2', '2']
+Matching probability:  62.0
+
+
+['ga_hc', '1', '3', '2']
+Matching probability:  62.0
+
+
+['ga_hc', '1', '4', '2']
+Matching probability:  59.0
+
+
+['ga_hc', '2', '2', '2']
+Matching probability:  0.0
+
+
+['ga_hc', '2', '3', '2']
+Matching probability:  17.0
+
+
+['ga_hc', '2', '4', '2']
+Matching probability:  0.0
+
+
+['ga_hc', '4', '4', '2']
+Matching probability:  0.0
+
+==========================================
+
+['ga_bb', '1', '1', '2']
+Matching probability:  0.0
+
+
+['ga_bb', '1', '2', '2']
+Matching probability:  1.0
+
+
+['ga_bb', '1', '3', '2']
+Matching probability:  0.0
+
+
+['ga_bb', '1', '4', '2']
+Matching probability:  0.0
+
+
+['ga_bb', '2', '2', '2']
+Matching probability:  0.0
+
+
+['ga_bb', '2', '3', '2']
+Matching probability:  0.0
+
+
+['ga_bb', '2', '4', '2']
+Matching probability:  0.0
+
+
+['ga_bb', '4', '4', '2']
+Matching probability:  1.0
+
+
+
+Process finished with exit code 0
