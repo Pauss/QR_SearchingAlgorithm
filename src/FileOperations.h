@@ -7,7 +7,7 @@
 #include <gsl/gsl_combination.h>
 /*=========================================*/
 /*define*/
-#define MAX_LINE 500
+#define MAX_LINE 100000000
 #define MAX_STRING 20
 #define MAX_NR_LENGTH 15
 #define DEFAULT_FILE "house.txt"

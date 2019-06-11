@@ -67,7 +67,7 @@ r_list = list()
 # max number of columns
 n_max = 10
 # number of files to be generated and verified
-n = 100
+n = 5
 # details of files to be first generated and then checked
 name = "GData"
 type_file = ".txt"
@@ -150,7 +150,7 @@ def execute_c(c_list, par):
 
             # Build subprocess command
             cmd = [command] + args + file_path
-            x = subprocess.check_output(cmd).splitlines()
+            x = subprocess.check_output(cmd, cwd='./Debug').splitlines()
 
             # Get output
             out = x[5].decode(sys.stdout.encoding)
@@ -190,17 +190,12 @@ def matching_some_columns(list1, list2):
     probability = 0
 
     for i in range(n_obsv):
-        dif1 = 0
-        dif2 = 0
+        temp_n = 0
+        for j in list1[i][1]:
+            if j in list2[i][1]:
+                temp_n += 1
 
-        for j in list2[i][1]:
-            if j not in list1[i][1]:
-                dif1 += 1
-        for k in list1[i][1]:
-            if k not in list2[i][1]:
-                dif2 += 1
-
-        temp_p = float(n_max - dif1 - dif2) / n_max
+        temp_p = float(temp_n) / list1[0][0]
         probability += temp_p
 
     probability = (float(probability / n_obsv)) * 100

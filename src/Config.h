@@ -11,7 +11,7 @@
 /*define*/
 /*===========Genetic Algorithm=============*/
 #define PERCENTAJE_OF_CHROMOSOMES 60u //70
-#define CONVERGE 500u
+#define CONVERGE 30u
 #define MAX_FITNESS 100000
 #define FIXED_NR_GENES 0u
 #define PERCENTAJE_OF_GENES 30u//55u
@@ -19,6 +19,7 @@
 /*===========BUilding BLocks===============*/
 /*=========================================*/
 #define PERCENTAJE_OF_SCHEMAS 60u //70
+#define OPERATORS_PROBABILITY 0.3
 /*=========================================*/
 /*==========Tournament Selection===========*/
 /*=========================================*/
@@ -46,11 +47,12 @@
 /*=========================================*/
 /*default files for graphics*/
 /*=========================================*/
-#define OUTPUT_FILE "./output_individuals/Out_individuals.csv"
-#define REAL_DATA_PATH "./real_data/"
-#define GENERATED_DATA_PATH "./generated_data/"
+#define OUTPUT_FILE "../output_individuals/Out_individuals.csv"
+#define REAL_DATA_PATH "../real_data/"
+#define GENERATED_DATA_PATH "../generated_data/"
 #define PATH_SIZE 255u
 #define USE_GRAPHICS 0u
+#define USE_GENERATED 1u
 /*=========================================*/
 
 #endif /* SRC_CONFIG_H_ */

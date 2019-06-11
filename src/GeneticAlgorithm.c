@@ -35,7 +35,7 @@ static DATA_ERRORS shuffle_array(T_INDIVIDUAL2* population, uint16 size);
 static void selection_tournament(T_INDIVIDUAL2* population, uint16 size, uint16 k);
 
 static boolean individual_match_schema(T_INDIVIDUAL2* individual,T_INDIVIDUAL2* schema);
-static boolean selection_building_blocks(T_INDIVIDUAL2* population, T_INDIVIDUAL2* schema, uint16* size, uint16 size_k);
+static uint16 selection_building_blocks(T_INDIVIDUAL2* population, T_INDIVIDUAL2* schema, uint16 size, uint16 size_k);
 
 static boolean neighbor_acceptance(T_INDIVIDUAL2* current, T_INDIVIDUAL2* neighbor, double temperature);
 
@@ -1004,6 +1004,7 @@ static void build_schemas(T_INDIVIDUAL2* schemas, uint16* size_schemas, T_INDIVI
 		columns_schema = (uint16) (temp_schema.size_bit / *size_schemas);
 	}
 
+
 	if (size > 0) {
 		mean_fitness = get_mean_fitness(population, size);
 	}
@@ -1037,9 +1038,12 @@ static void build_schemas(T_INDIVIDUAL2* schemas, uint16* size_schemas, T_INDIVI
 					&& (mean_schema_fitness > 0))
 					//if(temp_schema.fitness_value < mean_fitness && (double)temp_schema.fitness_value > (double)0 )
 					{
+
+
 				individual_init(&schemas[temp_i]);
 				copy_individual_into_population(schemas, &temp_schema, temp_i,
 						0);
+
 				temp_i++;
 
 			} else {
@@ -1071,7 +1075,7 @@ static void combine_schemas(T_INDIVIDUAL2* schema1,T_INDIVIDUAL2* schema2)
 	individual_init(&temp_schema);
 
 	for (uint16 i = 0; i < schema2->size_bit; i++) {
-		if (schema1->bit_columns[i] == 1 || schema2->bit_columns[i]) {
+		if (schema1->bit_columns[i] == 1 || schema2->bit_columns[i] == 1) {
 			temp_size++;
 			model[i] = 1;
 		} else {
@@ -1102,39 +1106,70 @@ static void combine_schemas(T_INDIVIDUAL2* schema1,T_INDIVIDUAL2* schema2)
 /*=========================================*/
 /*This function implements Building- Blocks Hypothesis*/
 /*=========================================*/
-static boolean selection_building_blocks(T_INDIVIDUAL2* population, T_INDIVIDUAL2* schemas, uint16* size, uint16 size_s)
+static uint16 selection_building_blocks(T_INDIVIDUAL2* population, T_INDIVIDUAL2* schemas, uint16 size, uint16 size_s)
 {
 
-	T_INDIVIDUAL2 temp_population[*size];
-	uint16 temp_size = 0;
-	boolean ret_val = FALSE;
+	T_INDIVIDUAL2 temp_population[size];
+	uint16 temp_size = INIT;
+	uint16 new_size = INIT;
+	double r = INIT;
 
-	for (uint16 i = 0; i < *size; i++) {
+	for(uint16 i = 0; i < size; i++)
+	{
+		individual_init(&temp_population[i]);
+	}
+
+	for (uint16 i = 0; i < size; i++) {
 
 		for (uint16 j = 0; j < size_s; j++) {
 
 			if (FALSE != individual_match_schema(&population[i], &schemas[j])) {
 
-				individual_init(&temp_population[temp_size]);
-				copy_individual_into_population(temp_population, population,
-						temp_size, i);
-				temp_size++;
+				r = (double) (rand() / (double) (RAND_MAX));
+
+				if (r < OPERATORS_PROBABILITY) {
+					population[i].selected = TRUE;
+				} else {
+					population[i].selected = FALSE;
+				}
 				break;
+			}
+			else{
+				population[i].selected = TRUE;
 			}
 
 		}
 
 	}
 
-	if (temp_size > 0) {
+	for(uint16 i = 0; i < size; i++){
 
-		copy_population(population, temp_population, temp_size);
-		*size = temp_size;
-		ret_val = TRUE;
-
+		if (population[i].selected != FALSE) {
+		copy_individual_into_population(temp_population, population,
+				temp_size, i);
+		temp_size++;
+		}
 	}
 
-	return ret_val;
+	new_size = temp_size;
+
+	for(uint16 i = 0; i < size; i++){
+
+		if (population[i].selected == FALSE) {
+		copy_individual_into_population(temp_population, population,
+				temp_size, i);
+		temp_size++;
+		}
+		else
+		{
+			population[i].selected = FALSE;
+		}
+	}
+
+
+	copy_population(population, temp_population, size);
+
+	return new_size;
 }
 
 /*=========================================*/
@@ -1291,6 +1326,7 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 	uint16 best_solution_index2 = INIT;
 	uint16 temp_nr_schemas = nr_schemas;
 	uint16 temp_nr_schemas_old = nr_schemas;
+	uint16 operators_size = INIT;
 	boolean b_converge = FALSE;
 	boolean last_converge = FALSE;
 	boolean correct_size = TRUE;
@@ -1341,28 +1377,32 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 		//set BEST
 		set_BEST(&best_solution, &GA_population[best_solution_index], &MIN);
 
-		build_schemas(Schemas, &temp_nr_schemas, GA_population, population_size);
+		for(uint16 i=0; i< nr_schemas; i++)
+		{
+			individual_init(&Schemas[i]);
+		}
 
+		build_schemas(Schemas, &temp_nr_schemas, GA_population, population_size);
 
 		while (converge_value < CONVERGE)
 
 		{
 			++generation;
 
-/*			if (FALSE
-					!= selection_building_blocks(GA_population, Schemas,
-							&population_size, temp_nr_schemas)) {
-			}*/
+			operators_size =  selection_building_blocks(GA_population, Schemas,
+							population_size, temp_nr_schemas);
 
-			new_population_computed(GA_population, population_size,
-					model_size_n, op2);
-			new_population_computed(GA_population, population_size,
-					model_size_n, op1);
+			if (operators_size) {
+				new_population_computed(GA_population, operators_size,
+						model_size_n, op2);
+				new_population_computed(GA_population, operators_size,
+						model_size_n, op1);
+			}
 
 			if (population_size) {
 
 				//apply fitness to all individuals
-				for (uint16 i = 0; i < population_size; i++) {
+				for (uint16 i = 0; i < operators_size; i++) {
 					fitness_func(&GA_population[i], model_size_n, model_size_k,
 							&result);
 				}
@@ -1390,24 +1430,19 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 					}
 				}
 
+
 				temp_nr_schemas_old = temp_nr_schemas;
 				temp_nr_schemas = nr_schemas;
+
+
 				build_schemas(temp_Schemas, &temp_nr_schemas, GA_population,
 						population_size);
 
-				if(temp_nr_schemas_old < temp_nr_schemas )
-				{
-					min_size = temp_nr_schemas_old;
-					max_size = temp_nr_schemas;
-				}
-				else
-				{
-					max_size = temp_nr_schemas_old;
-					min_size = temp_nr_schemas;
-				}
+				min_size = MIN_(temp_nr_schemas_old, temp_nr_schemas);
+				max_size = MAX_(temp_nr_schemas_old, temp_nr_schemas);
 
 
-				for (uint16 i = 0; i < min_size - 1; i++) {
+				for (uint16 i = 0; i < temp_nr_schemas - 1; i++) {
 
 					combine_schemas(&temp_Schemas[i], &temp_Schemas[i + 1]);
 
@@ -1415,7 +1450,8 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 
 				for (uint16 i = 0; i < min_size; i++) {
 
-					if (Schemas[i].fitness_value < temp_Schemas[i].fitness_value) {
+					if (Schemas[i].fitness_value
+							< temp_Schemas[i].fitness_value) {
 						//Schema[i] doesn't change
 
 					} else {
@@ -1425,19 +1461,15 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 
 				}
 
-				for(uint16 i= min_size; i< max_size; i++)
-				{
-					if(max_size == temp_nr_schemas_old)
-					{
-						/*nothing*/
-					}
-					else
-					{
+				//if new size of schema array is bigger than previous one, then update Schemas array
+				if (temp_nr_schemas == max_size) {
+
+					for (uint16 i = min_size; i < max_size; i++) {
+
 						copy_individual_into_population(Schemas, temp_Schemas,
 								i, i);
 					}
 				}
-
 
 				best_solution_index2 = get_index_of_BEST(Schemas,
 						temp_nr_schemas);

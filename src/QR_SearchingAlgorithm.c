@@ -169,8 +169,6 @@ int main(int argc, char **argv)
 	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 	printf("\nEXECUTION TIME %f\n", time_spent);
 
-	//fclose(stdout);
-	//fclose(stderr);
 	return 0;
 
 }
@@ -240,7 +238,11 @@ static void read_inputs(CMD_INPUTS* cmd_data, char** argv) {
 		cmd_data->strategy = invalid_strategy;
 	}
 
-	strcpy(cmd_data->my_file, GENERATED_DATA_PATH);
+	if (USE_GENERATED) {
+		strcpy(cmd_data->my_file, GENERATED_DATA_PATH);
+	} else {
+		strcpy(cmd_data->my_file, REAL_DATA_PATH);
+	}
 
 	cmd_data->my_file = strcat(cmd_data->my_file, argv[5]);
 
