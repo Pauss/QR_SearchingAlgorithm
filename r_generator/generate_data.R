@@ -17,9 +17,9 @@
 ## intercept: logical
 ## sd: numeric, standard deviation of the error term
 
+M_PI = 3.14159265358979323846
 
-
-model <- function(nobs = 50, nreg = 10, ntrue = 5 , intercept = TRUE, sd = 0.05)
+model <- function(nobs = 100, nreg = 10, ntrue = 5 , intercept = TRUE, sd = 0.01)
 {
     ## independent variables
     X <- rnorm(nobs * nreg,sd=0.01)
@@ -38,9 +38,12 @@ model <- function(nobs = 50, nreg = 10, ntrue = 5 , intercept = TRUE, sd = 0.05)
     ## dependent variable
     y <- cbind(intercept, X) %*% c(1, coefs) + error
 
-    model = list(y = y, X = X, nobs = nobs, nreg = nreg, ntrue= ntrue, intercept = intercept, true = true)
+    model = list(y = y, X = X, nobs = nobs, nreg = nreg, ntrue= ntrue, intercept = intercept, true = true, error = error)
  
 }
+
+norm_vec <- function(x) (sum(x^2))
+fitness_func <- function(n, k, RSS) ((n + n * log(2 * M_PI) + n * log(RSS / n)+ 2 * (k + 2))) #k+1 without intercept
 
 inc <- function(x)
 {
@@ -57,6 +60,7 @@ write_to_file <-function(filename)
     ##get number of lines and columns to be written to file
     nlines = as.numeric(temp_model[3])
     ncolumns = as.numeric(temp_model[4]) + 1
+    ncolumns_model = as.numeric(temp_model[5])
 
     y = unlist(temp_model[1])
     x = unlist(temp_model[2])
@@ -66,6 +70,12 @@ write_to_file <-function(filename)
     write.table(combine, file=filename, row.names=FALSE, col.names=TRUE)
 
     print(temp_model[7])
+
+    e = unlist(temp_model[8])
+    RSS = norm_vec(e)
+    AIC = fitness_func(ncolumns, ncolumns_model, RSS)
+
+    print(AIC)
 
 }
 

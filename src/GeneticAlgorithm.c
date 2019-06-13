@@ -880,6 +880,7 @@ static void print_individual(T_INDIVIDUAL2* individual)
 	if (individual->columns != NULL && individual->size > 0) {
 		print_vector16(individual->columns, individual->size);
 		printf("Fitness Value: %f\n", individual->fitness_value);
+		//printf("RSS Value: %f\n", individual->RSS);
 	}
 }
 

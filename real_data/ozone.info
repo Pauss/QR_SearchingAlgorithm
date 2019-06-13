@@ -1,0 +1,41 @@
+DATA.OZONE(BDL)                                              BLSS Data Library
+
+
+NAME
+     data.ozone -- Los Angeles ozone pollution data, 1976
+
+DATASETS
+     ozone     (366 observations, 13 variables).
+
+DESCRIPTION
+     Los Angeles ozone pollution data, 1976.  Each observation is one day.
+
+     Column    Contains
+        1      Month: 1 = January, ..., 12 = December.
+        2      Day of month.
+        3      Day of week: 1 = Monday, ..., 7 = Sunday.
+        4      Daily maximum one-hour-average ozone reading (parts per million)
+               at Upland, CA.
+        5      500 millibar pressure height (m) measured at Vandenberg AFB.
+        6      Wind speed (mph) at Los Angeles International Airport (LAX).
+        7      Humidity (%) at LAX.
+        8      Temperature (degrees F) measured at Sandburg, CA.
+        9      Temperature (degrees F) measured at El Monte, CA.
+       10      Inversion base height (feet) at LAX.
+       11      Pressure gradient (mm Hg) from LAX to Daggett, CA.
+       12      Inversion base temperature (degrees F) at LAX.
+       13      Visibility (miles) measured at LAX.
+
+     Source:  Leo Breiman, Department of Statistics, UC Berkeley.  Data used in
+     Leo Breiman and Jerome H. Friedman (1985), Estimating optimal
+     transformations for multiple regression and correlation, JASA, 80, pp.
+     580-598.
+
+     Note:  Units for the Sandberg and El Monte temperatures are incorrectly
+     reported in the BLSS book as degrees C.  The correct units are degrees F,
+     as shown above.
+
+     Missing data is represented by "NA".
+
+
+BLSS 4.0                                                      Printed 8-Oct-91

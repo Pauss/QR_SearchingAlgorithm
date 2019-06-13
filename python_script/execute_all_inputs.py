@@ -89,9 +89,25 @@ def list_prepare(out):
     return temp_list
 
 
+def list_prepare2(out):
+
+    temp = out.split(" ")
+    temp = [maybe_float(v) for v in temp]
+    temp = [v for v in temp if v is not None]
+
+    return temp[0]
+
+
 def maybe_int(s):
     try:
         return int(s)
+    except (ValueError, TypeError):
+        return None
+
+
+def maybe_float(s):
+    try:
+        return float(s)
     except (ValueError, TypeError):
         return None
 
@@ -120,8 +136,12 @@ def execute_r():
 
             # Get output
             out = x[1].decode(sys.stdout.encoding)
+            out2 = x[3].decode(sys.stdout.encoding)
 
             new_l = list_prepare(out)
+            new_e = list_prepare2(out2)
+
+            new_l.append(new_e)
             r_list.append(new_l)
 
     except FileNotFoundError as err1:
@@ -154,8 +174,16 @@ def execute_c(c_list, par):
 
             # Get output
             out = x[5].decode(sys.stdout.encoding)
+            out2 = x[6].decode(sys.stdout.encoding)
+            out3 = x[8].decode(sys.stdout.encoding)
 
             new_l = list_prepare(out)
+            new_aic = list_prepare2(out2)
+            new_exec_time = list_prepare2(out3)
+
+            new_l.append(new_aic)
+            new_l.append(new_exec_time)
+
             c_list.append(new_l)
 
     except FileNotFoundError as err1:
