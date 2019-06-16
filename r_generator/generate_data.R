@@ -19,24 +19,37 @@
 
 M_PI = 3.14159265358979323846
 
-model <- function(nobs = 100, nreg = 10, ntrue = 5 , intercept = TRUE, sd = 0.01)
+model <- function(nobs = 80, nreg = 60, ntrue = 30 , intercept = TRUE, sd = 0.01)
 {
     ## independent variables
     X <- rnorm(nobs * nreg,sd=0.01)
+
+    X = to_6_digits(X)
+
     dim(X) <- c(nobs, nreg)
 
     
     ## coefficients
     coefs <- rep_len(0, length.out = nreg)
-    true <- sample.int(nreg, size = ntrue)
-    coefs[true] <- 1
 
+    ##coefs_real <- runif(nreg, min=-0.5, max=1.5)
+
+    coefs = to_6_digits(coefs)
+
+    true <- sample.int(nreg, size = ntrue)
+
+    coefs[true] <- 1 ##coefs_real[true]
 
     ## error
     error <- rnorm(nobs, sd = sd)
 
+    error = to_6_digits(error)
+
+
     ## dependent variable
     y <- cbind(intercept, X) %*% c(1, coefs) + error
+
+    y = to_6_digits(y)
 
     model = list(y = y, X = X, nobs = nobs, nreg = nreg, ntrue= ntrue, intercept = intercept, true = true, error = error)
  
@@ -44,6 +57,16 @@ model <- function(nobs = 100, nreg = 10, ntrue = 5 , intercept = TRUE, sd = 0.01
 
 norm_vec <- function(x) (sum(x^2))
 fitness_func <- function(n, k, RSS) ((n + n * log(2 * M_PI) + n * log(RSS / n)+ 2 * (k + 2))) #k+1 without intercept
+
+to_6_digits <- function(x)
+{
+    for (i in seq_along(x)){
+     x[i] = as.numeric(formatC(round(x[i], 6), digits = 6, format = "f"))
+        ## x[i] = as.numeric(format(round(x[i], 5), nsmall = 5))
+    }
+
+    to_6_digits = x
+}
 
 inc <- function(x)
 {
@@ -69,15 +92,18 @@ write_to_file <-function(filename)
 
     write.table(combine, file=filename, row.names=FALSE, col.names=TRUE)
 
-    print(temp_model[7])
+    best = (unlist(temp_model[7]))
+
+    #print(temp_model[7])
+    print(best)
 
     e = unlist(temp_model[8])
     RSS = norm_vec(e)
     AIC = fitness_func(ncolumns, ncolumns_model, RSS)
 
     print(AIC)
-
 }
 
 filename <- commandArgs(trailingOnly = TRUE)
+##filename = "Gdata0.txt"
 write_to_file(filename)

@@ -3,23 +3,24 @@
   <component name="ChangeListManager">
     <list default="true" id="227b9698-ea02-4b22-aea0-eee01c5adfa1" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/../Debug/QR_SearchingAlgorithm.exe" beforeDir="false" afterPath="$PROJECT_DIR$/../Debug/QR_SearchingAlgorithm.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Debug/src/FileOperations.o" beforeDir="false" afterPath="$PROJECT_DIR$/../Debug/src/FileOperations.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Debug/src/MatrixComputations.o" beforeDir="false" afterPath="$PROJECT_DIR$/../Debug/src/MatrixComputations.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Debug/src/QR_SearchingAlgorithm.d" beforeDir="false" afterPath="$PROJECT_DIR$/../Debug/src/QR_SearchingAlgorithm.d" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../Debug/src/QR_SearchingAlgorithm.o" beforeDir="false" afterPath="$PROJECT_DIR$/../Debug/src/QR_SearchingAlgorithm.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../QR_SearchingAlgorithm.exe.stackdump" beforeDir="false" afterPath="$PROJECT_DIR$/../QR_SearchingAlgorithm.exe.stackdump" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../generated_data/GData0.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData0.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../generated_data/GData1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData1.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../generated_data/GData2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData2.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../generated_data/GData3.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData3.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../generated_data/GData4.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData4.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../integration.bat" beforeDir="false" afterPath="$PROJECT_DIR$/../integration.bat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../output_graphics/My_Graphic.png" beforeDir="false" afterPath="$PROJECT_DIR$/../output_graphics/My_Graphic.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../generated_data/GData5.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData5.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../generated_data/GData6.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData6.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../generated_data/GData7.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData7.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../generated_data/GData8.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData8.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../generated_data/GData9.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData9.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../output_individuals/Out_individuals.csv" beforeDir="false" afterPath="$PROJECT_DIR$/../output_individuals/Out_individuals.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../python_script/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../python_script/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../python_script/execute_all_inputs.py" beforeDir="false" afterPath="$PROJECT_DIR$/../python_script/execute_all_inputs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../python_script/execute_all_inputs.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/generate_data.R" beforeDir="false" afterPath="$PROJECT_DIR$/generate_data.R" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/Config.h" beforeDir="false" afterPath="$PROJECT_DIR$/../src/Config.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../src/GeneticAlgorithm.c" beforeDir="false" afterPath="$PROJECT_DIR$/../src/GeneticAlgorithm.c" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -37,8 +38,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/generate_data.R">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="442">
-              <caret line="77" column="13" selection-start-line="77" selection-start-column="13" selection-end-line="77" selection-end-column="13" />
+            <state relative-caret-position="510">
+              <caret line="30" column="4" lean-forward="true" selection-start-line="30" selection-start-column="4" selection-end-line="30" selection-end-column="4" />
             </state>
           </provider>
         </entry>
@@ -89,6 +90,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -100,7 +102,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -169,7 +170,7 @@
     <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.15658094" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.1633888" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="0" weight="0.32920355" />
       <window_info anchor="bottom" id="Event Log" order="1" sideWeight="0.5007776" side_tool="true" weight="0.32920355" />
@@ -178,7 +179,7 @@
       <window_info anchor="bottom" id="Message" order="4" />
       <window_info anchor="bottom" id="Find" order="5" />
       <window_info anchor="bottom" id="Version Control" order="6" />
-      <window_info anchor="bottom" id="Run" order="7" weight="0.19469027" />
+      <window_info anchor="bottom" id="Run" order="7" weight="0.2141707" />
       <window_info anchor="bottom" id="Debug" order="8" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="10" weight="0.4" />
@@ -204,8 +205,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/generate_data.R">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="442">
-          <caret line="77" column="13" selection-start-line="77" selection-start-column="13" selection-end-line="77" selection-end-column="13" />
+        <state relative-caret-position="510">
+          <caret line="30" column="4" lean-forward="true" selection-start-line="30" selection-start-column="4" selection-end-line="30" selection-end-column="4" />
         </state>
       </provider>
     </entry>

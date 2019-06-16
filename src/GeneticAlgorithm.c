@@ -184,19 +184,21 @@ static void build_individual(T_INDIVIDUAL2* GA_individual, uint8* rand_model,
 			temp_submodel = submodel_matrix(GA_individual->columns,
 					GA_individual->size);
 			GA_individual->RSS = RSS_compute(temp_submodel);
+			gsl_matrix_free(temp_submodel);
 		}
 
 		GA_individual->fitness_value = MAX_FITNESS;
 		GA_individual->selection_probability = 0;
 		GA_individual->selected = FALSE;
 
-		//gsl_matrix_free(temp_submodel);
+
 
 	} else {
 
 		individual_init(GA_individual);
 
 	}
+
 
 }
 
@@ -272,7 +274,6 @@ static void probability_selection(T_INDIVIDUAL2* population, uint16 size) {
 
 		double r = (double) (rand() / (double) (RAND_MAX));
 
-
 		//r bigger than actual but less then next individual
 		if ((population[i].selection_probability < r
 				&& r <= population[i + 1].selection_probability) && (INIT != population[i].selection_probability)) {
@@ -281,6 +282,7 @@ static void probability_selection(T_INDIVIDUAL2* population, uint16 size) {
 		} else
 			population[i].selected = FALSE;
 	}
+
 
 }
 
@@ -457,7 +459,8 @@ static void selection_roulette_wheel(T_INDIVIDUAL2* population, uint16* size, ui
 
 		}
 
-		//printf("\n<IN FUNCTION selection_roulette_wheel> temp_size: %d\n", temp_size);
+		//shuffle_array(population, *size);
+
 
 	} while (temp_size < *size);
 
@@ -880,7 +883,7 @@ static void print_individual(T_INDIVIDUAL2* individual)
 	if (individual->columns != NULL && individual->size > 0) {
 		print_vector16(individual->columns, individual->size);
 		printf("Fitness Value: %f\n", individual->fitness_value);
-		//printf("RSS Value: %f\n", individual->RSS);
+		printf("RSS Value: %f\n", individual->RSS);
 	}
 }
 
@@ -1751,6 +1754,9 @@ void GA_hill_climbing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 	individual_dealloc(&current_individual);
 	individual_dealloc(&neighbor_individual);
 	individual_dealloc(&best_individual);
+
+
+
 
 }
 

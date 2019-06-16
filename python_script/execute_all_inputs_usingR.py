@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import time
+import graphics_alg as alg
 #########################################################
 # Execute QR_SearchingAlgorithm on generated files
 #########################################################
@@ -67,7 +68,11 @@ r_list = list()
 # max number of columns
 n_max = 10
 # number of files to be generated and verified
-n = 5
+n = 10
+# number of iterations for algorithms to be compared on generated files
+n_iterations = 1
+# number of configurations of alg
+n_config = 2
 # details of files to be first generated and then checked
 name = "GData"
 type_file = ".txt"
@@ -134,6 +139,8 @@ def execute_r():
             cmd = [command, path_script] + file_path
             x = subprocess.check_output(cmd).splitlines()
 
+            print(x)
+
             # Get output
             out = x[1].decode(sys.stdout.encoding)
             out2 = x[3].decode(sys.stdout.encoding)
@@ -174,12 +181,14 @@ def execute_c(c_list, par):
 
             # Get output
             out = x[5].decode(sys.stdout.encoding)
-            out2 = x[6].decode(sys.stdout.encoding)
-            out3 = x[8].decode(sys.stdout.encoding)
+            out2 = x[6].decode(sys.stdout.encoding)  # AIC
+            out3 = x[7].decode(sys.stdout.encoding)  # RSS
+            out4 = x[9].decode(sys.stdout.encoding)
 
             new_l = list_prepare(out)
             new_aic = list_prepare2(out2)
-            new_exec_time = list_prepare2(out3)
+            new_rss = list_prepare2(out3)
+            new_exec_time = list_prepare2(out4)
 
             new_l.append(new_aic)
             new_l.append(new_exec_time)
@@ -206,8 +215,8 @@ def matching_all_columns(list1, list2):
             temp_n = [z for z, j in zip(list1[i][1], list2[i][1]) if z == j]
             if len(temp_n) == list1[i][0]:
                 n_match += 1
-    probability = (float(n_match / n_obsv)) * 100
-    return probability
+    report = (float(n_match / n_obsv))
+    return report
 
 
 def matching_some_columns(list1, list2):
@@ -226,12 +235,63 @@ def matching_some_columns(list1, list2):
         temp_p = float(temp_n) / list1[0][0]
         probability += temp_p
 
-    probability = (float(probability / n_obsv)) * 100
-    return probability
+    report = (float(probability / n_obsv))
+    return report
 
 
-def compare_outputs():
+def min_max(a, b):
+
+    if a<b:
+        min = a
+        max = b
+    else:
+        min = b
+        max = a
+
+    return [min, max]
+
+
+def matching_rss(list1, list2):
+
+    # this function compute report between RSS given by generated script and output of heuristic alg
+    n_obsv = len(list1)
+    report = 0
+    min_dif = 0.001
+
+    for i in range(n_obsv):
+        [temp_min, temp_max] = min_max(list1[i][2], list2[i][2])
+        temp_dif = temp_max - temp_min
+
+        # print("DIF: ", temp_dif)
+
+        if temp_dif > min_dif:
+            report += abs(temp_dif/list1[i][2])
+
+    report = (float(report / n_obsv))
+    return report
+
+
+def average_time(list2):
+
+    # this function compute average time execution of an algorithm
+    n_obsv = len(list2)
+    report = 0
+
+    for i in range(n_obsv):
+        report += list2[i][3]
+
+    report = (float(report / n_obsv))
+    return report
+
+
+def compare_outputs_nr_files_size():
     global r_list
+    global n_iterations
+    global n_config
+
+    # file path for outputs of reports
+    filepath = "./output_individuals/Out_Algorithms.csv"
+    f = open(filepath, "w+")
 
     execute_r()
 
@@ -245,32 +305,127 @@ def compare_outputs():
     dicts.append(ga_sa_dict)
     dicts.append(ga_bb_dict)
 
-    super_dict = {}
-    for d in dicts:
-        for k, v in d.items():
-            super_dict[k] = v
-
     # compare results
     try:
-        for k in super_dict.keys():
-            c_list = list()
-            print(super_dict[k])
-            execute_c(c_list, super_dict[k])
 
-            print(r_list)
-            print(c_list)
+        for d in dicts:
+            temp_dict = {k: d[k] for k in list(d)[:n_config]}
 
-            p1 = matching_all_columns(r_list, c_list)
-            p2 = matching_some_columns(r_list, c_list)
+            t_p1 = t_p2 = t_p3 = t_p4 = 0
 
-            print("Matching probability by all columns: ", p1)
-            print("Matching probability by some columns: ", p2)
+            for k in temp_dict.keys():
+                print(temp_dict[k])
+
+                p1 = p2 = p3 = p4 = 0
+                for i in range(n_iterations):
+
+                    c_list = list()
+                    execute_c(c_list, temp_dict[k])
+
+                    p1 += matching_all_columns(r_list, c_list)
+                    p2 += matching_some_columns(r_list, c_list)
+                    p3 += matching_rss(r_list, c_list)
+                    p4 += average_time(c_list)
+
+                    '''
+                    print("iteration" , i)
+                    print("Matching report by all columns: ", p1)
+                    print("Matching report by some columns: ", p2)
+                    print("Average difference: ", p3)
+                    print("Average time execution: ", p4)
+                    print("==========================================\n")
+                    '''
+                list_p = [p1, p2, p3, p4]
+                list_p = [x / n_iterations for x in list_p]
+
+                t_p1 += list_p[0]
+                t_p2 += list_p[1]
+                t_p3 += list_p[2]
+                t_p4 += list_p[3]
+
+            list_t_p = [t_p1, t_p2, t_p3, t_p4]
+            list_t_p = [x / n_config for x in list_t_p]
+
+            print("Matching report by all columns: ", list_t_p[0])
+            print("Matching report by some columns: ", list_t_p[1])
+            print("Average difference: ", list_t_p[2])
+            print("Average time execution: ", list_t_p[3])
             print("==========================================\n")
-            time.sleep(0.2)
+            f.write("{},{},{},{}\n".format(list_t_p[0], list_t_p[1], list_t_p[2], list_t_p[3]))
 
     except Exception as err:
         print(err)
 
 
-compare_outputs()
+def compare_outputs_tuning_alg(alg):
+    global r_list
+    global n_iterations
+
+    # file path for outputs of reports
+    filepath = "./output_individuals/Out_Algorithms_Tuning.csv"
+    f = open(filepath, "w+")
+
+    execute_r()
+
+    print("==========================================")
+
+    # combine all dictionaries into one
+    dicts = {}
+
+    try:
+        if alg.lower() == "ga":
+            print("yes")
+            dicts = ga_dict.copy()
+        if alg.lower() == 'ga_hc':
+            dicts = ga_hc_dict.copy()
+        if alg.lower() == 'ga_sa':
+            dicts = ga_sa_dict.copy()
+        if alg.lower() == 'ga_bb':
+            dicts = ga_bb_dict.copy()
+
+    except Exception as err:
+        print(err)
+
+    # compare results
+    try:
+        for k in dicts.keys():
+            print(dicts[k])
+
+            p1 = p2 = p3 = p4 = 0
+            for i in range(n_iterations):
+
+                c_list = list()
+                execute_c(c_list, dicts[k])
+
+                print(r_list)
+                print(c_list)
+
+                p1 += matching_all_columns(r_list, c_list)
+                p2 += matching_some_columns(r_list, c_list)
+                p3 += matching_rss(r_list, c_list)
+                p4 += average_time(c_list)
+
+            p1 = p1 / n_iterations
+            p2 = p2 / n_iterations
+            p3 = p3 / n_iterations
+            p4 = p4 / n_iterations
+            print("Matching report by all columns: ", p1)
+            print("Matching report by some columns: ", p2)
+            print("Average difference: ", p3)
+            print("Average time execution: ", p4)
+            print("==========================================\n")
+
+            f.write("{},{},{},{}\n".format(p1, p2, p3, p4))
+
+    except Exception as err:
+        print(err)
+
+
+#compare_outputs_nr_files_size()
+#alg.execute()
+
+alg_to_compare = "ga_bb"
+compare_outputs_tuning_alg(alg_to_compare)
+alg.execute_tuning(alg_to_compare)
+
 
