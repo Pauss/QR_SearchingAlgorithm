@@ -13,15 +13,27 @@ r_list = list()
 # max number of columns
 n_max = 10
 # number of files to be generated and verified
-n = 1
+n = 5
 # number of iterations for algorithms to be compared on generated files
 n_iterations = 1
 # number of configurations of alg
-n_config = 8
+n_config = 3
 # details of files to be first generated and then checked
 name = "GData"
 type_file = ".txt"
 #########################################################
+
+''' 
+mutation1 - flip 
+mutation2 - interchanging # number of columns is kept
+mutation3 - interchanging absolute # interchanging different genes always
+mutation4 - reversing
+
+crossover1 - 1 point # number of columns is kept
+crossover2 - uniform 
+crossover3 - RRC
+crossover4 - 1 point simple
+'''
 
 ga_dict = {
     # genetic algorithm
@@ -29,56 +41,53 @@ ga_dict = {
     'ga2': ["ga", "1", "2", "1"],
     'ga3': ["ga", "1", "3", "1"],
     'ga4': ["ga", "1", "4", "1"],
-    'ga5': ["ga", "2", "2", "1"],
-    'ga6': ["ga", "2", "3", "1"],
-    'ga7': ["ga", "2", "4", "1"],
-    'ga8': ["ga", "4", "3", "1"],
-    'ga9': ["ga", "4", "4", "1"],
-    'ga10': ["ga", "1", "1", "2"],
-    'ga11': ["ga", "1", "2", "2"],
-    'ga12': ["ga", "1", "3", "2"],
-    'ga13': ["ga", "1", "4", "2"],
-    'ga14': ["ga", "2", "2", "2"],
-    'ga15': ["ga", "2", "3", "2"],
-    'ga16': ["ga", "2", "4", "2"],
-    'ga17': ["ga", "4", "3", "2"],
-    'ga18': ["ga", "4", "4", "2"],
+    'ga5': ["ga", "2", "1", "1"],
+    'ga6': ["ga", "2", "2", "1"],
+    'ga7': ["ga", "2", "3", "1"],
+    'ga8': ["ga", "2", "4", "1"],
+    'ga9': ["ga", "4", "1", "1"],
+    'ga10': ["ga", "4", "2", "1"],
+    'ga11': ["ga", "4", "3", "1"],
+    'ga12': ["ga", "4", "4", "1"],
+    'ga13': ["ga", "1", "1", "2"],
+    'ga14': ["ga", "1", "2", "2"],
+    'ga15': ["ga", "1", "3", "2"],
+    'ga16': ["ga", "1", "4", "2"],
+    'ga17': ["ga", "2", "1", "2"],
+    'ga18': ["ga", "2", "2", "2"],
+    'ga19': ["ga", "2", "3", "2"],
+    'ga20': ["ga", "2", "4", "2"],
+    'ga21': ["ga", "4", "1", "2"],
+    'ga22': ["ga", "4", "2", "2"],
+    'ga23': ["ga", "4", "3", "2"],
+    'ga24': ["ga", "4", "4", "2"],
 }
 ga_sa_dict = {
     # simulated annealing
     'ga_sa1': ["ga_sa", "1", "1", "2"],
-    'ga_sa2': ["ga_sa", "1", "2", "2"],
-    'ga_sa3': ["ga_sa", "1", "3", "2"],
-    'ga_sa4': ["ga_sa", "1", "4", "2"],
-    'ga_sa5': ["ga_sa", "2", "2", "2"],
-    'ga_sa6': ["ga_sa", "2", "3", "2"],
-    'ga_sa7': ["ga_sa", "2", "4", "2"],
-    'ga_sa8': ["ga_sa", "4", "3", "2"],
-    'ga_sa9': ["ga_sa", "4", "4", "2"],
+    'ga_sa2': ["ga_sa", "2", "2", "2"],
+    'ga_sa3': ["ga_sa", "4", "3", "2"],
 }
 ga_hc_dict = {
     # hill climbing
     'ga_hc1': ["ga_hc", "1", "1", "2"],
-    'ga_hc2': ["ga_hc", "1", "2", "2"],
-    'ga_hc3': ["ga_hc", "1", "3", "2"],
-    'ga_hc4': ["ga_hc", "1", "4", "2"],
-    'ga_hc5': ["ga_hc", "2", "2", "2"],
-    'ga_hc6': ["ga_hc", "2", "3", "2"],
-    'ga_hc7': ["ga_hc", "2", "4", "2"],
-    'ga_hc8': ["ga_hc", "4", "3", "2"],
-    'ga_gc9': ["ga_hc", "4", "4", "2"],
+    'ga_hc2': ["ga_hc", "2", "2", "2"],
+    'ga_hc3': ["ga_hc", "4", "3", "2"],
 }
 ga_bb_dict = {
     # Building Blocks
-    'ga_bb1': ["ga_bb", "1", "1", "2"],
-    'ga_bb2': ["ga_bb", "1", "2", "2"],
-    'ga_bb3': ["ga_bb", "1", "3", "2"],
-    'ga_bb4': ["ga_bb", "1", "4", "2"],
-    'ga_bb5': ["ga_bb", "2", "2", "2"],
-    'ga_bb6': ["ga_bb", "2", "3", "2"],
-    'ga_bb7': ["ga_bb", "2", "4", "2"],
-    'ga_bb8': ["ga_bb", "4", "3", "2"],
-    'ga_bb9': ["ga_bb", "4", "4", "2"],
+    'ga_bb1': ["ga", "1", "1", "1"],
+    'ga_bb2': ["ga", "1", "2", "1"],
+    'ga_bb3': ["ga", "1", "3", "1"],
+    'ga_bb4': ["ga", "1", "4", "1"],
+    'ga_bb5': ["ga", "2", "1", "1"],
+    'ga_bb6': ["ga", "2", "2", "1"],
+    'ga_bb7': ["ga", "2", "3", "1"],
+    'ga_bb8': ["ga", "2", "4", "1"],
+    'ga_bb9': ["ga", "4", "1", "1"],
+    'ga_bb10': ["ga", "4", "2", "1"],
+    'ga_bb11': ["ga", "4", "3", "1"],
+    'ga_bb12': ["ga", "4", "4", "1"],
 }
 
 
@@ -252,16 +261,16 @@ def matching_rss(list1, list2):
     # this function compute report between RSS given by generated script and output of heuristic alg
     n_obsv = len(list1)
     report = 0
-    min_dif = 0.001
+    RSS_min_dif = 0.001
+    AIC_min_dif = 4
 
     for i in range(n_obsv):
         [temp_min, temp_max] = min_max(list1[i][2], list2[i][2])
         temp_dif = temp_max - temp_min
 
         # print("DIF: ", temp_dif)
-
-        if temp_dif > min_dif:
-            report += abs(temp_dif/list1[i][2])
+        #if temp_dif > AIC_min_dif:
+        report += abs(temp_dif/list1[i][2])
 
     report = (float(report / n_obsv))
     return report
@@ -317,6 +326,9 @@ def compare_outputs_nr_files_size():
 
                     c_list = list()
                     execute_c(c_list, temp_dict[k])
+
+                    print(r_list)
+                    print(c_list)
 
                     p1 += matching_all_columns(r_list, c_list)
                     p2 += matching_some_columns(r_list, c_list)
@@ -393,6 +405,9 @@ def compare_outputs_tuning_alg(alg):
                 c_list = list()
                 execute_c(c_list, dicts[k])
 
+                print(r_list)
+                print(c_list)
+
                 p1 += matching_all_columns(r_list, c_list)
                 p2 += matching_some_columns(r_list, c_list)
                 p3 += matching_rss(r_list, c_list)
@@ -426,6 +441,5 @@ elif method == 2:
     compare_outputs_tuning_alg(alg_to_compare)
     alg.execute_tuning(alg_to_compare)
 
-execute_py()
 
 

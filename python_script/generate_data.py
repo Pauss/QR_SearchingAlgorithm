@@ -7,11 +7,11 @@ import sys
 ## intercept: logical
 ## sd: numeric, standard deviation of the error term
 
-nobs = 1000
-nreg = 500
-ntrue = 250
+nobs = 100
+nreg = 30
+ntrue = 10
 intercept = True
-sd = 0.01
+sd = 0.05
 M_PI = 3.14159265358979323846
 
 

@@ -47,7 +47,7 @@ def get_graphic():
 
     # used for setting up style adjustments
     font = {'family': 'sans-serif',
-            'color': 'darkorchid',
+            'color': 'black',
             'weight': 'normal',
             'size': 8,
             'ha': 'center',
@@ -69,7 +69,7 @@ def get_graphic():
 
     # customization
     ax1.set_xlabel('Iteration', fontdict=font)
-    ax1.set_ylabel('Fitness value', fontdict=font)
+    ax1.set_ylabel('AIC', fontdict=font)
     # ax1.set_title('Visualisation of fitness and dimension of individuals', fontdict=font)
     ax1.grid(True)
     ########################################
@@ -83,7 +83,7 @@ def get_graphic():
 
     # customization
     ax2.set_xlabel('Number of columns', fontdict=font)
-    ax2.set_ylabel('Fitness value', fontdict=font)
+    ax2.set_ylabel('AIC', fontdict=font)
     # ax2.set_title('Visualisation of progress of the fitness within iterations', fontdict=font)
     ax2.grid(True)
     ########################################
@@ -101,7 +101,7 @@ def get_graphic():
 
     # customization
     ax3.set_xlabel('Individual columns', fontdict=font)
-    ax3.set_ylabel('Fitness value', fontdict=font)
+    ax3.set_ylabel('AIC', fontdict=font)
     # ax3.set_title('Visualisation of progress of the fitness within iterations', fontdict=font)
     ax3.grid(True)
     ########################################

@@ -21,10 +21,10 @@ if %index% leq %count% (
 ECHO ============================
 ECHO Operation successfully ended
 ECHO ============================
-@ECHO OFF 
-::cd ../python_script
-::ECHO Run graphics
-::python graphics.py
+ 
+cd ../python_script
+ECHO Run graphics
+python graphics.py
 ECHO ============================
 ECHO Operation successfully ended
 ECHO ============================

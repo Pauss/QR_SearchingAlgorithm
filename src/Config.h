@@ -10,11 +10,11 @@
 /*=========================================*/
 /*define*/
 /*===========Genetic Algorithm=============*/
-#define PERCENTAJE_OF_CHROMOSOMES 60u //70
+#define PERCENTAJE_OF_CHROMOSOMES 50u //70
 #define CONVERGE 30u
 #define MAX_FITNESS 100000
 #define FIXED_NR_GENES 0u
-#define PERCENTAJE_OF_GENES 50u//55u
+#define PERCENTAJE_OF_GENES 34u//55u
 /*=========================================*/
 /*===========BUilding BLocks===============*/
 /*=========================================*/
@@ -51,8 +51,8 @@
 #define REAL_DATA_PATH "../real_data/"
 #define GENERATED_DATA_PATH "../generated_data/"
 #define PATH_SIZE 255u
-#define USE_GRAPHICS 0u
-#define USE_GENERATED 1u
+#define USE_GRAPHICS 1u
+#define USE_GENERATED 0u
 /*=========================================*/
 
 #endif /* SRC_CONFIG_H_ */

@@ -1265,10 +1265,10 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 							&result);
 				}
 
-				if(USE_GRAPHICS)
+/*				if(USE_GRAPHICS)
 				{
 					print_steps_population(GA_population, model_size_n, 1, generation);
-				}
+				}*/
 
 
 				//get BEST
@@ -1284,8 +1284,10 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 					//reset counter in case converge is not consecutively met
 					converge_value = INIT;
 
-					//print_steps(&best_solution, 1 ,1);
-					print_steps_population(&best_solution,1, 1, generation);
+					if(USE_GRAPHICS)
+					{
+						print_steps_population(&best_solution,1, 1, generation);
+					}
 
 
 				} else {
@@ -1495,7 +1497,7 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 
 				if(USE_GRAPHICS)
 				{
-					print_steps_population(Schemas, temp_nr_schemas, 1, generation);
+					print_steps_population(&best_solution, 1, 1, generation);
 				}
 
 
@@ -1667,7 +1669,7 @@ void GA_simulated_annealing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 
 			if(USE_GRAPHICS)
 			{
-				print_steps(&current_individual, iteration, iteration);
+				print_steps(&best_individual, iteration, iteration);
 			}
 		}
 	}
@@ -1740,7 +1742,7 @@ void GA_hill_climbing(T_OPERATOR_METHOD op1, T_OPERATOR_METHOD op2){
 
 			if(USE_GRAPHICS)
 			{
-				print_steps(&current_individual, iteration, iteration);
+				print_steps(&best_individual, iteration, iteration);
 			}
 		}
 
