@@ -1424,6 +1424,11 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 				{
 					set_BEST(&best_solution, &GA_population[best_solution_index], &MIN);
 
+					if(USE_GRAPHICS)
+					{
+						print_steps_population(&best_solution,1, 1, generation);
+					}
+
 					b_converge = FALSE;
 					//reset counter in case converge is not consecutively met
 					converge_value = INIT;
@@ -1483,6 +1488,11 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 				if (Schemas[best_solution_index2].fitness_value < MIN) {
 					set_BEST(&best_solution, &Schemas[best_solution_index2], &MIN);
 
+					if(USE_GRAPHICS)
+					{
+						print_steps_population(&best_solution,1, 1, generation);
+					}
+
 					b_converge = FALSE;
 					//reset counter in case converge is not consecutively met
 					converge_value = INIT;
@@ -1495,11 +1505,6 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 					}
 				}
 
-				if(USE_GRAPHICS)
-				{
-					print_steps_population(&best_solution, 1, 1, generation);
-				}
-
 
 			} else {
 				//if no individuals got selected in new population then search must be stopped
@@ -1507,11 +1512,6 @@ void GA_BB_alg(T_OPERATOR_METHOD op1,  T_OPERATOR_METHOD op2)
 			}
 
 			last_converge = b_converge;
-
-			if(USE_GRAPHICS)
-			{
-				print_steps_population(&best_solution,1, 1, generation);
-			}
 
 
 		}

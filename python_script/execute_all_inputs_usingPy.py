@@ -13,11 +13,13 @@ r_list = list()
 # max number of columns
 n_max = 10
 # number of files to be generated and verified
-n = 5
+n = 10
+# alg to compare
+alg_to_compare = "ga_bb"
+# method comparing alg:  1-all alg, 2-single alg tuning
+method = 2
 # number of iterations for algorithms to be compared on generated files
 n_iterations = 1
-# number of configurations of alg
-n_config = 3
 # details of files to be first generated and then checked
 name = "GData"
 type_file = ".txt"
@@ -35,6 +37,16 @@ crossover3 - RRC
 crossover4 - 1 point simple
 '''
 
+# for comparing alg
+compare_dict = {
+    # one config for each alg
+    'ga': ["ga", "2", "3", "2"],
+    'ga_hc': ["ga_hc", "1", "1", "2"],
+    'ga_sa': ["ga_sa", "1", "1", "2"],
+    'ga_bb': ["ga_bb", "2", "3", "2"],
+}
+
+# for tuning algorithms
 ga_dict = {
     # genetic algorithm
     'ga1': ["ga", "1", "1", "1"],
@@ -76,18 +88,18 @@ ga_hc_dict = {
 }
 ga_bb_dict = {
     # Building Blocks
-    'ga_bb1': ["ga", "1", "1", "1"],
-    'ga_bb2': ["ga", "1", "2", "1"],
-    'ga_bb3': ["ga", "1", "3", "1"],
-    'ga_bb4': ["ga", "1", "4", "1"],
-    'ga_bb5': ["ga", "2", "1", "1"],
-    'ga_bb6': ["ga", "2", "2", "1"],
-    'ga_bb7': ["ga", "2", "3", "1"],
-    'ga_bb8': ["ga", "2", "4", "1"],
-    'ga_bb9': ["ga", "4", "1", "1"],
-    'ga_bb10': ["ga", "4", "2", "1"],
-    'ga_bb11': ["ga", "4", "3", "1"],
-    'ga_bb12': ["ga", "4", "4", "1"],
+    'ga_bb1': ["ga_bb", "1", "1", "1"],
+    'ga_bb2': ["ga_bb", "1", "2", "1"],
+    'ga_bb3': ["ga_bb", "1", "3", "1"],
+    'ga_bb4': ["ga_bb", "1", "4", "1"],
+    'ga_bb5': ["ga_bb", "2", "1", "1"],
+    'ga_bb6': ["ga_bb", "2", "2", "1"],
+    'ga_bb7': ["ga_bb", "2", "3", "1"],
+    'ga_bb8': ["ga_bb", "2", "4", "1"],
+    'ga_bb9': ["ga_bb", "4", "1", "1"],
+    'ga_bb10': ["ga_bb", "4", "2", "1"],
+    'ga_bb11': ["ga_bb", "4", "3", "1"],
+    'ga_bb12': ["ga_bb", "4", "4", "1"],
 }
 
 
@@ -153,8 +165,6 @@ def execute_py():
             new_l.append(AIC)
 
             r_list.append(new_l)
-
-        print(r_list)
 
     except FileNotFoundError as err1:
         print("In Execute_r: ", err1)
@@ -246,7 +256,7 @@ def matching_some_columns(list1, list2):
 
 def min_max(a, b):
 
-    if a<b:
+    if a < b:
         min = a
         max = b
     else:
@@ -268,7 +278,6 @@ def matching_rss(list1, list2):
         [temp_min, temp_max] = min_max(list1[i][2], list2[i][2])
         temp_dif = temp_max - temp_min
 
-        # print("DIF: ", temp_dif)
         #if temp_dif > AIC_min_dif:
         report += abs(temp_dif/list1[i][2])
 
@@ -302,67 +311,43 @@ def compare_outputs_nr_files_size():
 
     print("==========================================")
 
-    # combine all dictionaries into one
-    dicts = list()
-
-    dicts.append(ga_dict)
-    dicts.append(ga_hc_dict)
-    dicts.append(ga_sa_dict)
-    dicts.append(ga_bb_dict)
-
     # compare results
     try:
 
-        for d in dicts:
-            temp_dict = {k: d[k] for k in list(d)[:n_config]}
+        for k in compare_dict.keys():
+            print(compare_dict[k])
 
-            t_p1 = t_p2 = t_p3 = t_p4 = 0
+            p2 = p3 = p4 = 0
+            for i in range(n_iterations):
 
-            for k in temp_dict.keys():
-                print(temp_dict[k])
+                c_list = list()
+                execute_c(c_list, compare_dict[k])
 
-                p1 = p2 = p3 = p4 = 0
-                for i in range(n_iterations):
+                print(r_list)
+                print(c_list)
 
-                    c_list = list()
-                    execute_c(c_list, temp_dict[k])
+                p2 += matching_some_columns(r_list, c_list)
+                p3 += matching_rss(r_list, c_list)
+                p4 += average_time(c_list)
 
-                    print(r_list)
-                    print(c_list)
+                '''
+                print("iteration" , i)
+                print("Matching columns: ", p2)
+                print("AIC error: ", p3)
+                print("Time execution: ", p4)
+                print("==========================================\n")
+                '''
+            list_p = [p2, p3, p4]
+            list_p = [x / n_iterations for x in list_p]
 
-                    p1 += matching_all_columns(r_list, c_list)
-                    p2 += matching_some_columns(r_list, c_list)
-                    p3 += matching_rss(r_list, c_list)
-                    p4 += average_time(c_list)
-
-                    '''
-                    print("iteration" , i)
-                    print("Matching report by all columns: ", p1)
-                    print("Matching report by some columns: ", p2)
-                    print("Average difference: ", p3)
-                    print("Average time execution: ", p4)
-                    print("==========================================\n")
-                    '''
-                list_p = [p1, p2, p3, p4]
-                list_p = [x / n_iterations for x in list_p]
-
-                t_p1 += list_p[0]
-                t_p2 += list_p[1]
-                t_p3 += list_p[2]
-                t_p4 += list_p[3]
-
-            list_t_p = [t_p1, t_p2, t_p3, t_p4]
-            list_t_p = [x / n_config for x in list_t_p]
-
-            print("Matching report by all columns: ", list_t_p[0])
-            print("Matching report by some columns: ", list_t_p[1])
-            print("Average difference: ", list_t_p[2])
-            print("Average time execution: ", list_t_p[3])
+            print("Matching columns: ", list_p[0])
+            print("AIC error: ", list_p[1])
+            print("Time execution: ", list_p[2])
             print("==========================================\n")
-            f.write("{},{},{},{}\n".format(list_t_p[0], list_t_p[1], list_t_p[2], list_t_p[3]))
+            f.write("{},{},{}\n".format(list_p[0], list_p[1], list_p[2]))
 
     except Exception as err:
-        print(err)
+        print("In compare_outputs_nr_files_size: ", err)
 
 
 def compare_outputs_tuning_alg(alg):
@@ -398,7 +383,7 @@ def compare_outputs_tuning_alg(alg):
         for k in dicts.keys():
             print(dicts[k])
 
-            p1 = p2 = p3 = p4 = 0
+            p2 = p3 = p4 = 0
             for i in range(n_iterations):
 
                 print(i)
@@ -408,28 +393,23 @@ def compare_outputs_tuning_alg(alg):
                 print(r_list)
                 print(c_list)
 
-                p1 += matching_all_columns(r_list, c_list)
                 p2 += matching_some_columns(r_list, c_list)
                 p3 += matching_rss(r_list, c_list)
                 p4 += average_time(c_list)
 
-            p1 = p1 / n_iterations
             p2 = p2 / n_iterations
             p3 = p3 / n_iterations
             p4 = p4 / n_iterations
-            print("Matching report by all columns: ", p1)
-            print("Matching report by some columns: ", p2)
-            print("Average difference: ", p3)
-            print("Average time execution: ", p4)
+            print("Matching columns: ", p2)
+            print("AIC error: ", p3)
+            print("Time execution: ", p4)
             print("==========================================\n")
 
-            f.write("{},{},{},{}\n".format(p1, p2, p3, p4))
+            f.write("{},{},{}\n".format(p2, p3, p4))
 
     except Exception as err:
-        print(err)
+        print("In compare_outputs_tuning_alg: ", err)
 
-
-method = 2
 
 # compare output between all algorithms
 if method == 1:
@@ -437,7 +417,6 @@ if method == 1:
     alg.execute()
 # compare output between different configurations of an algorithm
 elif method == 2:
-    alg_to_compare = "ga"
     compare_outputs_tuning_alg(alg_to_compare)
     alg.execute_tuning(alg_to_compare)
 
