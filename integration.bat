@@ -22,9 +22,9 @@ ECHO ============================
 ECHO Operation successfully ended
 ECHO ============================
  
-cd ../python_script
-ECHO Run graphics
-python graphics.py
+::cd ../python_script
+::ECHO Run graphics
+::python graphics.py
 ECHO ============================
 ECHO Operation successfully ended
 ECHO ============================

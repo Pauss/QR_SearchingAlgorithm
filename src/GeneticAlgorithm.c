@@ -438,28 +438,27 @@ static void selection_roulette_wheel(T_INDIVIDUAL2* population, uint16* size, ui
 
 	do {
 
-		probability_selection(population, *size);
+	probability_selection(population, *size);
+	population_selected(population, temp_pool, *size, &temp_pool_size);
 
-		population_selected(population, temp_pool, *size, &temp_pool_size);
+	if (temp_pool_size)
 
-		if (temp_pool_size)
+	{
+		for (uint16 i = 0; i < temp_pool_size; i++) {
+			if (temp_size < *size) {
 
-		{
-			for (uint16 i = 0; i < temp_pool_size; i++) {
-				if (temp_size < *size) {
-
-					individual_init(&temp_population[temp_size]);
-					copy_individual_into_population(temp_population, temp_pool,
-							temp_size, i);
-					++temp_size;
-				} else {
-					break;
-				}
+				individual_init(&temp_population[temp_size]);
+				copy_individual_into_population(temp_population, temp_pool,
+						temp_size, i);
+				++temp_size;
+			} else {
+				break;
 			}
-
 		}
 
-		//shuffle_array(population, *size);
+	}
+
+		shuffle_array(population, *size);
 
 
 	} while (temp_size < *size);

@@ -163,8 +163,7 @@ T_FILE_ERRORS fileIsValid(int8* name_file) {
 	file_dimensions.lines = INIT;
 
 	/* check that file is existent on the disk*/
-	this_file_checks = open_file(name_file)
-	;
+	this_file_checks = open_file(name_file);
 
 	if (FALSE == this_file_checks) {
 		return file_not_found;

@@ -245,5 +245,4 @@ static void read_inputs(CMD_INPUTS* cmd_data, char** argv) {
 	}
 
 	cmd_data->my_file = strcat(cmd_data->my_file, argv[5]);
-
 }

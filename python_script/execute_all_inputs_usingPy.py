@@ -12,14 +12,17 @@ import generate_data as gen
 r_list = list()
 # max number of columns
 n_max = 10
+
 # number of files to be generated and verified
 n = 10
+# number of iterations for algorithms to be compared on generated files
+n_iterations = 1
+
 # alg to compare
 alg_to_compare = "ga_bb"
 # method comparing alg:  1-all alg, 2-single alg tuning
-method = 2
-# number of iterations for algorithms to be compared on generated files
-n_iterations = 1
+method = 1
+
 # details of files to be first generated and then checked
 name = "GData"
 type_file = ".txt"
@@ -40,10 +43,10 @@ crossover4 - 1 point simple
 # for comparing alg
 compare_dict = {
     # one config for each alg
-    'ga': ["ga", "2", "3", "2"],
+    'ga': ["ga", "2", "3", "1"],
     'ga_hc': ["ga_hc", "1", "1", "2"],
     'ga_sa': ["ga_sa", "1", "1", "2"],
-    'ga_bb': ["ga_bb", "2", "3", "2"],
+    'ga_bb': ["ga_bb", "4", "3", "2"],
 }
 
 # for tuning algorithms
@@ -74,6 +77,7 @@ ga_dict = {
     'ga23': ["ga", "4", "3", "2"],
     'ga24': ["ga", "4", "4", "2"],
 }
+
 ga_sa_dict = {
     # simulated annealing
     'ga_sa1': ["ga_sa", "1", "1", "2"],
@@ -254,6 +258,26 @@ def matching_some_columns(list1, list2):
     return report
 
 
+def missmatch_columns(list1, list2):
+
+    # this function find all matching columns of an individual
+    # the probability is computed obtaining all columns that are the same as columns of best solution
+    n_obsv = len(list1)
+    probability = 0
+
+    for i in range(n_obsv):
+        temp_n = 0
+        for j in list1[i][1]:
+            if j in list2[i][1]:
+                temp_n += 1
+        missmatch = list2[i][0] - temp_n
+        temp_p = float(missmatch) / list2[i][0]
+        probability += temp_p
+
+    report = (float(probability / n_obsv))
+    return report
+
+
 def min_max(a, b):
 
     if a < b:
@@ -326,25 +350,28 @@ def compare_outputs_nr_files_size():
                 print(r_list)
                 print(c_list)
 
+                p1 = missmatch_columns(r_list, c_list)
                 p2 += matching_some_columns(r_list, c_list)
                 p3 += matching_rss(r_list, c_list)
                 p4 += average_time(c_list)
 
                 '''
                 print("iteration" , i)
+                print("MissMatching columns: ", p1)
                 print("Matching columns: ", p2)
                 print("AIC error: ", p3)
                 print("Time execution: ", p4)
                 print("==========================================\n")
                 '''
-            list_p = [p2, p3, p4]
+            list_p = [p2, p3, p4, p1]
             list_p = [x / n_iterations for x in list_p]
 
             print("Matching columns: ", list_p[0])
             print("AIC error: ", list_p[1])
             print("Time execution: ", list_p[2])
+            print("Missmatch columns: ", list_p[3])
             print("==========================================\n")
-            f.write("{},{},{}\n".format(list_p[0], list_p[1], list_p[2]))
+            f.write("{},{},{},{}\n".format(list_p[0], list_p[1], list_p[2], list_p[3]))
 
     except Exception as err:
         print("In compare_outputs_nr_files_size: ", err)
@@ -383,7 +410,7 @@ def compare_outputs_tuning_alg(alg):
         for k in dicts.keys():
             print(dicts[k])
 
-            p2 = p3 = p4 = 0
+            p1 = p2 = p3 = p4 = 0
             for i in range(n_iterations):
 
                 print(i)
@@ -393,19 +420,22 @@ def compare_outputs_tuning_alg(alg):
                 print(r_list)
                 print(c_list)
 
+                p1 += missmatch_columns(r_list, c_list)
                 p2 += matching_some_columns(r_list, c_list)
                 p3 += matching_rss(r_list, c_list)
                 p4 += average_time(c_list)
 
+            pi = p1 / n_iterations
             p2 = p2 / n_iterations
             p3 = p3 / n_iterations
             p4 = p4 / n_iterations
+            print("MissMatching columns: ", p1)
             print("Matching columns: ", p2)
             print("AIC error: ", p3)
             print("Time execution: ", p4)
             print("==========================================\n")
 
-            f.write("{},{},{}\n".format(p2, p3, p4))
+            f.write("{},{},{},{}\n".format(p2, p3, p4, p1))
 
     except Exception as err:
         print("In compare_outputs_tuning_alg: ", err)

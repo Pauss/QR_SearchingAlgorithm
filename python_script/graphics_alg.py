@@ -5,9 +5,11 @@ import numpy as np
 report_match_some_columns = list()
 report_AIC = list()
 average_time = list()
+report_missmatch_columns = list()
 
 n_list = 4
 
+y_colors = ["green", "red", "gold", "deepskyblue"]
 
 # function to get GA computed data in order to show it on graphics
 def get_data(filepath):
@@ -15,6 +17,7 @@ def get_data(filepath):
     global report_match_some_columns
     global report_AIC
     global average_time
+    global report_missmatch_columns
 
     try:
         fd = open(filepath, 'r')
@@ -26,6 +29,7 @@ def get_data(filepath):
             report_match_some_columns.append(float(values[0]))
             report_AIC.append(float(values[1]))
             average_time.append(float(values[2]))
+            report_missmatch_columns.append(float(values[3]))
 
             line = fd.readline()
 
@@ -43,6 +47,7 @@ def get_data_tuning(filepath):
     global report_match_some_columns
     global report_AIC
     global average_time
+    global report_missmatch_columns
 
     try:
         fd = open(filepath, 'r')
@@ -54,6 +59,7 @@ def get_data_tuning(filepath):
             report_match_some_columns.append(float(values[0]))
             report_AIC.append(float(values[1]))
             average_time.append(float(values[2]))
+            report_missmatch_columns.append(float(values[3]))
 
             line = fd.readline()
 
@@ -70,13 +76,13 @@ def get_graphic():
     ########################################
     # scatter the data
 
-    data = list()
+    global y_colors
 
-    y_colors = ["deepskyblue", "orangered", "green"]
+    data = list()
 
     for i in range(n_list):
         temp_list = []
-        temp_list.extend([report_match_some_columns[i], report_AIC[i], average_time[i]])
+        temp_list.extend([report_match_some_columns[i], report_missmatch_columns[i], report_AIC[i], average_time[i]])
         data.append(temp_list)
 
     dim = len(data)
@@ -87,7 +93,7 @@ def get_graphic():
     fig, ax = plt.subplots()
     x = np.arange(len(data))
     x_names = ["GA", "HC", "SA", "GA_BB"]
-    y_label = ["Columns match", "AIC error", "Time execution(s)"]
+    y_label = ["Columns match", "Columns missmatch", "AIC error", "Time execution(s)"]
     for i in range(len(data[0])):
         y = [d[i] for d in data]
         b = ax.bar(x + i * dimw, y, dimw, bottom=0.001, label=y_label[i], color=y_colors[i])
@@ -151,13 +157,13 @@ def get_graphic3():
     ########################################
     # scatter the data
 
-    data = list()
+    global y_colors
 
-    y_colors = ["deepskyblue", "orangered", "green"]
+    data = list()
 
     for i in range(n_list):
         temp_list = []
-        temp_list.extend([report_match_some_columns[i], report_AIC[i], average_time[i]])
+        temp_list.extend([report_match_some_columns[i], report_missmatch_columns[i], report_AIC[i], average_time[i]])
         data.append(temp_list)
 
     dim = len(data)
@@ -168,7 +174,7 @@ def get_graphic3():
     ax = plt.subplot(2, 1, 1)
     x = np.arange(len(data))
     x_names = ["GA", "HC", "SA", "GA_BB"]
-    y_label = ["Columns match", "AIC error", "Time execution(s)"]
+    y_label = ["Columns match", "Columns missmatch", "AIC error", "Time execution(s)"]
     for i in range(len(data[0])):
         y = [d[i] for d in data]
         b = ax.bar(x + i * dimw, y, dimw, bottom=0.001, label=y_label[i], color=y_colors[i])
@@ -201,12 +207,13 @@ def get_graphic_tuning(alg):
     n_config = len(report_match_some_columns)
     x = np.arange(n_config)
 
-    lines = plt.plot(x, report_match_some_columns, x, report_AIC, x, average_time)
-    plt.setp(lines[0], linewidth=4)
-    plt.setp(lines[1], linewidth=2)
-    plt.setp(lines[2], linewidth=1)
+    lines = plt.plot(x, report_match_some_columns, x, report_missmatch_columns, x, report_AIC, x, average_time)
+    plt.setp(lines[0], linewidth=4, color=y_colors[0])
+    plt.setp(lines[1], linewidth=3, color=y_colors[1])
+    plt.setp(lines[2], linewidth=2, color=y_colors[2])
+    plt.setp(lines[3], linewidth=1, color=y_colors[3])
 
-    plt.legend(("Columns match", "AIC error", "Time execution(s)"),
+    plt.legend(("Columns match", "Columns missmatch", "AIC error", "Time execution(s)"),
                fancybox=True, framealpha=0.5, loc='upper right', fontsize='x-small')
     ax.set_title('Comparing the performance of ' + alg)
 

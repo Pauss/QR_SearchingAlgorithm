@@ -1,0 +1,44 @@
+nr_files: 10 
+Tunning : nobs = 100,nreg = 30,ntrue = 15,sd = 0.01
+GA:
+ga1.txt 
+- populatie 80%, conv 50, tournament_k = 20u
+ga2.txt
+-populatie 100%, conv 50, tournament_k = 15%
+ga3.txt
+-populatie 50%, conv 100, tournament_k = 30%
+ga4.txt
+-populatie 30%, conv 150, tournament_k = 40%
+ga5.txt
+-populatie 50%, conv 200, tournament_k = 40%
+ga6.txt   --shuffle array
+-populatie 30%, conv 100, tournament_k = 40%
+ga7.txt   --shuffle array
+-populatie 30%, conv 100, tournament_k = 40%
+-fixed nr genes 50%
+HC:
+hc1.txt
+- iteratii 100
+hc2.txt
+-iteratii 50
+hc3.txt
+-iteratii 25
+hc4.txt
+-iteratii 1000
+hc5.txt
+-iteratii 10000
+SA:
+sa1.txt
+- iteratii 100, cooling rate_0.99, temp 1000000
+sa2.txt
+- iteratii 100, cooling rate_0.90, temp 1000000
+sa3.txt
+- iteratii 100, cooling rate_0.85, temp 1000000
+sa4.txt
+- iteratii 100, cooling rate_0.75, temp 1000000
+sa5.txt
+- iteratii 100, cooling rate_0.50, temp 1000000
+sa6.txt
+- iteratii 100, cooling rate_0.25, temp 1000000
+sa7.txt
+- iteratii 1000, cooling rate_0.25, temp 1000000

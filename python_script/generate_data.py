@@ -8,10 +8,10 @@ import sys
 ## sd: numeric, standard deviation of the error term
 
 nobs = 100
-nreg = 50
-ntrue = 5
+nreg = 30
+ntrue = 15
+sd = 0.01
 intercept = True
-sd = 0.25
 M_PI = 3.14159265358979323846
 
 
