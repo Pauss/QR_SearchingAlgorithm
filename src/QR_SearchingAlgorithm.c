@@ -26,6 +26,7 @@ int main(int argc, char **argv)
 
 	clock_t begin = clock();
 	srand(time(NULL)*SEED_RAND);
+	//srand(time(NULL));
 
 	T_FILE_DIM* file_dim;
  	T_FILE_ERRORS check_file = file_no_error;

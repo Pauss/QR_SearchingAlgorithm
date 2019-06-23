@@ -208,8 +208,20 @@ static void build_individual(T_INDIVIDUAL2* GA_individual, uint8* rand_model,
 static void generate_population(T_INDIVIDUAL2* GA_population, uint16 size, uint16 n, uint16 k)
 {
 
+	uint16 random_columns = 0;
+
 	//generate population
 	for (uint16 i = 0; i < size; i++) {
+
+		random_columns = 0;
+
+		if (FIXED_NR_GENES == 0 && n > 0) {
+			while (random_columns == 0) {
+				random_columns = rand() % n;
+			}
+
+			k = random_columns;
+		}
 
 		individual_init(&GA_population[i]);
 		generate_individual(&GA_population[i], n, k);
@@ -978,7 +990,7 @@ static double get_mean_fitness(T_INDIVIDUAL2* population, uint16 size)
 
 	}
 
-	if (size > 0 && ret_val > 0) {
+	if (size > 0 && ret_val != 0) {
 		ret_val /= size;
 	}
 
@@ -1033,12 +1045,12 @@ static void build_schemas(T_INDIVIDUAL2* schemas, uint16* size_schemas, T_INDIVI
 				}
 			}
 
-			if (mean_schema_fitness > 0 && individuals_s > 0) {
+			if (mean_schema_fitness != 0 && individuals_s > 0) {
 				mean_schema_fitness /= individuals_s;
 			}
 
 			if ((mean_schema_fitness <= mean_fitness)
-					&& (mean_schema_fitness > 0))
+					&& (mean_schema_fitness != 0))
 					//if(temp_schema.fitness_value < mean_fitness && (double)temp_schema.fitness_value > (double)0 )
 					{
 
@@ -1240,6 +1252,10 @@ void GA_naive_alg(T_SELECTION_METHOD method, T_OPERATOR_METHOD op1,  T_OPERATOR_
 			 */
 
 			++generation;
+
+			/*printf("\n==================%d================\n", generation);
+			print_population(GA_population, population_size);*/
+
 
 			switch (method) {
 			case tournament: selection_tournament(GA_population, population_size, PERCENTAJE(PERCENTAJE_OF_TOURNAMENT_K, model_size_k)); break;

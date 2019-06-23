@@ -1,21 +1,5 @@
 nr_files: 10 
 Tunning : nobs = 100,nreg = 30,ntrue = 15,sd = 0.01
-GA:
-ga1.txt 
-- populatie 80%, conv 50, tournament_k = 20u
-ga2.txt
--populatie 100%, conv 50, tournament_k = 15%
-ga3.txt
--populatie 50%, conv 100, tournament_k = 30%
-ga4.txt
--populatie 30%, conv 150, tournament_k = 40%
-ga5.txt
--populatie 50%, conv 200, tournament_k = 40%
-ga6.txt   --shuffle array
--populatie 30%, conv 100, tournament_k = 40%
-ga7.txt   --shuffle array
--populatie 30%, conv 100, tournament_k = 40%
--fixed nr genes 50%
 HC:
 hc1.txt
 - iteratii 100

@@ -1,11 +1,12 @@
-import subprocess
-import sys
-import time
-import graphics_alg as alg
-import generate_data as gen
 #########################################################
 # Execute QR_SearchingAlgorithm on generated files
 #########################################################
+
+import subprocess
+import sys
+import graphics_alg as alg
+import generate_data as gen
+
 
 #########################################################
 # Global variables
@@ -18,10 +19,10 @@ n = 10
 # number of iterations for algorithms to be compared on generated files
 n_iterations = 1
 
-# alg to compare
-alg_to_compare = "ga_bb"
-# method comparing alg:  1-all alg, 2-single alg tuning
-method = 1
+# method comparing alg:  1 for all alg, 2 for single alg tuning
+method = 2
+# alg to compare, in case method = 2
+alg_to_compare = "ga"
 
 # details of files to be first generated and then checked
 name = "GData"
@@ -31,7 +32,7 @@ type_file = ".txt"
 ''' 
 mutation1 - flip 
 mutation2 - interchanging # number of columns is kept
-mutation3 - interchanging absolute # interchanging different genes always
+mutation3 - interchanging absolute # interchanging different genes always # blocanta
 mutation4 - reversing
 
 crossover1 - 1 point # number of columns is kept
@@ -46,7 +47,7 @@ compare_dict = {
     'ga': ["ga", "2", "3", "1"],
     'ga_hc': ["ga_hc", "1", "1", "2"],
     'ga_sa': ["ga_sa", "1", "1", "2"],
-    'ga_bb': ["ga_bb", "4", "3", "2"],
+    'ga_bb': ["ga_bb", "4", "1", "2"],
 }
 
 # for tuning algorithms

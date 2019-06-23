@@ -10,24 +10,24 @@
 /*=========================================*/
 /*define*/
 /*===========Genetic Algorithm=============*/
-#define PERCENTAJE_OF_CHROMOSOMES 80u //70
+#define PERCENTAJE_OF_CHROMOSOMES 30u //70
 #define CONVERGE 100u
 #define MAX_FITNESS 100000
-#define FIXED_NR_GENES 0u
+#define FIXED_NR_GENES 1u
 #define PERCENTAJE_OF_GENES 50u//55u
-/*=========================================*/
-/*===========BUilding BLocks===============*/
-/*=========================================*/
-#define PERCENTAJE_OF_SCHEMAS 50u //70
-#define OPERATORS_PROBABILITY 1
 /*=========================================*/
 /*==========Tournament Selection===========*/
 /*=========================================*/
-#define PERCENTAJE_OF_TOURNAMENT_K 40u
+#define PERCENTAJE_OF_TOURNAMENT_K 80u
+/*=========================================*/
+/*===========BUilding BLocks===============*/
+/*=========================================*/
+#define PERCENTAJE_OF_SCHEMAS 90u //70
+#define OPERATORS_PROBABILITY 10
 /*=========================================*/
 /*==========Simulated Annealing============*/
 /*=========================================*/
-#define TEMP 10000000 //10000 100000 100000 // 10000000
+#define TEMP 1000000 //10000 100000 100000 // 10000000
 #define COOLING_RATE 0.25//0.003 0.98 0.330 0.729 0.85/ 0.86 /0.95 /0.75
 /*This parameter is also used in Hill Climbing*/
 #define NR_ITERATIONS 1000u
@@ -53,7 +53,7 @@
 #define GENERATED_DATA_PATH2 "../gen_data/"
 #define PATH_SIZE 255u
 #define USE_GRAPHICS 0u
-#define USE_GENERATED 0u
+#define USE_GENERATED 1u
 /*=========================================*/
 
 #endif /* SRC_CONFIG_H_ */

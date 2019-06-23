@@ -11,8 +11,9 @@ n_list = 4
 
 y_colors = ["green", "red", "gold", "deepskyblue"]
 
-# function to get GA computed data in order to show it on graphics
+
 def get_data(filepath):
+    # function to get GA computed data in order to show it on graphics
 
     global report_match_some_columns
     global report_AIC
@@ -105,8 +106,8 @@ def get_graphic():
 
     fig.tight_layout()
 
-    plt.show()
-    plt.savefig('./output_graphics/My_Graphic_Reports.png')
+    # plt.show()
+    plt.savefig('./output_graphics/generated_images/comparing_alg/Img.png')
 
 
 def get_graphic2():
@@ -148,8 +149,8 @@ def get_graphic2():
 
     ax2.legend(fancybox=True, framealpha=0.5, loc='upper right')
 
-    plt.show()
-    plt.savefig('./output_graphics/My_Graphic_Reports.png')
+    # plt.show()
+    plt.savefig('./output_graphics/generated_images/comparing_alg/Img.png')
 
 
 def get_graphic3():
@@ -194,8 +195,8 @@ def get_graphic3():
     ax3.set(ylim=(0.0, 1.1))
     ax3.set_title('Zoomed in', fontsize=8)
 
-    plt.show()
-    plt.savefig('./output_graphics/My_Graphic_Reports.png')
+    # plt.show()
+    plt.savefig('./output_graphics/generated_images/comparing_alg/Img.png')
 
 
 def get_graphic_tuning(alg):
@@ -217,10 +218,12 @@ def get_graphic_tuning(alg):
                fancybox=True, framealpha=0.5, loc='upper right', fontsize='x-small')
     ax.set_title('Comparing the performance of ' + alg)
 
+    plt.grid(True)
+
     # fig.tight_layout()
 
-    plt.show()
-    plt.savefig('./output_graphics/My_Graphic_Reports_Tuning.png')
+    # plt.show()
+    plt.savefig('./output_graphics/generated_images/tunning/difRandomColumns/Img.png')
 
 
 def execute():

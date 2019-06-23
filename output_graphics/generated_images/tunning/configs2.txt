@@ -1,0 +1,24 @@
+nr_files: 10 
+Tunning : nobs = 300,nreg = 20,ntrue = 10,sd = 0.01
+GA: BEST from : 
+ga1.txt 
+- populatie 30%, conv 100, tournament_k = 10
+ga2.txt
+-populatie 30%, conv 100, tournament_k = 25
+ga3.txt
+-populatie 30%, conv 100, tournament_k = 30u
+=====
+ga4.txt
+-populatie 50%, conv 300, tournament_k = 10%
+ga5.txt
+-populatie 50%, conv 300, tournament_k = 25%
+ga6.txt   
+-populatie 50%, conv 300, tournament_k = 30%
+=====
+ga7.txt   
+-populatie 80%, conv 100, tournament_k = 20%
+=====
+ga8.txt
+populatie 100%, conv 100, tournament_k = 10%   
+-fixed nr genes 50%
+====================================================

@@ -1,0 +1,115 @@
+GA: BEST from : 
+nr_files: 10
+======================
+======================
+Tunning : nobs = 100,nreg = 20,ntrue = 10,sd = 0.01
+======================
+======================
+ga1.txt
+-populatie 30%, conv 100, tournament_k = 10  (din 10)
+ga2.txt
+-populatie 30%, conv 100, tournament_k = 30   (din 30)
+ga3.txt
+-populatie 30%, conv 100, tournament_k = 50u  (din 50)
+=====
+ga6.txt
+populatie 100%, conv 100, tournament_k = 30%   
+-fixed nr genes 50%
+======================
+======================
+Tunning : nobs = 100,nreg = 20,ntrue = 10,sd = 0.01
+======================
+======================
+ga10.txt 
+- populatie 30%, conv 80, tournament_k = 10
+ga11.txt
+-populatie 30%, conv 80, tournament_k = 50u
+=====
+ga12.txt
+-populatie 50%, conv 80, tournament_k = 10%
+ga13.txt   
+-populatie 50%, conv 80, tournament_k = 50%
+=====
+======================
+======================
+Tunning : nobs = 50,nreg = 20,ntrue = 10,sd = 0.01
+======================
+======================
+ga14.txt 
+- populatie 80%, conv 80, tournament_k = 10
+ga15.txt
+-populatie 80%, conv 60, tournament_k = 50u
+=====
+ga16.txt   
+-populatie 100%, conv 200, tournament_k = 50%
+ga17.txt   
+-populatie 100%, conv 100, tournament_k = 50%
+- fuxed nr genes
+ga18.txt   
+-populatie 80%, conv 1000, tournament_k = 50%
+- fixed nr genes
+==================================================
+==================================================
+nr_files: 10 
+======================
+======================
+Tunning : nobs = 150,nreg = 20,ntrue = 10,sd = 0.01
+======================
+======================
+HC:
+hc1.txt
+- iteratii 50
+hc2.txt
+-iteratii 100
+hc3.txt
+-iteratii 1000
+=======
+SA:
+sa1.txt
+- iteratii 100, cooling rate_0.99, temp 1000000
+sa2.txt
+- iteratii 100, cooling rate_0.85, temp 1000000
+sa3.txt
+- iteratii 100, cooling rate_0.75, temp 1000000
+sa4.txt
+- iteratii 100, cooling rate_0.50, temp 1000000
+sa5.txt
+- iteratii 100, cooling rate_0.25, temp 1000000
+sa7.txt
+- iteratii 1000, cooling rate_0.25, temp 1000000
+
+==================================================
+======================
+======================
+Tunning : nobs = 100,nreg = 20,ntrue = 10,sd = 0.01
+======================
+======================
+BB:
+bb1.txt
+-populatie 100%, conv 100, 30%schema, 10%op genertici
+bb2.txt
+-populatie 100%, conv 100, 30%schema, 20%op genertici
+bb3.txt
+-populatie 100%, conv 100, 30%schema, 50%op genertici
+=====
+bb4.txt
+-populatie 100%, conv 100, 50%schema, 10%op genertici
+bb5.txt
+-populatie 100%, conv 100, 50%schema, 20%op genertici
+bb6.txt
+-populatie 100%, conv 100, 50%schema, 50%op genertici
+=====
+bb7.txt
+-populatie 100%, conv 100, 90%schema, 10%op genertici
+bb8.txt
+-populatie 100%, conv 100, 90%schema, 20%op genertici
+bb9.txt
+-populatie 100%, conv 100, 90%schema, 50%op genertici
+
+=====
+bb10.txt
+-populatie 100%, conv 100, 90%schema, 1%op genertici
+bb11.txt
+-populatie 100%, conv 100, 50%schema, 1%op genertici
+bb12.txt
+-populatie 100%, conv 100, 30%schema, 1%op genertici

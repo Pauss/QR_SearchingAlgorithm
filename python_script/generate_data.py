@@ -8,8 +8,8 @@ import sys
 ## sd: numeric, standard deviation of the error term
 
 nobs = 100
-nreg = 30
-ntrue = 15
+nreg = 20
+ntrue = 10
 sd = 0.01
 intercept = True
 M_PI = 3.14159265358979323846
@@ -72,7 +72,7 @@ def write_to_file(filename):
             f.write("\n")
 
     except Exception as err:
-        print("Write to file error: ",err)
+        print("Write to file error: ", err)
 
     try:
         RSS = sum([x**2 for x in err])
