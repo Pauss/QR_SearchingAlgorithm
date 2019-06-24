@@ -10,7 +10,7 @@ import sys
 nobs = 100
 nreg = 20
 ntrue = 10
-sd = 0.01
+sd = 0.05
 intercept = True
 M_PI = 3.14159265358979323846
 

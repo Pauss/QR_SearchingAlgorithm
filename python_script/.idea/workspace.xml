@@ -2,28 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="67a9d59a-f5fd-40e3-9d29-cffbcb889832" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../Debug/QR_SearchingAlgorithm.exe" beforeDir="false" afterPath="$PROJECT_DIR$/../Debug/QR_SearchingAlgorithm.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Debug/src/QR_SearchingAlgorithm.o" beforeDir="false" afterPath="$PROJECT_DIR$/../Debug/src/QR_SearchingAlgorithm.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generated_data/GData0.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData0.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generated_data/GData1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData1.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generated_data/GData2.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData2.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generated_data/GData3.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData3.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generated_data/GData4.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData4.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generated_data/GData5.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData5.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generated_data/GData6.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData6.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generated_data/GData7.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData7.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generated_data/GData8.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData8.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../generated_data/GData9.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../generated_data/GData9.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../output_individuals/Out_Algorithms.csv" beforeDir="false" afterPath="$PROJECT_DIR$/../output_individuals/Out_Algorithms.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../output_individuals/Out_Algorithms_Tuning.csv" beforeDir="false" afterPath="$PROJECT_DIR$/../output_individuals/Out_Algorithms_Tuning.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../output_individuals/Out_individuals.csv" beforeDir="false" afterPath="$PROJECT_DIR$/../output_individuals/Out_individuals.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../docs/licenta_doc.docx" beforeDir="false" afterPath="$PROJECT_DIR$/../docs/licenta_doc.docx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/execute_all_inputs_usingPy.py" beforeDir="false" afterPath="$PROJECT_DIR$/execute_all_inputs_usingPy.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/generate_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/generate_data.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/graphics_alg.py" beforeDir="false" afterPath="$PROJECT_DIR$/graphics_alg.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/Config.h" beforeDir="false" afterPath="$PROJECT_DIR$/../src/Config.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/GeneticAlgorithm.c" beforeDir="false" afterPath="$PROJECT_DIR$/../src/GeneticAlgorithm.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../src/QR_SearchingAlgorithm.c" beforeDir="false" afterPath="$PROJECT_DIR$/../src/QR_SearchingAlgorithm.c" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -45,11 +27,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/generate_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="24" column="27" lean-forward="true" selection-start-line="24" selection-start-column="27" selection-end-line="24" selection-end-column="27" />
+            <state relative-caret-position="17">
+              <caret line="12" column="9" selection-start-line="12" selection-start-column="9" selection-end-line="12" selection-end-column="9" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -60,8 +42,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/graphics_alg.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="321">
-              <caret line="220" column="17" selection-start-line="220" selection-start-column="17" selection-end-line="220" selection-end-column="17" />
+            <state relative-caret-position="39">
+              <caret line="196" column="26" selection-start-line="196" selection-start-column="26" selection-end-line="196" selection-end-column="26" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -69,11 +51,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/execute_all_inputs_usingPy.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="222">
-              <caret line="22" column="10" lean-forward="true" selection-start-line="22" selection-start-column="10" selection-end-line="22" selection-end-column="10" />
+            <state relative-caret-position="136">
+              <caret line="17" column="16" lean-forward="true" selection-start-line="17" selection-start-column="16" selection-end-line="17" selection-end-column="16" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
               </folding>
@@ -93,6 +75,7 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>BEST</find>
+      <find>n_max</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -110,7 +93,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="1">
     <option name="x" value="4" />
     <option name="y" value="11" />
     <option name="width" value="1346" />
@@ -338,11 +321,11 @@
     <editor active="true" />
     <layout>
       <window_info content_ui="combo" id="Project" order="0" weight="0.1244168" />
-      <window_info id="Structure" order="1" side_tool="true" visible="true" weight="0.2496112" />
+      <window_info id="Structure" order="1" side_tool="true" visible="true" weight="0.16329704" />
       <window_info id="Favorites" order="2" side_tool="true" weight="0.12363919" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.8895801" visible="true" weight="0.24955752" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.8895801" visible="true" weight="0.23362832" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -424,7 +407,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/execute_all_inputs_usingPy.py</url>
-          <line>241</line>
+          <line>239</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
       </breakpoints>
@@ -453,30 +436,30 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/graphics_alg.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="321">
-          <caret line="220" column="17" selection-start-line="220" selection-start-column="17" selection-end-line="220" selection-end-column="17" />
+        <state relative-caret-position="39">
+          <caret line="196" column="26" selection-start-line="196" selection-start-column="26" selection-end-line="196" selection-end-column="26" />
           <folding>
             <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/generate_data.py">
+    <entry file="file://$PROJECT_DIR$/execute_all_inputs_usingPy.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="24" column="27" lean-forward="true" selection-start-line="24" selection-start-column="27" selection-end-line="24" selection-end-column="27" />
+        <state relative-caret-position="136">
+          <caret line="17" column="16" lean-forward="true" selection-start-line="17" selection-start-column="16" selection-end-line="17" selection-end-column="16" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#0#17#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/execute_all_inputs_usingPy.py">
+    <entry file="file://$PROJECT_DIR$/generate_data.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="222">
-          <caret line="22" column="10" lean-forward="true" selection-start-line="22" selection-start-column="10" selection-end-line="22" selection-end-column="10" />
+        <state relative-caret-position="17">
+          <caret line="12" column="9" selection-start-line="12" selection-start-column="9" selection-end-line="12" selection-end-column="9" />
           <folding>
-            <element signature="e#0#17#0" expanded="true" />
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>

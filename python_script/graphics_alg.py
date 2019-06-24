@@ -105,6 +105,7 @@ def get_graphic():
     ax.set_title('Comparing the performance of heuristic algorithms')
 
     fig.tight_layout()
+    plt.grid(True)
 
     # plt.show()
     plt.savefig('./output_graphics/generated_images/comparing_alg/Img.png')
@@ -184,6 +185,7 @@ def get_graphic3():
     plt.title("Comparing the performance of heuristic algorithms")
 
     ax.legend(fancybox=True, framealpha=0.5, loc='upper right')
+    plt.grid(True)
 
     ax3 = plt.subplot(2, 1, 2)
     for i in range(len(data[0])):
@@ -194,6 +196,8 @@ def get_graphic3():
 
     ax3.set(ylim=(0.0, 1.1))
     ax3.set_title('Zoomed in', fontsize=8)
+
+    plt.grid(True)
 
     # plt.show()
     plt.savefig('./output_graphics/generated_images/comparing_alg/Img.png')

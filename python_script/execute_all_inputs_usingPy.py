@@ -11,8 +11,6 @@ import generate_data as gen
 #########################################################
 # Global variables
 r_list = list()
-# max number of columns
-n_max = 10
 
 # number of files to be generated and verified
 n = 10
@@ -20,7 +18,7 @@ n = 10
 n_iterations = 1
 
 # method comparing alg:  1 for all alg, 2 for single alg tuning
-method = 2
+method = 1
 # alg to compare, in case method = 2
 alg_to_compare = "ga"
 
@@ -44,10 +42,10 @@ crossover4 - 1 point simple
 # for comparing alg
 compare_dict = {
     # one config for each alg
-    'ga': ["ga", "2", "3", "1"],
+    'ga':    ["ga",    "4", "1", "2"],
     'ga_hc': ["ga_hc", "1", "1", "2"],
     'ga_sa': ["ga_sa", "1", "1", "2"],
-    'ga_bb': ["ga_bb", "4", "1", "2"],
+    'ga_bb': ["ga_bb", "4", "3", "2"],
 }
 
 # for tuning algorithms

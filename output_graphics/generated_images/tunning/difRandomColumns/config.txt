@@ -20,35 +20,6 @@ populatie 100%, conv 100, tournament_k = 30%
 Tunning : nobs = 100,nreg = 20,ntrue = 10,sd = 0.01
 ======================
 ======================
-ga10.txt 
-- populatie 30%, conv 80, tournament_k = 10
-ga11.txt
--populatie 30%, conv 80, tournament_k = 50u
-=====
-ga12.txt
--populatie 50%, conv 80, tournament_k = 10%
-ga13.txt   
--populatie 50%, conv 80, tournament_k = 50%
-=====
-======================
-======================
-Tunning : nobs = 50,nreg = 20,ntrue = 10,sd = 0.01
-======================
-======================
-ga14.txt 
-- populatie 80%, conv 80, tournament_k = 10
-ga15.txt
--populatie 80%, conv 60, tournament_k = 50u
-=====
-ga16.txt   
--populatie 100%, conv 200, tournament_k = 50%
-ga17.txt   
--populatie 100%, conv 100, tournament_k = 50%
-- fuxed nr genes
-ga18.txt   
--populatie 80%, conv 1000, tournament_k = 50%
-- fixed nr genes
-==================================================
 ==================================================
 nr_files: 10 
 ======================

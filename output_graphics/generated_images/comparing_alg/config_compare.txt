@@ -1,0 +1,45 @@
+
+template:
+nobsv 100, nreg 20, sd 0.01, nr files 10
+
+config:
+compare_dict = {
+    # one config for each alg
+    'ga':    ["ga", "4", "1", "2"],
+    'ga_hc': ["ga_hc", "1", "1", "2"],
+    'ga_sa': ["ga_sa", "1", "1", "2"],
+    'ga_bb': ["ga_bb", "4", "3", "2"],
+}
+
+ga : converge 100, pop 100%, tournament 30%
+hc : iteratii 100
+sa : iteratii 100, cooling_rate 0.25
+bb :converge 100, pop 100%, schema 90% columns, p 20% pentru muta?ii genetice 
+============
+nr files
+============
+10 - comp1, comp2 pop 80% (best), comp3 60%
+50 - comp 4 pop 80%, comp5 100% (best)
+100 - comp6
+============
+============
+nr observatii
+============
+200 - comp7, comp8 cooling rate 0.30
+500 - comp9
+============
+============
+nr coloane
+============
+50 - comp 10
+100 - comp 11, nobsv 200 comp 11.2, nobsv 300 comp12 
+============
+============
+sd
+============
+0.03 comp 14
+0.05 comp 15
+0.09 comp 16 
+============
+10 iteratii - comp17
+===========

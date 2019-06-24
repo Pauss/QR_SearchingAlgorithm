@@ -10,27 +10,27 @@
 /*=========================================*/
 /*define*/
 /*===========Genetic Algorithm=============*/
-#define PERCENTAJE_OF_CHROMOSOMES 30u //70
+#define PERCENTAJE_OF_CHROMOSOMES 100u //70
 #define CONVERGE 100u
 #define MAX_FITNESS 100000
-#define FIXED_NR_GENES 1u
+#define FIXED_NR_GENES 0u
 #define PERCENTAJE_OF_GENES 50u//55u
 /*=========================================*/
 /*==========Tournament Selection===========*/
 /*=========================================*/
-#define PERCENTAJE_OF_TOURNAMENT_K 80u
+#define PERCENTAJE_OF_TOURNAMENT_K 30u
 /*=========================================*/
 /*===========BUilding BLocks===============*/
 /*=========================================*/
 #define PERCENTAJE_OF_SCHEMAS 90u //70
-#define OPERATORS_PROBABILITY 10
+#define OPERATORS_PROBABILITY 20
 /*=========================================*/
 /*==========Simulated Annealing============*/
 /*=========================================*/
 #define TEMP 1000000 //10000 100000 100000 // 10000000
-#define COOLING_RATE 0.25//0.003 0.98 0.330 0.729 0.85/ 0.86 /0.95 /0.75
+#define COOLING_RATE 0.30//0.003 0.98 0.330 0.729 0.85/ 0.86 /0.95 /0.75
 /*This parameter is also used in Hill Climbing*/
-#define NR_ITERATIONS 1000u
+#define NR_ITERATIONS 100u
 /*=========================================*/
 /*================Crossover================*/
 /*=========================================*/
